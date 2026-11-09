@@ -93,12 +93,18 @@ class SupabaseService {
     required String fullName,
     String? realName,
     String? guardianName,
+    String? avatarUrl,
+    bool updateAvatar = false,
   }) async {
-    await client.from('profiles').update({
+    final Map<String, dynamic> data = {
       'full_name': fullName,
-      'real_name': realName,
-      'guardian_name': guardianName,
-    }).eq('id', userId);
+      'real_name': realName ?? fullName,
+      'guardian_name': guardianName ?? fullName,
+    };
+    if (updateAvatar) {
+      data['avatar_url'] = avatarUrl;
+    }
+    await client.from('profiles').update(data).eq('id', userId);
   }
 
   // ─── Horarios del Estudiante ("Tu Horario") ──────────────────────────────────

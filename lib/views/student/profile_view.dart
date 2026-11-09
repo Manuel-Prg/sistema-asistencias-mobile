@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
@@ -9,10 +10,177 @@ import '../../providers/glass_settings_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/theme_provider.dart';
 
-class ProfileView extends ConsumerWidget {
+class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
 
-  void _confirmSignOut(BuildContext context, WidgetRef ref) {
+  @override
+  ConsumerState<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends ConsumerState<ProfileView> {
+  late TextEditingController _nameController;
+  bool _isSavingName = false;
+  bool _isUpdatingPhoto = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = ref.read(authProvider).profile;
+    _nameController = TextEditingController(text: profile?.fullName ?? '');
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSaveName() async {
+    final newName = _nameController.text.trim();
+    if (newName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor ingresa un nombre válido.'),
+          backgroundColor: AppColors.terracottaRule,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSavingName = true);
+    final success = await ref.read(authProvider.notifier).updateProfileName(newName);
+    if (!mounted) return;
+    setState(() => _isSavingName = false);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+              SizedBox(width: 10),
+              Expanded(child: Text('¡Nombre guardado con éxito!')),
+            ],
+          ),
+          backgroundColor: AppColors.primary,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else {
+      final error = ref.read(authProvider).errorMessage ?? 'Error al actualizar el nombre.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: AppColors.terracottaRule,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _showUploadPhotoDialog(BuildContext context) {
+    final urlController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => GlassDialog(
+        title: const Text('Subir foto de perfil'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Ingresa el enlace directo de tu fotografía (formato WebP, JPG o PNG):',
+              style: TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: urlController,
+              decoration: InputDecoration(
+                hintText: 'https://ejemplo.com/foto.jpg',
+                prefixIcon: const Icon(Icons.link_rounded),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final url = urlController.text.trim();
+              if (url.isEmpty) return;
+              Navigator.of(ctx).pop();
+              setState(() => _isUpdatingPhoto = true);
+              final success = await ref.read(authProvider.notifier).updateProfileAvatar(url);
+              if (!mounted) return;
+              setState(() => _isUpdatingPhoto = false);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success ? '¡Foto de perfil actualizada!' : 'No fue posible guardar la foto.',
+                  ),
+                  backgroundColor: success ? AppColors.primary : AppColors.terracottaRule,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Guardar Foto'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeletePhoto(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => GlassDialog(
+        title: const Text('Eliminar foto'),
+        content: const Text('¿Estás seguro de que deseas eliminar tu foto de perfil?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              setState(() => _isUpdatingPhoto = true);
+              final success = await ref.read(authProvider.notifier).updateProfileAvatar(null);
+              if (!mounted) return;
+              setState(() => _isUpdatingPhoto = false);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success ? 'Foto de perfil eliminada.' : 'Error al eliminar la foto.',
+                  ),
+                  backgroundColor: success ? AppColors.terracottaRule : AppColors.terracottaRule,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.terracottaRule,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmSignOut(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => GlassDialog(
@@ -41,7 +209,7 @@ class ProfileView extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final studentState = ref.watch(studentProvider);
     final themeMode = ref.watch(themeModeProvider);
@@ -52,65 +220,159 @@ class ProfileView extends ConsumerWidget {
     final student = studentState.student;
 
     final fullName = profile?.fullName ?? 'Estudiante';
-    final email = profile?.email ?? authState.user?.email ?? '';
+    final hasAvatar = profile?.avatarUrl != null && profile!.avatarUrl!.trim().isNotEmpty;
+
+    // Sincronizar campo si cambió desde provider y no se está editando activamente
+    if (!_isSavingName && _nameController.text != fullName && fullName.isNotEmpty) {
+      _nameController.text = fullName;
+    }
+
+    final secondaryTextColor = isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted;
 
     return GlassScaffold(
       appBar: const GlassAppBar(
         title: Text('Mi Perfil'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         children: [
-          // Header del perfil con cristal líquido
+          // Subtítulo de cabecera
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 16),
+            child: Text(
+              'Administra tus datos personales y foto de perfil',
+              style: TextStyle(
+                fontSize: 13,
+                fontFamily: AppTheme.brandFont,
+                color: secondaryTextColor,
+                height: 1.35,
+              ),
+            ),
+          ),
+
+          // ─── Tarjeta 1: Foto de Perfil ─────────────────────────────────────────
           GlassSurface(
             padding: const EdgeInsets.all(20),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 36,
-                  backgroundColor: AppColors.primary,
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    fullName.isNotEmpty ? fullName[0].toUpperCase() : 'E',
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                    'Foto de perfil',
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  fullName,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Sube una foto para identificarte\n(200x200px, WebP, máx 1 MB)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: AppTheme.brandFont,
+                      color: secondaryTextColor,
+                      height: 1.35,
+                    ),
                   ),
                 ),
-                if (student != null) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.accentLimnological.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      student.studentTypeFormatted,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.accentLimnological,
+                const SizedBox(height: 18),
+
+                // Avatar circular
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 104,
+                      height: 104,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isDark
+                              ? AppColors.signalAqua.withValues(alpha: 0.4)
+                              : AppColors.primary.withValues(alpha: 0.2),
+                          width: 2.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
+                      child: ClipOval(
+                        child: hasAvatar
+                            ? Image.network(
+                                profile!.avatarUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, stack) => _buildAvatarFallback(fullName),
+                                loadingBuilder: (ctx, child, progress) {
+                                  if (progress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  );
+                                },
+                              )
+                            : _buildAvatarFallback(fullName),
+                      ),
+                    ),
+                    if (_isUpdatingPhoto)
+                      Container(
+                        width: 104,
+                        height: 104,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.45),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Botones Subir Foto y Eliminar Foto
+                OutlinedButton.icon(
+                  onPressed: _isUpdatingPhoto ? null : () => _showUploadPhotoDialog(context),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    side: BorderSide(
+                      color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                      width: 1.2,
+                    ),
+                    backgroundColor: isDark
+                        ? const Color(0xFF133644).withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.7),
+                  ),
+                  icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                  label: const Text(
+                    'Subir foto',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                ),
+                if (hasAvatar) ...[
+                  const SizedBox(height: 6),
+                  TextButton.icon(
+                    onPressed: _isUpdatingPhoto ? null : () => _confirmDeletePhoto(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.terracottaRule,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                    icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                    label: const Text(
+                      'Eliminar foto',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                     ),
                   ),
                 ],
@@ -119,19 +381,140 @@ class ProfileView extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
 
-          // Información académica con cristal líquido
+          // ─── Tarjeta 2: Datos Personales ───────────────────────────────────────
+          GlassSurface(
+            padding: const EdgeInsets.all(20),
+            borderRadius: BorderRadius.circular(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Datos personales',
+                  style: TextStyle(
+                    fontFamily: AppTheme.brandFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tu nombre real o nombre de guardian',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontFamily: AppTheme.brandFont,
+                    color: secondaryTextColor,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Nombre completo o de guardian',
+                  style: TextStyle(
+                    fontFamily: AppTheme.brandFont,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? const Color(0xFFE2EFF5) : AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _nameController,
+                  style: TextStyle(
+                    fontFamily: AppTheme.brandFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: isDark
+                        ? const Color(0xFF0F2631).withValues(alpha: 0.55)
+                        : Colors.white.withValues(alpha: 0.8),
+                    hintText: 'Ingresa tu nombre completo',
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isSavingName ? null : _handleSaveName,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                    ),
+                    icon: _isSavingName
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.save_outlined, size: 18),
+                    label: Text(
+                      _isSavingName ? 'Guardando...' : 'Guardar cambios',
+                      style: TextStyle(
+                        fontFamily: AppTheme.brandFont,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // ─── Tarjeta 3: Detalles del Programa ──────────────────────────────────
           if (student != null) ...[
             GlassSurface(
-              padding: const EdgeInsets.all(16),
-              borderRadius: BorderRadius.circular(16),
+              padding: const EdgeInsets.all(20),
+              borderRadius: BorderRadius.circular(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Detalles del Programa',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.school_outlined,
+                        color: AppColors.accentLimnological,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Detalles del Programa',
+                        style: TextStyle(
+                          fontFamily: AppTheme.brandFont,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   _ProfileInfoRow(
                     icon: Icons.timer_outlined,
                     label: 'Horas Requeridas',
@@ -149,29 +532,44 @@ class ProfileView extends ConsumerWidget {
                     label: 'Sala Asignada',
                     value: student.assignedRoom,
                   ),
+                  const Divider(height: 16),
+                  _ProfileInfoRow(
+                    icon: Icons.badge_outlined,
+                    label: 'Modalidad',
+                    value: student.studentTypeFormatted,
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
           ],
 
-          // Selector de Tema (Claro / Oscuro / Sistema)
+          // ─── Tarjeta 4: Tema de la Aplicación ─────────────────────────────────
           GlassSurface(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            borderRadius: BorderRadius.circular(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.palette_outlined, color: AppColors.accentLimnological, size: 20),
-                    SizedBox(width: 10),
+                    const Icon(
+                      Icons.palette_outlined,
+                      color: AppColors.accentLimnological,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
                     Text(
                       'Tema de la Aplicación',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontFamily: AppTheme.brandFont,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<ThemeMode>(
@@ -210,20 +608,29 @@ class ProfileView extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
 
-          // Efectos de Vidrio y Cristal (iOS Glass)
+          // ─── Tarjeta 5: Efecto de Vidrio (iOS Glass) ──────────────────────────
           GlassSurface(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            borderRadius: BorderRadius.circular(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.blur_on_rounded, color: AppColors.accentLimnological, size: 22),
+                    const Icon(
+                      Icons.blur_on_rounded,
+                      color: AppColors.accentLimnological,
+                      size: 22,
+                    ),
                     const SizedBox(width: 10),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Efecto de Vidrio (iOS Glass)',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontFamily: AppTheme.brandFont,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     Container(
@@ -251,7 +658,8 @@ class ProfileView extends ConsumerWidget {
                   'Ajusta la transparencia en los menús y la navegación de la app. Se conserva el contraste del texto.',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                    fontFamily: AppTheme.brandFont,
+                    color: secondaryTextColor,
                     height: 1.35,
                   ),
                 ),
@@ -280,17 +688,22 @@ class ProfileView extends ConsumerWidget {
                     Icons.border_style_rounded,
                     color: glassSettings.showBorders
                         ? (isDark ? AppColors.signalAqua : AppColors.accentLimnological)
-                        : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
+                        : secondaryTextColor,
                   ),
-                  title: const Text(
+                  title: Text(
                     'Contornos de Vidrio',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   subtitle: Text(
                     'Mostrar bordes decorativos alrededor del cristal de la app. Si desactivas esta opción, se mantendrán el desenfoque y la refracción.',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                      fontFamily: AppTheme.brandFont,
+                      color: secondaryTextColor,
                       height: 1.35,
                     ),
                   ),
@@ -301,13 +714,13 @@ class ProfileView extends ConsumerWidget {
                   },
                 ),
                 const SizedBox(height: 12),
-                // Muestra de cristal en tiempo real
-                const Text(
+                Text(
                   'Vista previa en tiempo real:',
                   style: TextStyle(
                     fontSize: 12,
+                    fontFamily: AppTheme.brandFont,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.slateMuted,
+                    color: secondaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -323,13 +736,21 @@ class ProfileView extends ConsumerWidget {
                           children: [
                             Text(
                               'Cristal a ${(glassSettings.transparency * 100).toInt()}% de transparencia',
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                              style: TextStyle(
+                                fontFamily: AppTheme.brandFont,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                             Text(
                               glassSettings.showBorders
                                   ? 'Contornos de cristal activos'
                                   : 'Sin contornos (solo desenfoque y refracción)',
-                              style: const TextStyle(fontSize: 11, color: AppColors.slateMuted),
+                              style: TextStyle(
+                                fontFamily: AppTheme.brandFont,
+                                fontSize: 11,
+                                color: secondaryTextColor,
+                              ),
                             ),
                           ],
                         ),
@@ -342,26 +763,57 @@ class ProfileView extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
-          // Botón de Cerrar Sesión
+          // ─── Tarjeta 6: Cerrar Sesión y Pie de Página ─────────────────────────
           OutlinedButton.icon(
             key: const ValueKey('profile_sign_out_button'),
-            onPressed: () => _confirmSignOut(context, ref),
+            onPressed: () => _confirmSignOut(context),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.terracottaRule,
               side: const BorderSide(color: AppColors.terracottaRule, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             icon: const Icon(Icons.logout_rounded, size: 20),
-            label: const Text('CERRAR SESIÓN'),
+            label: Text(
+              'CERRAR SESIÓN',
+              style: TextStyle(
+                fontFamily: AppTheme.brandFont,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
-          const Center(
+          Center(
             child: Text(
               '${AppConstants.institutionName} • ${AppConstants.appVersion}',
-              style: TextStyle(fontSize: 11, color: AppColors.slateMuted),
+              style: TextStyle(
+                fontSize: 11,
+                fontFamily: AppTheme.brandFont,
+                color: secondaryTextColor,
+              ),
             ),
           ),
           const SizedBox(height: 120),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatarFallback(String name) {
+    final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'G';
+    return Container(
+      color: AppColors.primary,
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: TextStyle(
+          fontSize: 38,
+          fontFamily: AppTheme.brandFont,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -391,6 +843,7 @@ class _ProfileInfoRow extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 13,
+              fontFamily: AppTheme.brandFont,
               color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
             ),
           ),
@@ -400,11 +853,14 @@ class _ProfileInfoRow extends StatelessWidget {
           child: Text(
             value,
             textAlign: TextAlign.end,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: AppTheme.brandFont,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ],
     );
   }
 }
-

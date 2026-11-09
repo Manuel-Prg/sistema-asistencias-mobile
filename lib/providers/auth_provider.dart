@@ -185,6 +185,50 @@ class AuthNotifier extends Notifier<AppAuthState> {
     }
   }
 
+  Future<bool> updateProfileName(String newName) async {
+    final current = state.profile;
+    if (current == null) return false;
+    try {
+      await SupabaseService.updateProfile(
+        userId: current.id,
+        fullName: newName.trim(),
+        realName: newName.trim(),
+        guardianName: newName.trim(),
+      );
+      final updated = await SupabaseService.getProfile(current.id);
+      if (updated != null) {
+        state = state.copyWith(profile: updated);
+      }
+      return true;
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Error al actualizar nombre: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateProfileAvatar(String? avatarUrl) async {
+    final current = state.profile;
+    if (current == null) return false;
+    try {
+      await SupabaseService.updateProfile(
+        userId: current.id,
+        fullName: current.fullName,
+        realName: current.realName,
+        guardianName: current.guardianName,
+        avatarUrl: avatarUrl,
+        updateAvatar: true,
+      );
+      final updated = await SupabaseService.getProfile(current.id);
+      if (updated != null) {
+        state = state.copyWith(profile: updated);
+      }
+      return true;
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Error al actualizar foto: $e');
+      return false;
+    }
+  }
+
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
     await SupabaseService.signOut();
