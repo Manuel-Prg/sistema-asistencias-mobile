@@ -51,6 +51,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           textStyle: const TextStyle(
+            inherit: false,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -66,6 +67,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           textStyle: const TextStyle(
+            inherit: false,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -140,8 +142,24 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           textStyle: const TextStyle(
+            inherit: false,
             fontSize: 15,
             fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.signalAqua,
+          minimumSize: const Size.fromHeight(50),
+          side: const BorderSide(color: AppColors.darkBorder, width: 1.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(
+            inherit: false,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

@@ -230,9 +230,11 @@ class _LoginViewState extends State<LoginView> {
                           : const Text(
                               'INGRESAR AL SISTEMA',
                               style: TextStyle(
+                                inherit: false,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.5,
+                                color: Colors.white,
                               ),
                             ),
                     ),
@@ -251,7 +253,12 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       label: const Text(
                         'Ver Estudiantes Activos en Recinto',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          inherit: false,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 28),
