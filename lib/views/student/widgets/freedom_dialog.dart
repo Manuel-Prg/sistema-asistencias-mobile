@@ -2,6 +2,7 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/skippy_quotes.dart';
+import '../../../core/widgets/glass_surface.dart';
 
 class FreedomDialog extends StatefulWidget {
   final String studentType;
@@ -64,11 +65,13 @@ class _FreedomDialogState extends State<FreedomDialog> {
       alignment: Alignment.topCenter,
       children: [
         Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: AppColors.sillarCard,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-          child: Padding(
+          child: GlassSurface(
+            borderRadius: BorderRadius.circular(24),
             padding: const EdgeInsets.all(24),
+            enableRefraction: true,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

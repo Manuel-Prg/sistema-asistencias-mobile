@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../student/widgets/active_students_sheet.dart';
 import 'forgot_password_view.dart';
@@ -46,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
+    return GlassScaffold(
       body: SafeArea(
         child: Consumer(
           builder: (context, ref, child) {
@@ -54,28 +56,19 @@ class _LoginViewState extends State<LoginView> {
 
             return Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Logo institucional
+                    // Logo institucional en cristal líquido
                     Center(
-                      child: Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(12),
+                      child: GlassSurface(
+                        shape: BoxShape.circle,
+                        width: 92,
+                        height: 92,
+                        padding: const EdgeInsets.all(14),
+                        enableRefraction: true,
                         child: Image.asset(
                           'assets/logo/logo_remove_background.png',
                           errorBuilder: (context, error, stackTrace) =>
@@ -91,7 +84,7 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     const Text(
                       AppConstants.appName,
                       textAlign: TextAlign.center,
@@ -111,20 +104,23 @@ class _LoginViewState extends State<LoginView> {
                         color: AppColors.accentLimnological,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
 
-                    // Banner de error si existe
-                    if (authState.errorMessage != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.terracottaRule.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.terracottaRule.withOpacity(0.4),
-                          ),
-                        ),
-                        child: Row(
+                    // Tarjeta de formulario con cristal líquido
+                    GlassSurface(
+                      borderRadius: BorderRadius.circular(24),
+                      padding: const EdgeInsets.all(22),
+                      enableRefraction: true,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Banner de error si existe
+                          if (authState.errorMessage != null) ...[
+                            GlassSurface(
+                              borderRadius: BorderRadius.circular(12),
+                              padding: const EdgeInsets.all(12),
+                              tintColor: AppColors.terracottaRule.withValues(alpha: 0.16),
+                              child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(
@@ -236,7 +232,10 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             ),
                     ),
-                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
 
                     // Pill botón para ver quiénes están en turno en vivo
                     OutlinedButton.icon(

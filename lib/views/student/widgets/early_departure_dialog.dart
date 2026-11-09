@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/widgets/glass_surface.dart';
 
 class EarlyDepartureDialog extends StatefulWidget {
   final Duration elapsedTime;
@@ -52,19 +53,14 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.pondCardDark : AppColors.sillarCard,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border.all(
-            color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
-          ),
-        ),
+      child: GlassSurface(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             Center(
               child: Container(
                 width: 44,
@@ -175,6 +171,7 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
           ],
         ),
       ),
+    ),
     );
   }
 }

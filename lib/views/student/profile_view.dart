@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/glass_settings_provider.dart';
@@ -14,8 +15,7 @@ class ProfileView extends ConsumerWidget {
   void _confirmSignOut(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      builder: (context) => GlassDialog(
         title: const Text('Cerrar Sesión'),
         content: const Text('¿Estás seguro de que deseas salir de tu cuenta?'),
         actions: [
@@ -23,6 +23,7 @@ class ProfileView extends ConsumerWidget {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancelar'),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -53,104 +54,102 @@ class ProfileView extends ConsumerWidget {
     final fullName = profile?.fullName ?? 'Estudiante';
     final email = profile?.email ?? authState.user?.email ?? '';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mi Perfil'),
+    return GlassScaffold(
+      appBar: const GlassAppBar(
+        title: Text('Mi Perfil'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Header del perfil
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 36,
-                    backgroundColor: AppColors.primary,
-                    child: Text(
-                      fullName.isNotEmpty ? fullName[0].toUpperCase() : 'E',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    fullName,
-                    textAlign: TextAlign.center,
+          // Header del perfil con cristal líquido
+          GlassSurface(
+            padding: const EdgeInsets.all(20),
+            borderRadius: BorderRadius.circular(16),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 36,
+                  backgroundColor: AppColors.primary,
+                  child: Text(
+                    fullName.isNotEmpty ? fullName[0].toUpperCase() : 'E',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 28,
                       fontWeight: FontWeight.w800,
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    email,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.slateMuted,
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  fullName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  email,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.slateMuted,
+                  ),
+                ),
+                if (student != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentLimnological.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      student.studentTypeFormatted,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.accentLimnological,
+                      ),
                     ),
                   ),
-                  if (student != null) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.accentLimnological.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        student.studentTypeFormatted,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.accentLimnological,
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
-              ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
 
-          // Información académica
+          // Información académica con cristal líquido
           if (student != null) ...[
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Detalles del Programa',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 12),
-                    _ProfileInfoRow(
-                      icon: Icons.timer_outlined,
-                      label: 'Horas Requeridas',
-                      value: '${student.requiredHours.toStringAsFixed(0)} hrs',
-                    ),
-                    const Divider(height: 16),
-                    _ProfileInfoRow(
-                      icon: Icons.check_circle_outline_rounded,
-                      label: 'Horas Acumuladas',
-                      value: '${student.accumulatedHours.toStringAsFixed(1)} hrs',
-                    ),
-                    const Divider(height: 16),
-                    _ProfileInfoRow(
-                      icon: Icons.meeting_room_outlined,
-                      label: 'Sala Asignada',
-                      value: student.assignedRoom,
-                    ),
-                  ],
-                ),
+            GlassSurface(
+              padding: const EdgeInsets.all(16),
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Detalles del Programa',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 12),
+                  _ProfileInfoRow(
+                    icon: Icons.timer_outlined,
+                    label: 'Horas Requeridas',
+                    value: '${student.requiredHours.toStringAsFixed(0)} hrs',
+                  ),
+                  const Divider(height: 16),
+                  _ProfileInfoRow(
+                    icon: Icons.check_circle_outline_rounded,
+                    label: 'Horas Acumuladas',
+                    value: '${student.accumulatedHours.toStringAsFixed(1)} hrs',
+                  ),
+                  const Divider(height: 16),
+                  _ProfileInfoRow(
+                    icon: Icons.meeting_room_outlined,
+                    label: 'Sala Asignada',
+                    value: student.assignedRoom,
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -353,7 +352,7 @@ class ProfileView extends ConsumerWidget {
               style: TextStyle(fontSize: 11, color: AppColors.slateMuted),
             ),
           ),
-          const SizedBox(height: 90),
+          const SizedBox(height: 120),
         ],
       ),
     );

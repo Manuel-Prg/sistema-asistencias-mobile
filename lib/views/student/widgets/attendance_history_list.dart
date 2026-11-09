@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../core/widgets/glass_surface.dart';
 import '../../../models/attendance_record.dart';
 
 class AttendanceHistoryList extends StatelessWidget {
@@ -16,27 +17,26 @@ class AttendanceHistoryList extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (records.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
-          child: Center(
-            child: Column(
-              children: [
-                Icon(
-                  Icons.history_rounded,
-                  size: 40,
-                  color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+      return GlassSurface(
+        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+        borderRadius: BorderRadius.circular(16),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.history_rounded,
+                size: 40,
+                color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Aún no tienes registros de asistencia',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.slateMuted,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Aún no tienes registros de asistencia',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.slateMuted,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
@@ -80,16 +80,10 @@ class AttendanceHistoryList extends StatelessWidget {
             badgeText = 'Incompleto';
           }
 
-          return Container(
+          return GlassSurface(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.pondCardDark : AppColors.sillarCard,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
-              ),
-            ),
+            borderRadius: BorderRadius.circular(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

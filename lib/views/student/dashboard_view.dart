@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/student_provider.dart';
 import 'widgets/active_students_sheet.dart';
@@ -38,8 +40,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        return GlassDialog(
           title: const Row(
             children: [
               Icon(Icons.warning_amber_rounded,
@@ -93,8 +94,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
+    return GlassScaffold(
+      appBar: GlassAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -128,16 +129,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             children: [
               // Banner de error si existe
               if (studentState.errorMessage != null) ...[
-                Container(
+                GlassSurface(
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.terracottaRule.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.terracottaRule.withOpacity(0.4),
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  tintColor: AppColors.terracottaRule.withValues(alpha: 0.18),
                   child: Row(
                     children: [
                       const Icon(Icons.error_outline,
@@ -197,7 +193,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
               // 4. Historial Reciente de Asistencia
               AttendanceHistoryList(records: studentState.history),
-              const SizedBox(height: 100),
+              const SizedBox(height: 120),
             ],
           ),
         ),

@@ -18,21 +18,17 @@ class AttendanceHeatmapCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.pondCardDark : AppColors.sillarCard,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        return GlassSurface(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Center(
                 child: Container(
                   width: 40,
@@ -127,7 +123,8 @@ class AttendanceHeatmapCard extends StatelessWidget {
               ],
             ],
           ),
-        );
+        ),
+      );
       },
     );
   }

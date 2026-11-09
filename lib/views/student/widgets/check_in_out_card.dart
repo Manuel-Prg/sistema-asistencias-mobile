@@ -172,21 +172,21 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
 
           if (!hasActive) ...[
             // ─── MODO ENTRADA ──────────────────────────────────────────
-            const Text(
+            Text(
               'Selecciona tu sala asignada:',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.secondary,
+                fontWeight: FontWeight.w600,
+                color: Colors.white.withValues(alpha: 0.88),
               ),
             ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
@@ -212,12 +212,12 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
+            Text(
               'Turno de trabajo:',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.secondary,
+                fontWeight: FontWeight.w600,
+                color: Colors.white.withValues(alpha: 0.88),
               ),
             ),
             const SizedBox(height: 8),

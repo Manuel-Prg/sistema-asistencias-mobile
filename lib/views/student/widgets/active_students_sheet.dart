@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../core/widgets/glass_surface.dart';
 import '../../../models/active_student.dart';
 import '../../../services/supabase_service.dart';
 
@@ -45,19 +46,15 @@ class _ActiveStudentsSheetState extends State<ActiveStudentsSheet> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
-      ),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.pondCardDark : AppColors.sillarCard,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        border: Border.all(
-          color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
-        ),
-      ),
+    return GlassSurface(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      child: Column(
+      enableRefraction: true,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.75,
+        ),
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -212,7 +209,8 @@ class _ActiveStudentsSheetState extends State<ActiveStudentsSheet> {
             ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 

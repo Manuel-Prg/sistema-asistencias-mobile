@@ -35,9 +35,9 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: GlassSurface(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(32),
             enableRefraction: true,
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
             child: Row(
@@ -119,10 +119,18 @@ class _GlassNavItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? (isDark
-                    ? AppColors.signalAqua.withValues(alpha: 0.16)
-                    : AppColors.primary.withValues(alpha: 0.12))
+                    ? AppColors.signalAqua.withValues(alpha: 0.18)
+                    : AppColors.primary.withValues(alpha: 0.08))
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
+            border: isSelected
+                ? Border.all(
+                    color: isDark
+                        ? AppColors.signalAqua.withValues(alpha: 0.35)
+                        : AppColors.primary.withValues(alpha: 0.16),
+                    width: 1,
+                  )
+                : null,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

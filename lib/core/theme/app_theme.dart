@@ -31,12 +31,12 @@ class AppTheme {
         onError: Colors.white,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.limestoneGround,
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.primary,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: GoogleFonts.ptSerif(
-          color: AppColors.limestoneGround,
+          color: AppColors.primary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.2,
@@ -50,6 +50,14 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: AppColors.stoneBorder, width: 1),
         ),
+      ),
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -140,6 +148,14 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: AppColors.darkBorder, width: 1),
         ),
+      ),
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

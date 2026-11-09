@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../models/student_schedule.dart';
 import '../../providers/schedule_provider.dart';
@@ -102,9 +103,9 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
       _syncFromSchedules(scheduleState.schedules);
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tu Horario Semanal'),
+    return GlassScaffold(
+      appBar: const GlassAppBar(
+        title: Text('Tu Horario Semanal'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -242,7 +243,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                       ),
                     ),
             ),
-            const SizedBox(height: 90),
+            const SizedBox(height: 120),
           ],
         ),
       ),
