@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/student_provider.dart';
 import 'widgets/attendance_heatmap_card.dart';
 import 'widgets/attendance_history_list.dart';
@@ -18,6 +19,8 @@ class DashboardView extends ConsumerStatefulWidget {
 }
 
 class _DashboardViewState extends ConsumerState<DashboardView> {
+  bool _showNotificationBanner = true;
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +75,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final studentState = ref.watch(studentProvider);
+    final notificationState = ref.watch(notificationProvider);
 
     final firstName = authState.profile?.fullName.split(' ').first ?? 'Estudiante';
 
@@ -144,6 +148,48 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         icon: const Icon(Icons.close, size: 18),
                         onPressed: () =>
                             ref.read(studentProvider.notifier).clearError(),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              // Banner de invitación a activar notificaciones push
+              if (!notificationState.isEnabled && _showNotificationBanner) ...[
+                GlassSurface(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_active_outlined,
+                          color: AppColors.accentLimnological, size: 22),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Activa las notificaciones para recordatorios de turnos y avisos.',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await ref
+                              .read(notificationProvider.notifier)
+                              .setNotificationsEnabled(true);
+                        },
+                        child: const Text(
+                          'Activar',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.signalAqua,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 16),
+                        onPressed: () => setState(() => _showNotificationBanner = false),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),

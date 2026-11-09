@@ -139,15 +139,37 @@ class _ResourcesViewState extends State<ResourcesView> {
   }
 
   Future<void> _openUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
+    try {
+      final uri = Uri.parse(url.trim());
+      // Intentar primero con el navegador predeterminado del sistema (Chrome/navegador externo)
+      bool launched = false;
+      try {
+        launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } catch (_) {
+        launched = false;
+      }
+
+      if (!launched) {
+        // Alternativa con el modo predeterminado de la plataforma
+        launched = await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No fue posible abrir el navegador para: $url'),
+            backgroundColor: AppColors.terracottaRule,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo abrir el enlace.'),
+          SnackBar(
+            content: Text('Error al abrir enlace: $e'),
             backgroundColor: AppColors.terracottaRule,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }

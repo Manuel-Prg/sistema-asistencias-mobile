@@ -7,6 +7,7 @@ import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/glass_settings_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/theme_provider.dart';
 
@@ -208,12 +209,49 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     );
   }
 
+  void _showNotificationSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => GlassDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.notifications_off_outlined, color: AppColors.amberTolerance, size: 24),
+            SizedBox(width: 10),
+            Expanded(child: Text('Permiso de Notificaciones')),
+          ],
+        ),
+        content: const Text(
+          'Para recibir alertas de retardos y avisos de tus turnos, debes autorizar las notificaciones en los ajustes del sistema de tu dispositivo.',
+          style: TextStyle(fontSize: 13, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Ahora no'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              ref.read(notificationProvider.notifier).openSettings();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Abrir Ajustes'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final studentState = ref.watch(studentProvider);
     final themeMode = ref.watch(themeModeProvider);
     final glassSettings = ref.watch(glassSettingsProvider);
+    final notificationState = ref.watch(notificationProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final profile = authState.profile;
@@ -602,6 +640,105 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ref.read(themeModeProvider.notifier).setTheme(newSelection.first);
                     },
                   ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // ─── Tarjeta: Notificaciones Push ─────────────────────────────────────
+          GlassSurface(
+            padding: const EdgeInsets.all(20),
+            borderRadius: BorderRadius.circular(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.notifications_active_outlined,
+                      color: AppColors.accentLimnological,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Notificaciones Push',
+                        style: TextStyle(
+                          fontFamily: AppTheme.brandFont,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: notificationState.isEnabled
+                            ? AppColors.signalAqua.withValues(alpha: 0.18)
+                            : AppColors.slateMuted.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: notificationState.isEnabled
+                              ? AppColors.signalAqua.withValues(alpha: 0.4)
+                              : AppColors.slateMuted.withValues(alpha: 0.25),
+                        ),
+                      ),
+                      child: Text(
+                        notificationState.isEnabled ? 'Activadas' : 'Inactivas',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: notificationState.isEnabled
+                              ? (isDark ? AppColors.signalAqua : AppColors.primary)
+                              : secondaryTextColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Recibe recordatorios de tus turnos, avisos de retardos, registro de asistencia y convocatorias a eventos especiales.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontFamily: AppTheme.brandFont,
+                    color: secondaryTextColor,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    'Permitir mensajes y alertas push',
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    notificationState.isEnabled
+                        ? 'Notificaciones permitidas en este dispositivo'
+                        : 'Toca para permitir alertas y recordatorios',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: AppTheme.brandFont,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                  value: notificationState.isEnabled,
+                  activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                  onChanged: (val) async {
+                    final success = await ref
+                        .read(notificationProvider.notifier)
+                        .setNotificationsEnabled(val);
+                    if (!mounted) return;
+                    if (val && !success) {
+                      _showNotificationSettingsDialog(context);
+                    }
+                  },
                 ),
               ],
             ),
