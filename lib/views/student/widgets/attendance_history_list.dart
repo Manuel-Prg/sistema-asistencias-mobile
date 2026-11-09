@@ -133,9 +133,9 @@ class AttendanceHistoryList extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             '•  Turno ${record.shift}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.slateMuted,
+                              color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
                             ),
                           ),
                         ],
@@ -146,10 +146,10 @@ class AttendanceHistoryList extends StatelessWidget {
                       record.hoursWorked != null
                           ? '${record.hoursWorked!.toStringAsFixed(1)} hrs'
                           : '--',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.primary,
+                        color: isDark ? AppColors.signalAqua : AppColors.primary,
                       ),
                     ),
                   ],
@@ -157,12 +157,15 @@ class AttendanceHistoryList extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.access_time_rounded,
-                        size: 13, color: AppColors.slateMuted),
+                    Icon(Icons.access_time_rounded,
+                        size: 13, color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                     const SizedBox(width: 4),
                     Text(
                       AppDateUtils.formatTimeRange(record.checkIn, record.checkOut),
-                      style: const TextStyle(fontSize: 12, color: AppColors.slateMuted),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                      ),
                     ),
                   ],
                 ),

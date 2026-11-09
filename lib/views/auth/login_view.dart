@@ -5,7 +5,6 @@ import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
-import '../student/widgets/active_students_sheet.dart';
 import 'forgot_password_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -236,27 +235,6 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
               const SizedBox(height: 24),
-
-                    // Pill botón para ver quiénes están en turno en vivo
-                    OutlinedButton.icon(
-                      onPressed: () => ActiveStudentsSheet.show(context),
-                      icon: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: AppColors.signalAqua,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      label: const Text(
-                        'Ver Estudiantes Activos en Recinto',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 28),
 
                     // Aviso aclaratorio para supervisores
                     Container(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 
 class AppTheme {
@@ -13,12 +12,20 @@ class AppTheme {
       brightness: Brightness.light,
       fontFamily: brandFont,
       textTheme: const TextTheme(
+        bodyLarge: TextStyle(fontFamily: brandFont, color: AppColors.mineralInk, fontSize: 16),
+        bodyMedium: TextStyle(fontFamily: brandFont, color: AppColors.slateMuted, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: brandFont, color: AppColors.slateMuted, fontSize: 12),
+        titleLarge: TextStyle(fontFamily: brandFont, color: AppColors.mineralInk, fontSize: 20, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(fontFamily: brandFont, color: AppColors.mineralInk, fontSize: 16, fontWeight: FontWeight.w600),
+        titleSmall: TextStyle(fontFamily: brandFont, color: AppColors.mineralInk, fontSize: 14, fontWeight: FontWeight.w600),
         labelLarge: TextStyle(
           fontFamily: brandFont,
           fontSize: 15,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
         ),
+        labelMedium: TextStyle(fontFamily: brandFont, color: AppColors.slateMuted, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: brandFont, color: AppColors.slateMuted, fontSize: 11),
       ),
       scaffoldBackgroundColor: AppColors.limestoneGround,
       colorScheme: const ColorScheme.light(
@@ -114,12 +121,20 @@ class AppTheme {
       brightness: Brightness.dark,
       fontFamily: brandFont,
       textTheme: const TextTheme(
+        bodyLarge: TextStyle(fontFamily: brandFont, color: AppColors.darkTextPrimary, fontSize: 16),
+        bodyMedium: TextStyle(fontFamily: brandFont, color: AppColors.darkTextSecondary, fontSize: 14),
+        bodySmall: TextStyle(fontFamily: brandFont, color: AppColors.darkTextSecondary, fontSize: 12),
+        titleLarge: TextStyle(fontFamily: brandFont, color: AppColors.darkTextPrimary, fontSize: 20, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(fontFamily: brandFont, color: AppColors.darkTextPrimary, fontSize: 16, fontWeight: FontWeight.w600),
+        titleSmall: TextStyle(fontFamily: brandFont, color: AppColors.darkTextPrimary, fontSize: 14, fontWeight: FontWeight.w600),
         labelLarge: TextStyle(
           fontFamily: brandFont,
           fontSize: 15,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
         ),
+        labelMedium: TextStyle(fontFamily: brandFont, color: AppColors.darkTextSecondary, fontSize: 12),
+        labelSmall: TextStyle(fontFamily: brandFont, color: AppColors.darkTextSecondary, fontSize: 11),
       ),
       scaffoldBackgroundColor: AppColors.abyssalGroundDark,
       colorScheme: const ColorScheme.dark(

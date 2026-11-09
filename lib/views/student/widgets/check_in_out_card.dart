@@ -12,7 +12,6 @@ class CheckInOutCard extends StatefulWidget {
   final bool isLoading;
   final Function(String room, String shift) onCheckIn;
   final Function(String? earlyDepartureReason) onCheckOut;
-  final VoidCallback onOpenActiveStudents;
 
   const CheckInOutCard({
     super.key,
@@ -20,7 +19,6 @@ class CheckInOutCard extends StatefulWidget {
     required this.isLoading,
     required this.onCheckIn,
     required this.onCheckOut,
-    required this.onOpenActiveStudents,
   });
 
   @override
@@ -101,68 +99,34 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
         children: [
           // Header de la tarjeta
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: hasActive ? AppColors.signalAqua : Colors.white54,
-                        shape: BoxShape.circle,
-                        boxShadow: hasActive
-                            ? [
-                                BoxShadow(
-                                  color: AppColors.signalAqua.withOpacity(0.6),
-                                  blurRadius: 6,
-                                  spreadRadius: 1,
-                                ),
-                              ]
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.signalAqua,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
-                    ),
-                  ],
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: hasActive ? AppColors.signalAqua : Colors.white54,
+                  shape: BoxShape.circle,
+                  boxShadow: hasActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.signalAqua.withOpacity(0.6),
+                            blurRadius: 6,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : null,
                 ),
               ),
-              const SizedBox(width: 8),
-              // Botón para ver activos en recinto
-              GestureDetector(
-                onTap: widget.onOpenActiveStudents,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.people_outline_rounded,
-                          size: 14, color: AppColors.limestoneGround),
-                      SizedBox(width: 6),
-                      Text(
-                        'Activos en Recinto',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.limestoneGround,
-                        ),
-                      ),
-                    ],
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.signalAqua,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ),
@@ -238,6 +202,15 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                     timeRange: '14:00 - 18:00',
                     isSelected: _selectedShift == AppConstants.shiftVespertino,
                     onTap: () => setState(() => _selectedShift = AppConstants.shiftVespertino),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _ShiftButton(
+                    label: 'Completo',
+                    timeRange: '11:00 - 18:00',
+                    isSelected: _selectedShift == AppConstants.shiftCompleto,
+                    onTap: () => setState(() => _selectedShift = AppConstants.shiftCompleto),
                   ),
                 ),
               ],

@@ -176,14 +176,14 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                                 fontWeight: FontWeight.w700,
                                 color: form.isActive
                                     ? (isDark ? AppColors.darkTextPrimary : AppColors.mineralInk)
-                                    : AppColors.slateMuted,
+                                    : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                               ),
                             ),
                           ],
                         ),
                         Switch(
                           value: form.isActive,
-                          activeColor: AppColors.primary,
+                          activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
                           onChanged: (val) {
                             setState(() {
                               form.isActive = val;
@@ -205,10 +205,10 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                               onTap: () => _pickTime(dayIndex, true),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Icon(Icons.arrow_forward_rounded,
-                                size: 18, color: AppColors.slateMuted),
+                                size: 18, color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                           ),
                           Expanded(
                             child: _TimeBox(
@@ -296,7 +296,10 @@ class _TimeBox extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 11, color: AppColors.slateMuted),
+              style: TextStyle(
+                fontSize: 11,
+                color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+              ),
             ),
             const SizedBox(height: 4),
             Row(

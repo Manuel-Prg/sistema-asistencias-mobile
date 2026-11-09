@@ -91,9 +91,9 @@ class ProfileView extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   email,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.slateMuted,
+                    color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
                   ),
                 ),
                 if (student != null) ...[
@@ -247,9 +247,13 @@ class ProfileView extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   'Ajusta la transparencia en los menús y la navegación de la app. Se conserva el contraste del texto.',
-                  style: TextStyle(fontSize: 12, color: AppColors.slateMuted, height: 1.35),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                    height: 1.35,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 SliderTheme(
@@ -275,16 +279,20 @@ class ProfileView extends ConsumerWidget {
                   secondary: Icon(
                     Icons.border_style_rounded,
                     color: glassSettings.showBorders
-                        ? AppColors.accentLimnological
-                        : AppColors.slateMuted,
+                        ? (isDark ? AppColors.signalAqua : AppColors.accentLimnological)
+                        : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                   ),
                   title: const Text(
                     'Contornos de Vidrio',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     'Mostrar bordes decorativos alrededor del cristal de la app. Si desactivas esta opción, se mantendrán el desenfoque y la refracción.',
-                    style: TextStyle(fontSize: 12, color: AppColors.slateMuted, height: 1.35),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                      height: 1.35,
+                    ),
                   ),
                   value: glassSettings.showBorders,
                   activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
@@ -372,14 +380,19 @@ class _ProfileInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
-        Icon(icon, size: 20, color: AppColors.accentLimnological),
+        Icon(icon, size: 20, color: isDark ? AppColors.signalAqua : AppColors.accentLimnological),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(fontSize: 13, color: AppColors.slateMuted),
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+            ),
           ),
         ),
         const SizedBox(width: 8),

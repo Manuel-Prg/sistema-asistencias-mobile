@@ -28,7 +28,7 @@ class AppColors {
   static const Color pondCardDark = Color(0xFF0D222C); // Tarjetas oscuro
   static const Color darkBorder = Color(0xFF1E3A47);
   static const Color darkTextPrimary = Color(0xFFF4F1EA);
-  static const Color darkTextSecondary = Color(0xFF8BA2AD);
+  static const Color darkTextSecondary = Color(0xFFC5D7DF); // Plata cian luminoso de alto contraste
 
   // Estados de Asistencia (Heatmap & Badges)
   static const Color statusOnTime = Color(0xFF10B981); // Verde puntual

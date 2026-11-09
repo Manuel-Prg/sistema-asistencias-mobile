@@ -5,7 +5,6 @@ import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/student_provider.dart';
-import 'widgets/active_students_sheet.dart';
 import 'widgets/attendance_heatmap_card.dart';
 import 'widgets/attendance_history_list.dart';
 import 'widgets/check_in_out_card.dart';
@@ -109,13 +108,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.people_alt_outlined),
-            tooltip: 'Estudiantes activos',
-            onPressed: () => ActiveStudentsSheet.show(context),
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: () =>
@@ -174,7 +166,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         earlyDepartureReason: earlyDepartureReason,
                       );
                 },
-                onOpenActiveStudents: () => ActiveStudentsSheet.show(context),
               ),
               const SizedBox(height: 16),
 

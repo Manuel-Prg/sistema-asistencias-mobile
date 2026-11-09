@@ -101,7 +101,10 @@ class AttendanceHeatmapCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           AppDateUtils.formatTimeRange(rec.checkIn, rec.checkOut),
-                          style: const TextStyle(fontSize: 12, color: AppColors.slateMuted),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                          ),
                         ),
                         if (rec.earlyDepartureReason != null) ...[
                           const SizedBox(height: 6),
@@ -112,7 +115,7 @@ class AttendanceHeatmapCard extends StatelessWidget {
                               fontWeight: FontWeight.w500,
                               color: rec.isLate
                                   ? AppColors.terracottaRule
-                                  : AppColors.slateMuted,
+                                  : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                             ),
                           ),
                         ],
@@ -213,7 +216,9 @@ class AttendanceHeatmapCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
-                            color: isReached ? Colors.white : AppColors.slateMuted,
+                            color: isReached
+                                ? Colors.white
+                                : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                           ),
                         ),
                         if (isLast)
@@ -222,7 +227,9 @@ class AttendanceHeatmapCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w600,
-                              color: isReached ? Colors.white70 : AppColors.slateMuted,
+                              color: isReached
+                                  ? Colors.white70
+                                  : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
                             ),
                           ),
                       ],

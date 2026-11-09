@@ -127,6 +127,8 @@ class _RegulationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GlassSurface(
       padding: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(16),
@@ -136,7 +138,7 @@ class _RegulationCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.14),
+              color: iconColor.withValues(alpha: isDark ? 0.22 : 0.14),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 22),
@@ -148,18 +150,19 @@ class _RegulationCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.slateMuted,
-                    height: 1.4,
+                    color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                    height: 1.45,
                   ),
                 ),
               ],
