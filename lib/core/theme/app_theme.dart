@@ -5,27 +5,20 @@ import '../constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
-  static TextTheme _buildTextTheme(Brightness brightness) {
-    final base = brightness == Brightness.dark
-        ? ThemeData.dark().textTheme
-        : ThemeData.light().textTheme;
-    return GoogleFonts.interTextTheme(base).copyWith(
-      labelLarge: GoogleFonts.inter(
-        fontSize: 15,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0.3,
-      ),
-    );
-  }
-
   static ThemeData get lightTheme {
-    final textTheme = _buildTextTheme(Brightness.light);
+    final fontFamily = GoogleFonts.inter().fontFamily;
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: GoogleFonts.inter().fontFamily,
-      textTheme: textTheme,
+      fontFamily: fontFamily,
+      textTheme: const TextTheme(
+        labelLarge: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        ),
+      ),
       scaffoldBackgroundColor: AppColors.limestoneGround,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
@@ -106,13 +99,19 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
-    final textTheme = _buildTextTheme(Brightness.dark);
+    final fontFamily = GoogleFonts.inter().fontFamily;
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: GoogleFonts.inter().fontFamily,
-      textTheme: textTheme,
+      fontFamily: fontFamily,
+      textTheme: const TextTheme(
+        labelLarge: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        ),
+      ),
       scaffoldBackgroundColor: AppColors.abyssalGroundDark,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.signalAqua,
