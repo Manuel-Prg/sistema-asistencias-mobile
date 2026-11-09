@@ -98,3 +98,4 @@ final notificationProvider =
     NotifierProvider<NotificationNotifier, NotificationState>(() {
   return NotificationNotifier();
 });
+

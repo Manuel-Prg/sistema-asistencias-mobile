@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
@@ -182,29 +183,135 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   void _confirmSignOut(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
-      builder: (context) => GlassDialog(
-        title: const Text('Cerrar Sesión'),
-        content: const Text('¿Estás seguro de que deseas salir de tu cuenta?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: GlassSurface(
+          borderRadius: BorderRadius.circular(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Antes de salir',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: AppTheme.brandFont,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'No olvides llenar tu bitácora del día. Puedes ir al formulario ahora y después continuar con tu cierre de sesión.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.45,
+                  fontFamily: AppTheme.brandFont,
+                  color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Botón 1: Cancelar (Outlined)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    side: BorderSide(
+                      color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                      width: 1.2,
+                    ),
+                    foregroundColor: isDark ? Colors.white : AppColors.primary,
+                  ),
+                  child: Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Botón 2: Ir a bitácora (Filled Primary)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final uri = Uri.parse('https://xurl.es/bitacora');
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } catch (_) {}
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        isDark ? AppColors.signalAqua : AppColors.primary,
+                    foregroundColor:
+                        isDark ? const Color(0xFF07161D) : Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Ir a bitácora',
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Botón 3: Solo cerrar sesión (Soft Tonal)
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    ref.read(authProvider.notifier).signOut();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    backgroundColor: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : const Color(0xFFEFECE6),
+                    foregroundColor:
+                        isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                  ),
+                  child: Text(
+                    'Solo cerrar sesión',
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ref.read(authProvider.notifier).signOut();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.terracottaRule,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Cerrar Sesión'),
-          ),
-        ],
+        ),
       ),
     );
   }

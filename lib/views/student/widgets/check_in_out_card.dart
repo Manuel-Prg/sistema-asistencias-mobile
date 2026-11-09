@@ -69,11 +69,12 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
   }
 
   void _handleCheckOut() {
+    final hoursWorked = _elapsed.inSeconds / 3600.0;
     // Si la sesión tiene menos de 3 horas, solicitar motivo de salida temprana
-    if (_elapsed.inHours < AppConstants.minShiftHours) {
+    if (hoursWorked < AppConstants.minShiftHours) {
       EarlyDepartureDialog.show(
         context,
-        elapsedTime: _elapsed,
+        hoursWorked: hoursWorked,
         onConfirm: (reason) {
           widget.onCheckOut(reason);
         },
