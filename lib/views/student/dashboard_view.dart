@@ -197,7 +197,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
               // 4. Historial Reciente de Asistencia
               AttendanceHistoryList(records: studentState.history),
-              const SizedBox(height: 24),
+              const SizedBox(height: 90),
             ],
           ),
         ),

@@ -254,6 +254,7 @@ class _EventsViewState extends ConsumerState<EventsView> {
                 ),
               ),
             ),
+            const SizedBox(height: 90),
           ],
         ),
       ),

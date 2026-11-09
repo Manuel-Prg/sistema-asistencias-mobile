@@ -72,3 +72,4 @@ Frente a la versión web general pensada para supervisión de escritorio y panta
 - Soporte nativo para escalas de fuente de accesibilidad del sistema operativo sin truncamiento ni desbordamiento de componentes.
 - Contraste visual estricto en Modo Claro y Modo Oscuro conforme a WCAG AA para entornos con reflejo solar en exteriores o salas con iluminación tenue.
 - Targets táctiles mínimos de 48x48 dp en todos los botones de interacción crítica (Check-in, Check-out, selector de salas y horarios).
+

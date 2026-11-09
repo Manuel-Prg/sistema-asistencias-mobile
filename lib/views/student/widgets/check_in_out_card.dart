@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../core/widgets/glass_surface.dart';
 import '../../../models/attendance_record.dart';
 import 'early_departure_dialog.dart';
 
@@ -89,24 +90,12 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
     final hasActive = widget.activeRecord != null;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Placa invertida en azul estanque `#0c3c4c` (punto focal del Design System)
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? AppColors.darkBorder : AppColors.primaryDeep,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+    // Placa invertida en azul estanque con efecto de cristal líquido iOS
+    return GlassSurface(
+      tintColor: isDark ? const Color(0xFF0C2B38) : AppColors.primary,
+      borderRadius: BorderRadius.circular(20),
       padding: const EdgeInsets.all(22),
+      enableRefraction: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

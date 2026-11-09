@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/glass_settings_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/theme_provider.dart';
 
@@ -42,6 +44,7 @@ class ProfileView extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     final studentState = ref.watch(studentProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final glassSettings = ref.watch(glassSettingsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final profile = authState.profile;
@@ -153,30 +156,181 @@ class ProfileView extends ConsumerWidget {
             const SizedBox(height: 16),
           ],
 
-          // Preferencias (Modo Oscuro / Claro)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                secondary: Icon(
-                  isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                  color: AppColors.primary,
+          // Selector de Tema (Claro / Oscuro / Sistema)
+          GlassSurface(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.palette_outlined, color: AppColors.accentLimnological, size: 20),
+                    SizedBox(width: 10),
+                    Text(
+                      'Tema de la Aplicación',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                  ],
                 ),
-                title: const Text(
-                  'Modo Oscuro',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<ThemeMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: ThemeMode.light,
+                        icon: Icon(Icons.light_mode_rounded, size: 18),
+                        label: Text('Claro'),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark,
+                        icon: Icon(Icons.dark_mode_rounded, size: 18),
+                        label: Text('Oscuro'),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.system,
+                        icon: Icon(Icons.settings_suggest_rounded, size: 18),
+                        label: Text('Sistema'),
+                      ),
+                    ],
+                    selected: {themeMode},
+                    style: SegmentedButton.styleFrom(
+                      selectedBackgroundColor: isDark
+                          ? AppColors.signalAqua.withValues(alpha: 0.25)
+                          : AppColors.primary.withValues(alpha: 0.15),
+                      selectedForegroundColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onSelectionChanged: (Set<ThemeMode> newSelection) {
+                      ref.read(themeModeProvider.notifier).setTheme(newSelection.first);
+                    },
+                  ),
                 ),
-                subtitle: Text(
-                  isDark ? 'Tema oscuro activado' : 'Tema claro activado',
-                  style: const TextStyle(fontSize: 12, color: AppColors.slateMuted),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Efectos de Vidrio y Cristal (iOS Glass)
+          GlassSurface(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.blur_on_rounded, color: AppColors.accentLimnological, size: 22),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Efecto de Vidrio (iOS Glass)',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.signalAqua.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.signalAqua.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Text(
+                        '${(glassSettings.transparency * 100).toInt()}%',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                value: themeMode == ThemeMode.dark,
-                activeColor: AppColors.primary,
-                onChanged: (val) {
-                  ref.read(themeModeProvider.notifier).toggleTheme();
-                },
-              ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Ajusta la transparencia en los menús y la navegación de la app. Se conserva el contraste del texto.',
+                  style: TextStyle(fontSize: 12, color: AppColors.slateMuted, height: 1.35),
+                ),
+                const SizedBox(height: 8),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    activeTrackColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                    thumbColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                    inactiveTrackColor: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                    trackHeight: 4,
+                  ),
+                  child: Slider(
+                    value: glassSettings.transparency,
+                    min: 0.10,
+                    max: 0.85,
+                    divisions: 15,
+                    onChanged: (val) {
+                      ref.read(glassSettingsProvider.notifier).setTransparency(val);
+                    },
+                  ),
+                ),
+                const Divider(height: 20),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: Icon(
+                    Icons.border_style_rounded,
+                    color: glassSettings.showBorders
+                        ? AppColors.accentLimnological
+                        : AppColors.slateMuted,
+                  ),
+                  title: const Text(
+                    'Contornos de Vidrio',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text(
+                    'Mostrar bordes decorativos alrededor del cristal de la app. Si desactivas esta opción, se mantendrán el desenfoque y la refracción.',
+                    style: TextStyle(fontSize: 12, color: AppColors.slateMuted, height: 1.35),
+                  ),
+                  value: glassSettings.showBorders,
+                  activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                  onChanged: (val) {
+                    ref.read(glassSettingsProvider.notifier).setShowBorders(val);
+                  },
+                ),
+                const SizedBox(height: 12),
+                // Muestra de cristal en tiempo real
+                const Text(
+                  'Vista previa en tiempo real:',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.slateMuted,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GlassSurface(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.auto_awesome_rounded, color: AppColors.signalAqua, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cristal a ${(glassSettings.transparency * 100).toInt()}% de transparencia',
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                            ),
+                            Text(
+                              glassSettings.showBorders
+                                  ? 'Contornos de cristal activos'
+                                  : 'Sin contornos (solo desenfoque y refracción)',
+                              style: const TextStyle(fontSize: 11, color: AppColors.slateMuted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -199,7 +353,7 @@ class ProfileView extends ConsumerWidget {
               style: TextStyle(fontSize: 11, color: AppColors.slateMuted),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 90),
         ],
       ),
     );

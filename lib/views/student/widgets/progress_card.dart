@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/glass_surface.dart';
 import '../../../models/student.dart';
 import 'freedom_dialog.dart';
 
@@ -17,12 +18,13 @@ class ProgressCard extends StatelessWidget {
     final percentage = student.progressPercentage;
     final isCompleted = student.isCompleted;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return GlassSurface(
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(16),
+      enableRefraction: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -173,8 +175,7 @@ class ProgressCard extends StatelessWidget {
             ],
           ],
         ),
-      ),
-    );
+      );
+    }
   }
-}
 

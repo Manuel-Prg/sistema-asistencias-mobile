@@ -97,7 +97,7 @@ class ResourcesView extends StatelessWidget {
               style: TextStyle(fontSize: 12, color: AppColors.slateMuted),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 90),
         ],
       ),
     );

@@ -251,7 +251,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                       ),
                     ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 90),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../core/widgets/glass_surface.dart';
 import '../../../models/infraction_models.dart';
 
 class AttendanceHeatmapCard extends StatelessWidget {
@@ -135,12 +136,13 @@ class AttendanceHeatmapCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return GlassSurface(
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(16),
+      enableRefraction: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             // Título de la sección
             Row(
               children: [
@@ -412,10 +414,9 @@ class AttendanceHeatmapCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
+    }
   }
-}
 
 class _LegendItem extends StatelessWidget {
   final Color color;
