@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/widgets/glass_surface.dart';
 import '../../models/student_schedule.dart';
 import '../../providers/schedule_provider.dart';
 
@@ -111,15 +112,9 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Banner explicativo de la regla de retardos
-            Container(
+            GlassSurface(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(isDark ? 0.2 : 0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
-                ),
-              ),
+              borderRadius: BorderRadius.circular(14),
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -146,19 +141,15 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
               final dayName = entry.value;
               final form = _daysForm[dayIndex]!;
 
-              return Container(
+              return GlassSurface(
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.pondCardDark : AppColors.sillarCard,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: form.isActive
-                        ? (isDark ? AppColors.signalAqua.withOpacity(0.4) : AppColors.primary)
-                        : (isDark ? AppColors.darkBorder : AppColors.stoneBorder),
-                    width: form.isActive ? 1.5 : 1,
-                  ),
-                ),
+                borderRadius: BorderRadius.circular(16),
+                tintColor: form.isActive
+                    ? (isDark
+                        ? AppColors.primary.withValues(alpha: 0.35)
+                        : AppColors.signalAqua.withValues(alpha: 0.10))
+                    : null,
                 child: Column(
                   children: [
                     Row(

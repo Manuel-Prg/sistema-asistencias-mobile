@@ -41,13 +41,21 @@ class GlassSurface extends ConsumerWidget {
     final defaultBaseColor = isDark ? AppColors.pondCardDark : AppColors.sillarCard;
     final activeBase = tintColor ?? defaultBaseColor;
 
+    // Si el color base es oscuro (como la tarjeta principal de check-in en azul estanque)
+    // y se encuentra sobre un fondo claro, protegemos la opacidad mínima para que el texto
+    // blanco y aqua nunca pierda contraste frente al fondo claro exterior.
+    final isDarkBase = activeBase.computeLuminance() < 0.20;
+    final effectiveAlpha = (!isDark && isDarkBase)
+        ? (0.86 + (1.0 - settings.transparency) * 0.10).clamp(0.82, 0.96)
+        : opacity;
+
     // Gradiente de refracción de vidrio estilo iOS
     final gradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
-        activeBase.withValues(alpha: (opacity * 1.08).clamp(0.10, 0.95)),
-        activeBase.withValues(alpha: (opacity * 0.85).clamp(0.08, 0.90)),
+        activeBase.withValues(alpha: (effectiveAlpha * 1.06).clamp(0.12, 0.96)),
+        activeBase.withValues(alpha: (effectiveAlpha * 0.88).clamp(0.10, 0.92)),
       ],
     );
 
