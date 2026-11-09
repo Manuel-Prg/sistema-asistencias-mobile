@@ -5,15 +5,16 @@ import '../constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get lightTheme {
-    final fontFamily = GoogleFonts.inter().fontFamily;
+  static const String brandFont = 'Archer';
 
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: fontFamily,
+      fontFamily: brandFont,
       textTheme: const TextTheme(
         labelLarge: TextStyle(
+          fontFamily: brandFont,
           fontSize: 15,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
@@ -30,12 +31,13 @@ class AppTheme {
         error: AppColors.terracottaRule,
         onError: Colors.white,
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.primary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.ptSerif(
+        titleTextStyle: TextStyle(
+          fontFamily: brandFont,
           color: AppColors.primary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -107,14 +109,13 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
-    final fontFamily = GoogleFonts.inter().fontFamily;
-
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: fontFamily,
+      fontFamily: brandFont,
       textTheme: const TextTheme(
         labelLarge: TextStyle(
+          fontFamily: brandFont,
           fontSize: 15,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
@@ -129,12 +130,13 @@ class AppTheme {
         onSurface: AppColors.darkTextPrimary,
         error: AppColors.terracottaRule,
       ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.pondCardDark,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.ptSerif(
+        titleTextStyle: TextStyle(
+          fontFamily: brandFont,
           color: AppColors.darkTextPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w700,

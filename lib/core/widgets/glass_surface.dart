@@ -50,20 +50,38 @@ class GlassSurface extends ConsumerWidget {
         : opacity;
 
     // Gradiente de refracción de vidrio estilo iOS
+    final darkTop = tintColor ?? const Color(0xFF133644);
+    final darkBottom = tintColor != null
+        ? tintColor!.withValues(alpha: 0.80)
+        : const Color(0xFF091C24);
+
     final gradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [
-        activeBase.withValues(alpha: (effectiveAlpha * 1.06).clamp(0.12, 0.96)),
-        activeBase.withValues(alpha: (effectiveAlpha * 0.88).clamp(0.10, 0.92)),
-      ],
+      colors: isDark
+          ? [
+              darkTop.withValues(
+                alpha: (effectiveAlpha * 1.15).clamp(0.18, 0.94),
+              ),
+              darkBottom.withValues(
+                alpha: (effectiveAlpha * 0.82).clamp(0.12, 0.90),
+              ),
+            ]
+          : [
+              activeBase.withValues(
+                alpha: (effectiveAlpha * 1.06).clamp(0.12, 0.96),
+              ),
+              activeBase.withValues(
+                alpha: (effectiveAlpha * 0.88).clamp(0.10, 0.92),
+              ),
+            ],
     );
 
     // Contorno decorativo de cristal
     final border = settings.showBorders
         ? Border.all(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.18)
+                ? Colors.white.withValues(alpha: 0.22)
                 : const Color(0xFF0C3C4C).withValues(alpha: 0.14),
             width: 1.2,
           )
@@ -72,11 +90,19 @@ class GlassSurface extends ConsumerWidget {
     final shadow = [
       BoxShadow(
         color: isDark
-            ? Colors.black.withValues(alpha: 0.35)
+            ? Colors.black.withValues(alpha: 0.50)
             : AppColors.primary.withValues(alpha: 0.08),
-        blurRadius: 18,
-        offset: const Offset(0, 6),
+        blurRadius: isDark ? 22 : 18,
+        spreadRadius: isDark ? -1 : 0,
+        offset: const Offset(0, 7),
       ),
+      if (isDark)
+        BoxShadow(
+          color: AppColors.signalAqua.withValues(alpha: 0.04),
+          blurRadius: 14,
+          spreadRadius: -2,
+          offset: const Offset(0, 2),
+        ),
     ];
 
     Widget content = Container(
@@ -97,7 +123,7 @@ class GlassSurface extends ConsumerWidget {
               top: 0,
               left: 12,
               right: 12,
-              height: 1,
+              height: 1.2,
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -105,8 +131,8 @@ class GlassSurface extends ConsumerWidget {
                       Colors.transparent,
                       Colors.white.withValues(
                         alpha: settings.showBorders
-                            ? (isDark ? 0.35 : 0.60)
-                            : 0.25,
+                            ? (isDark ? 0.45 : 0.65)
+                            : (isDark ? 0.25 : 0.30),
                       ),
                       Colors.transparent,
                     ],

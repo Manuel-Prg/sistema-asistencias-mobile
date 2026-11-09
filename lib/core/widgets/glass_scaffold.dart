@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import '../theme/app_theme.dart';
 import 'glass_surface.dart';
 
 /// Scaffold con fondo ambiental orgánico estilo iOS Liquid Glass
@@ -58,15 +59,15 @@ class GlassScaffold extends StatelessWidget {
           Positioned(
             top: -60,
             right: -60,
-            width: 260,
-            height: 260,
+            width: 280,
+            height: 280,
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
                     isDark
-                        ? AppColors.signalAqua.withValues(alpha: 0.12)
+                        ? AppColors.signalAqua.withValues(alpha: 0.16)
                         : AppColors.signalAqua.withValues(alpha: 0.22),
                     Colors.transparent,
                   ],
@@ -85,7 +86,7 @@ class GlassScaffold extends StatelessWidget {
                 gradient: RadialGradient(
                   colors: [
                     isDark
-                        ? AppColors.primary.withValues(alpha: 0.14)
+                        ? const Color(0xFF0C4656).withValues(alpha: 0.20)
                         : const Color(0xFFD2EBE7).withValues(alpha: 0.28),
                     Colors.transparent,
                   ],
@@ -104,7 +105,7 @@ class GlassScaffold extends StatelessWidget {
                 gradient: RadialGradient(
                   colors: [
                     isDark
-                        ? AppColors.primary.withValues(alpha: 0.25)
+                        ? const Color(0xFF0C3847).withValues(alpha: 0.28)
                         : AppColors.accentLimnological.withValues(alpha: 0.10),
                     Colors.transparent,
                   ],
@@ -153,9 +154,11 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: title != null
             ? DefaultTextStyle.merge(
                 style: TextStyle(
+                  fontFamily: AppTheme.brandFont,
                   color: fg,
                   fontWeight: FontWeight.w700,
-                  fontSize: 18,
+                  fontSize: 19,
+                  letterSpacing: -0.2,
                 ),
                 child: title!,
               )
