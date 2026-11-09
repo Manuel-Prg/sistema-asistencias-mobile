@@ -114,37 +114,43 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: hasActive ? AppColors.signalAqua : Colors.white54,
-                      shape: BoxShape.circle,
-                      boxShadow: hasActive
-                          ? [
-                              BoxShadow(
-                                color: AppColors.signalAqua.withOpacity(0.6),
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                              ),
-                            ]
-                          : null,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: hasActive ? AppColors.signalAqua : Colors.white54,
+                        shape: BoxShape.circle,
+                        boxShadow: hasActive
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.signalAqua.withOpacity(0.6),
+                                  blurRadius: 6,
+                                  spreadRadius: 1,
+                                ),
+                              ]
+                            : null,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.signalAqua,
-                      letterSpacing: 0.8,
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.signalAqua,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               // Botón para ver activos en recinto
               GestureDetector(
                 onTap: widget.onOpenActiveStudents,
@@ -296,28 +302,33 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.activeRecord!.cleanEventName,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.activeRecord!.cleanEventName,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Turno ${widget.activeRecord!.shift.toUpperCase()}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.signalAqua,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(height: 2),
+                            Text(
+                              'Turno ${widget.activeRecord!.shift.toUpperCase()}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.signalAqua,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -346,13 +357,18 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                     children: [
                       const Icon(Icons.timer_outlined, color: AppColors.signalAqua, size: 20),
                       const SizedBox(width: 8),
-                      Text(
-                        '${_elapsed.inHours}h ${(_elapsed.inMinutes % 60).toString().padLeft(2, '0')}m ${(_elapsed.inSeconds % 60).toString().padLeft(2, '0')}s transcurridos',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          fontFeatures: [FontFeature.tabularFigures()],
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            '${_elapsed.inHours}h ${(_elapsed.inMinutes % 60).toString().padLeft(2, '0')}m ${(_elapsed.inSeconds % 60).toString().padLeft(2, '0')}s transcurridos',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              fontFeatures: [FontFeature.tabularFigures()],
+                            ),
+                          ),
                         ),
                       ),
                     ],

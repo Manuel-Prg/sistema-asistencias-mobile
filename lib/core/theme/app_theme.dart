@@ -5,11 +5,27 @@ import '../constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
+  static TextTheme _buildTextTheme(Brightness brightness) {
+    final base = brightness == Brightness.dark
+        ? ThemeData.dark().textTheme
+        : ThemeData.light().textTheme;
+    return GoogleFonts.interTextTheme(base).copyWith(
+      labelLarge: GoogleFonts.inter(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.3,
+      ),
+    );
+  }
+
   static ThemeData get lightTheme {
+    final textTheme = _buildTextTheme(Brightness.light);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       fontFamily: GoogleFonts.inter().fontFamily,
+      textTheme: textTheme,
       scaffoldBackgroundColor: AppColors.limestoneGround,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
@@ -50,11 +66,6 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(
-            inherit: false,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
           elevation: 0,
         ),
       ),
@@ -65,11 +76,6 @@ class AppTheme {
           side: const BorderSide(color: AppColors.stoneBorder, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: const TextStyle(
-            inherit: false,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -100,10 +106,13 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
+    final textTheme = _buildTextTheme(Brightness.dark);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: GoogleFonts.inter().fontFamily,
+      textTheme: textTheme,
       scaffoldBackgroundColor: AppColors.abyssalGroundDark,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.signalAqua,
@@ -141,11 +150,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(
-            inherit: false,
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
+          elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -155,11 +160,6 @@ class AppTheme {
           side: const BorderSide(color: AppColors.darkBorder, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: const TextStyle(
-            inherit: false,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),

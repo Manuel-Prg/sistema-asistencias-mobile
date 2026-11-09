@@ -183,6 +183,7 @@ class ProfileView extends ConsumerWidget {
 
           // Botón de Cerrar Sesión
           OutlinedButton.icon(
+            key: const ValueKey('profile_sign_out_button'),
             onPressed: () => _confirmSignOut(context, ref),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.terracottaRule,
@@ -228,9 +229,13 @@ class _ProfileInfoRow extends StatelessWidget {
             style: const TextStyle(fontSize: 13, color: AppColors.slateMuted),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );

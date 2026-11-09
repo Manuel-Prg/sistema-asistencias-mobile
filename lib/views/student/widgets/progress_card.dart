@@ -91,14 +91,18 @@ class ProgressCard extends StatelessWidget {
                     color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 if (!isCompleted)
-                  Text(
-                    'Faltan ${student.remainingHours.toStringAsFixed(1)} hrs',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                  Expanded(
+                    child: Text(
+                      'Faltan ${student.remainingHours.toStringAsFixed(1)} hrs',
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                      ),
                     ),
                   ),
               ],

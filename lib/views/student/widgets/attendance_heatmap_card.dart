@@ -79,13 +79,17 @@ class AttendanceHeatmapCard extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              rec.cleanEventName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
+                            Expanded(
+                              child: Text(
+                                rec.cleanEventName,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Text(
                               rec.hoursWorked != null
                                   ? '${rec.hoursWorked!.toStringAsFixed(1)} hrs'
@@ -321,10 +325,14 @@ class AttendanceHeatmapCard extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Actividad de las últimas 16 semanas:',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Text(
+                    'Actividad de las últimas 16 semanas:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                 ),
+                SizedBox(width: 8),
                 Text(
                   'Toca un día para ver detalle',
                   style: TextStyle(fontSize: 10, color: AppColors.slateMuted),

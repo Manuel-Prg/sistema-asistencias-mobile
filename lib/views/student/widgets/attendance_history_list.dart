@@ -123,22 +123,31 @@ class AttendanceHistoryList extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Text(
-                      record.cleanEventName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              record.cleanEventName,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '•  Turno ${record.shift}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.slateMuted,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      '•  Turno ${record.shift}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.slateMuted,
-                      ),
-                    ),
-                    const Spacer(),
                     Text(
                       record.hoursWorked != null
                           ? '${record.hoursWorked!.toStringAsFixed(1)} hrs'

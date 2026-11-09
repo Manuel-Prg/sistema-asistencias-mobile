@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "accessibility": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "2174f783a038a7ca4869c4c18e14726ec13b9c6b705d59253f647d0ca37cb78d"
+    },
+    "bash-defensive-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "autoskills-registry",
+      "computedHash": "2c6409224fbb56ceff6655b73cb03a736ea6c89e622734752c568efafd59a964"
+    },
+    "dart-best-practices": {
+      "source": "kevmoo/dash_skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "509fbc6f29ee86e9abea9e659b574fed83aa0d700209c4ea4d6fea69652ac8ca"
+    },
+    "flutter-animations": {
+      "source": "madteacher/mad-agents-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "bb61dc664754acb797b37ffe2ce2a42212eb7f92eeab575797a05413b2ef134b"
+    },
+    "flutter-expert": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "ddd5eaa15db4aa1bbebd7e95f57c5f4dfd2c5eda34dc88a54a91156a3e4342ba"
+    },
+    "flutter-testing": {
+      "source": "madteacher/mad-agents-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "9de813d81db8ad38630a28b893494c1ebfe5def0e5d47cfb46c632ea7d2d92e5"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "a4e6516a601f72ffd8bcd0d64609e8ba724d2ce92569a059a6890a5caadf072b"
+    },
+    "seo": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "7495da57766c99f787a729d4a21234ecb5d29d90f304a0d9a5996dcdc1eec048"
+    }
+  }
+}

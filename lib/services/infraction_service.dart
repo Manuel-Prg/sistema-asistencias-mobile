@@ -113,7 +113,7 @@ class InfractionService {
 
       final status = classifyRecord(record);
       if (status == RecordStatus.justified) {
-        justifiedRecords.push(record);
+        justifiedRecords.add(record);
       } else if (status == RecordStatus.falta) {
         faltaRecords.add(record);
         directFaltasCount++;
