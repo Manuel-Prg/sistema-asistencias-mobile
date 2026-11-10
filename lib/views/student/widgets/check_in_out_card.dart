@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
@@ -336,7 +337,14 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                         Icons.timer_outlined,
                         color: AppColors.signalAqua,
                         size: 20,
-                      ),
+                      )
+                          .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                          .scale(
+                            begin: const Offset(0.92, 0.92),
+                            end: const Offset(1.18, 1.18),
+                            duration: 1000.ms,
+                            curve: Curves.easeInOut,
+                          ),
                       const SizedBox(width: 8),
                       Flexible(
                         child: FittedBox(

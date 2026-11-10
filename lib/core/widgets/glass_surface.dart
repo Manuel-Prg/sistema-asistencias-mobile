@@ -115,34 +115,7 @@ class GlassSurface extends ConsumerWidget {
         borderRadius: shape == BoxShape.circle ? null : radius,
         border: border,
       ),
-      child: Stack(
-        children: [
-          // Destello especular de refracción en el borde superior
-          if (enableRefraction && shape != BoxShape.circle)
-            Positioned(
-              top: 0,
-              left: 12,
-              right: 12,
-              height: 1.2,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      Colors.white.withValues(
-                        alpha: settings.showBorders
-                            ? (isDark ? 0.45 : 0.65)
-                            : (isDark ? 0.25 : 0.30),
-                      ),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          child,
-        ],
-      ),
+      child: child,
     );
 
     final shouldBlur = (settings.enableBlur == true) && (settings.blurSigma > 0);

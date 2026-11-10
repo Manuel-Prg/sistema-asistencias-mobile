@@ -136,20 +136,32 @@ class _GlassNavItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                isSelected ? selectedIcon : icon,
-                size: 22,
-                color: isSelected ? activeColor : inactiveColor,
+              AnimatedScale(
+                scale: isSelected ? 1.18 : 1.0,
+                duration: const Duration(milliseconds: 260),
+                curve: Curves.easeOutBack,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  transitionBuilder: (child, anim) =>
+                      ScaleTransition(scale: anim, child: child),
+                  child: Icon(
+                    isSelected ? selectedIcon : icon,
+                    key: ValueKey<bool>(isSelected),
+                    size: 22,
+                    color: isSelected ? activeColor : inactiveColor,
+                  ),
+                ),
               ),
               const SizedBox(height: 3),
-              Text(
-                label,
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                   color: isSelected ? activeColor : inactiveColor,
                   letterSpacing: 0.15,
                 ),
+                child: Text(label),
               ),
             ],
           ),
