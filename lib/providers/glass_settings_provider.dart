@@ -12,14 +12,16 @@ class GlassSettings {
   final double blurSigma;
 
   /// Habilitar desenfoque gaussiano en tiempo real (si está desactivado, usa modo alto rendimiento)
-  final bool enableBlur;
+  final bool? _enableBlur;
 
   const GlassSettings({
     this.transparency = 0.50,
     this.showBorders = true,
     this.blurSigma = 10.0,
-    this.enableBlur = true,
-  });
+    bool enableBlur = true,
+  }) : _enableBlur = enableBlur;
+
+  bool get enableBlur => _enableBlur ?? true;
 
   GlassSettings copyWith({
     double? transparency,

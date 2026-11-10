@@ -145,7 +145,7 @@ class GlassSurface extends ConsumerWidget {
       ),
     );
 
-    final shouldBlur = settings.enableBlur && settings.blurSigma > 0;
+    final shouldBlur = (settings.enableBlur == true) && (settings.blurSigma > 0);
 
     Widget visual;
     if (shouldBlur) {
