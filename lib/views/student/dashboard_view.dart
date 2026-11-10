@@ -199,37 +199,45 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
               ],
 
               // 1. Tarjeta de Entrada y Salida (Foco operativo primario)
-              CheckInOutCard(
-                activeRecord: studentState.activeRecord,
-                isLoading: studentState.isLoading,
-                onCheckIn: (room, shift) {
-                  ref
-                      .read(studentProvider.notifier)
-                      .checkIn(room: room, shift: shift);
-                },
-                onCheckOut: (earlyDepartureReason) {
-                  ref.read(studentProvider.notifier).checkOut(
-                        earlyDepartureReason: earlyDepartureReason,
-                      );
-                },
+              RepaintBoundary(
+                child: CheckInOutCard(
+                  activeRecord: studentState.activeRecord,
+                  isLoading: studentState.isLoading,
+                  onCheckIn: (room, shift) {
+                    ref
+                        .read(studentProvider.notifier)
+                        .checkIn(room: room, shift: shift);
+                  },
+                  onCheckOut: (earlyDepartureReason) {
+                    ref.read(studentProvider.notifier).checkOut(
+                          earlyDepartureReason: earlyDepartureReason,
+                        );
+                  },
+                ),
               ),
               const SizedBox(height: 16),
 
               // 2. Tarjeta de Progreso de Horas
               if (studentState.student != null)
-                ProgressCard(student: studentState.student!),
+                RepaintBoundary(
+                  child: ProgressCard(student: studentState.student!),
+                ),
               const SizedBox(height: 16),
 
               // 3. Tarjeta de Heatmap y Control de Infracciones
               if (studentState.infractions != null)
-                AttendanceHeatmapCard(
-                  infractions: studentState.infractions!,
-                  heatmapWeeks: studentState.heatmapWeeks,
+                RepaintBoundary(
+                  child: AttendanceHeatmapCard(
+                    infractions: studentState.infractions!,
+                    heatmapWeeks: studentState.heatmapWeeks,
+                  ),
                 ),
               const SizedBox(height: 20),
 
               // 4. Historial Reciente de Asistencia
-              AttendanceHistoryList(records: studentState.history),
+              RepaintBoundary(
+                child: AttendanceHistoryList(records: studentState.history),
+              ),
               const SizedBox(height: 120),
             ],
           ),

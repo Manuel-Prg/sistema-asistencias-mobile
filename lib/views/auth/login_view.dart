@@ -74,9 +74,11 @@ class _LoginViewState extends State<LoginView> {
                         enableRefraction: true,
                         child: Image.asset(
                           'assets/logo/logo_remove_background.png',
+                          cacheWidth: 180,
                           errorBuilder: (context, error, stackTrace) =>
                               Image.asset(
                                 'assets/logo/iconoFavicon.png',
+                                cacheWidth: 180,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Icon(
                                       Icons.water_drop_rounded,

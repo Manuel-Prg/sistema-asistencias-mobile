@@ -499,6 +499,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                             ? Image.network(
                                 profile.avatarUrl!,
                                 fit: BoxFit.cover,
+                                cacheWidth: 200,
+                                cacheHeight: 200,
                                 errorBuilder: (ctx, err, stack) =>
                                     _buildAvatarFallback(fullName),
                                 loadingBuilder: (ctx, child, progress) {
@@ -1063,6 +1065,46 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     ref
                         .read(glassSettingsProvider.notifier)
                         .setShowBorders(val);
+                  },
+                ),
+                const Divider(height: 20),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: Icon(
+                    Icons.speed_rounded,
+                    color: !glassSettings.enableBlur
+                        ? (isDark
+                              ? AppColors.signalAqua
+                              : AppColors.accentLimnological)
+                        : secondaryTextColor,
+                  ),
+                  title: Text(
+                    'Modo Alto Rendimiento',
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    !glassSettings.enableBlur
+                        ? 'Activado: Máxima fluidez y ahorro de batería en tu teléfono.'
+                        : 'Desactivado: Desenfoque gaussiano completo activado.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: AppTheme.brandFont,
+                      color: secondaryTextColor,
+                      height: 1.35,
+                    ),
+                  ),
+                  value: !glassSettings.enableBlur,
+                  activeThumbColor: isDark
+                      ? AppColors.signalAqua
+                      : AppColors.primary,
+                  onChanged: (val) {
+                    ref
+                        .read(glassSettingsProvider.notifier)
+                        .setEnableBlur(!val);
                   },
                 ),
                 const SizedBox(height: 12),

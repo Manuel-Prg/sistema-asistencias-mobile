@@ -31,7 +31,8 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
   String _selectedRoom = AppConstants.rooms.first;
   String _selectedShift = AppConstants.shiftMatutino;
   Timer? _timer;
-  Duration _elapsed = Duration.zero;
+  final ValueNotifier<Duration> _elapsedNotifier =
+      ValueNotifier<Duration>(Duration.zero);
 
   @override
   void initState() {
@@ -59,19 +60,19 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
 
   void _updateElapsed() {
     if (widget.activeRecord == null) return;
-    setState(() {
-      _elapsed = DateTime.now().difference(widget.activeRecord!.checkIn);
-    });
+    _elapsedNotifier.value =
+        DateTime.now().difference(widget.activeRecord!.checkIn);
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _elapsedNotifier.dispose();
     super.dispose();
   }
 
   void _handleCheckOut() {
-    final hoursWorked = _elapsed.inSeconds / 3600.0;
+    final hoursWorked = _elapsedNotifier.value.inSeconds / 3600.0;
     // Si la sesión tiene menos de 3 horas, solicitar motivo de salida temprana
     if (hoursWorked < AppConstants.minShiftHours) {
       EarlyDepartureDialog.show(
@@ -340,14 +341,19 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                       Flexible(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
-                          child: Text(
-                            '${_elapsed.inHours}h ${(_elapsed.inMinutes % 60).toString().padLeft(2, '0')}m ${(_elapsed.inSeconds % 60).toString().padLeft(2, '0')}s transcurridos',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              fontFeatures: [FontFeature.tabularFigures()],
-                            ),
+                          child: ValueListenableBuilder<Duration>(
+                            valueListenable: _elapsedNotifier,
+                            builder: (context, elapsed, _) {
+                              return Text(
+                                '${elapsed.inHours}h ${(elapsed.inMinutes % 60).toString().padLeft(2, '0')}m ${(elapsed.inSeconds % 60).toString().padLeft(2, '0')}s transcurridos',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  fontFeatures: [FontFeature.tabularFigures()],
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),

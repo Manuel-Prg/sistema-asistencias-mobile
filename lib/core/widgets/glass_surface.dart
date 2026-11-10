@@ -145,34 +145,45 @@ class GlassSurface extends ConsumerWidget {
       ),
     );
 
-    Widget blurred = shape == BoxShape.circle
-        ? ClipOval(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: settings.blurSigma,
-                sigmaY: settings.blurSigma,
-              ),
-              child: content,
-            ),
-          )
-        : ClipRRect(
-            borderRadius: radius,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: settings.blurSigma,
-                sigmaY: settings.blurSigma,
-              ),
-              child: content,
-            ),
-          );
+    final shouldBlur = settings.enableBlur && settings.blurSigma > 0;
 
-    Widget result = DecoratedBox(
-      decoration: BoxDecoration(
-        shape: shape,
-        borderRadius: shape == BoxShape.circle ? null : radius,
-        boxShadow: shadow,
+    Widget visual;
+    if (shouldBlur) {
+      visual = shape == BoxShape.circle
+          ? ClipOval(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: settings.blurSigma,
+                  sigmaY: settings.blurSigma,
+                ),
+                child: content,
+              ),
+            )
+          : ClipRRect(
+              borderRadius: radius,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: settings.blurSigma,
+                  sigmaY: settings.blurSigma,
+                ),
+                child: content,
+              ),
+            );
+    } else {
+      visual = shape == BoxShape.circle
+          ? ClipOval(child: content)
+          : ClipRRect(borderRadius: radius, child: content);
+    }
+
+    Widget result = RepaintBoundary(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: shape,
+          borderRadius: shape == BoxShape.circle ? null : radius,
+          boxShadow: shadow,
+        ),
+        child: visual,
       ),
-      child: blurred,
     );
 
     if (margin != null) {

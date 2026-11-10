@@ -373,11 +373,12 @@ class AttendanceHeatmapCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          // Cuadrícula Heatmap desplazable horizontalmente
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            reverse: true, // Mostrar la semana más reciente a la derecha
-            child: Row(
+          // Cuadrícula Heatmap desplazable horizontalmente aislada en GPU
+          RepaintBoundary(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true, // Mostrar la semana más reciente a la derecha
+              child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: heatmapWeeks.map((week) {
                 return Padding(
@@ -427,6 +428,7 @@ class AttendanceHeatmapCard extends StatelessWidget {
               }).toList(),
             ),
           ),
+        ),
           const SizedBox(height: 12),
 
           // Leyenda de colores
