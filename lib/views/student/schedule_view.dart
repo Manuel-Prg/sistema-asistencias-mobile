@@ -4,9 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
-import '../../core/widgets/glass_surface.dart';
 import '../../models/student_schedule.dart';
 import '../../providers/schedule_provider.dart';
+import 'schedule/day_schedule_form.dart';
+import 'schedule/schedule_day_card.dart';
+import 'schedule/schedule_header.dart';
+import 'schedule/schedule_presets_bar.dart';
+import 'schedule/schedule_save_button.dart';
+import 'schedule/schedule_stats_card.dart';
 
 class ScheduleView extends ConsumerStatefulWidget {
   const ScheduleView({super.key});
@@ -16,39 +21,38 @@ class ScheduleView extends ConsumerStatefulWidget {
 }
 
 class _ScheduleViewState extends ConsumerState<ScheduleView> {
-  // Mapa de días editables (1=Martes a 6=Domingo)
-  final Map<int, _DayScheduleForm> _daysForm = {
-    1: _DayScheduleForm(
+  final Map<int, DayScheduleForm> _daysForm = {
+    1: DayScheduleForm(
       dayOfWeek: 1,
       startTime: '11:00',
       endTime: '14:00',
       isActive: false,
     ),
-    2: _DayScheduleForm(
+    2: DayScheduleForm(
       dayOfWeek: 2,
       startTime: '11:00',
       endTime: '14:00',
       isActive: false,
     ),
-    3: _DayScheduleForm(
+    3: DayScheduleForm(
       dayOfWeek: 3,
       startTime: '11:00',
       endTime: '14:00',
       isActive: false,
     ),
-    4: _DayScheduleForm(
+    4: DayScheduleForm(
       dayOfWeek: 4,
       startTime: '11:00',
       endTime: '14:00',
       isActive: false,
     ),
-    5: _DayScheduleForm(
+    5: DayScheduleForm(
       dayOfWeek: 5,
       startTime: '11:00',
       endTime: '14:00',
       isActive: false,
     ),
-    6: _DayScheduleForm(
+    6: DayScheduleForm(
       dayOfWeek: 6,
       startTime: '11:00',
       endTime: '14:00',
@@ -62,7 +66,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
     if (_initialized) return;
     for (final sch in schedules) {
       if (_daysForm.containsKey(sch.dayOfWeek)) {
-        _daysForm[sch.dayOfWeek] = _DayScheduleForm(
+        _daysForm[sch.dayOfWeek] = DayScheduleForm(
           dayOfWeek: sch.dayOfWeek,
           startTime: sch.startTime.substring(0, 5),
           endTime: sch.endTime.substring(0, 5),
@@ -101,6 +105,25 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
     }
   }
 
+  void _applyPresetToAll(String start, String end) {
+    setState(() {
+      for (final form in _daysForm.values) {
+        if (form.isActive) {
+          form.startTime = start;
+          form.endTime = end;
+        }
+      }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Horario ($start - $end) aplicado a días activos.'),
+        backgroundColor: AppColors.primary,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   Future<void> _saveAll() async {
     final notifier = ref.read(scheduleProvider.notifier);
     bool allSuccess = true;
@@ -118,251 +141,93 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
     if (mounted && allSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('¡Horario guardado correctamente!'),
+          content: Row(
+            children: [
+              Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+              SizedBox(width: 10),
+              Expanded(child: Text('¡Horario guardado correctamente!')),
+            ],
+          ),
           backgroundColor: AppColors.statusOnTime,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
   }
 
+  double _calculateTotalWeeklyHours() {
+    double total = 0.0;
+    for (final f in _daysForm.values) {
+      if (f.isActive) {
+        final startP = f.startTime.split(':');
+        final endP = f.endTime.split(':');
+        final startM =
+            (int.tryParse(startP[0]) ?? 0) * 60 +
+            (startP.length > 1 ? (int.tryParse(startP[1]) ?? 0) : 0);
+        final endM =
+            (int.tryParse(endP[0]) ?? 0) * 60 +
+            (endP.length > 1 ? (int.tryParse(endP[1]) ?? 0) : 0);
+        final diff = endM - startM;
+        if (diff > 0) total += diff / 60.0;
+      }
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheduleState = ref.watch(scheduleProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Theme.of(context).brightness == Brightness.dark;
 
     if (scheduleState.schedules.isNotEmpty && !_initialized) {
       _syncFromSchedules(scheduleState.schedules);
     }
 
+    final activeCount = _daysForm.values.where((d) => d.isActive).length;
+    final weeklyHours = _calculateTotalWeeklyHours();
+
     return GlassScaffold(
-      appBar: const GlassAppBar(title: Text('Tu Horario Semanal')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Banner explicativo de la regla de retardos
-            GlassSurface(
-              padding: const EdgeInsets.all(14),
-              borderRadius: BorderRadius.circular(14),
-              child: const Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: AppColors.accentLimnological,
-                    size: 22,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Este horario es la referencia oficial con la que el sistema calcula si tienes un retardo (>15 minutos de tolerancia) al hacer check-in. Activa los días que asistes y define tus horas pactadas.',
-                      style: TextStyle(fontSize: 13, height: 1.4),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
+      appBar: const GlassAppBar(),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 130),
+        children: [
+          const ScheduleHeader(),
 
-            // Lista de días de Martes a Domingo
-            ...AppConstants.scheduleDaysMap.entries.map((entry) {
-              final dayIndex = entry.key;
-              final dayName = entry.value;
-              final form = _daysForm[dayIndex]!;
-
-              return GlassSurface(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                borderRadius: BorderRadius.circular(16),
-                tintColor: form.isActive
-                    ? (isDark
-                          ? AppColors.primary.withValues(alpha: 0.35)
-                          : AppColors.signalAqua.withValues(alpha: 0.10))
-                    : null,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: form.isActive
-                                    ? AppColors.statusOnTime
-                                    : AppColors.slateMuted.withValues(
-                                        alpha: 0.4,
-                                      ),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              dayName,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: form.isActive
-                                    ? (isDark
-                                          ? AppColors.darkTextPrimary
-                                          : AppColors.mineralInk)
-                                    : (isDark
-                                          ? const Color(0xFFC5D7DF)
-                                          : AppColors.slateMuted),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Switch(
-                          value: form.isActive,
-                          activeThumbColor: isDark
-                              ? AppColors.signalAqua
-                              : AppColors.primary,
-                          onChanged: (val) {
-                            setState(() {
-                              form.isActive = val;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    if (form.isActive) ...[
-                      const SizedBox(height: 12),
-                      const Divider(height: 1),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _TimeBox(
-                              label: 'Entrada',
-                              timeStr: form.startTime,
-                              onTap: () => _pickTime(dayIndex, true),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 18,
-                              color: isDark
-                                  ? const Color(0xFFC5D7DF)
-                                  : AppColors.slateMuted,
-                            ),
-                          ),
-                          Expanded(
-                            child: _TimeBox(
-                              label: 'Salida',
-                              timeStr: form.endTime,
-                              onTap: () => _pickTime(dayIndex, false),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            }),
-
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: scheduleState.isSaving ? null : _saveAll,
-              child: scheduleState.isSaving
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text(
-                      'GUARDAR HORARIOS',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-            ),
-            const SizedBox(height: 120),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DayScheduleForm {
-  final int dayOfWeek;
-  String startTime;
-  String endTime;
-  bool isActive;
-
-  _DayScheduleForm({
-    required this.dayOfWeek,
-    required this.startTime,
-    required this.endTime,
-    required this.isActive,
-  });
-}
-
-class _TimeBox extends StatelessWidget {
-  final String label;
-  final String timeStr;
-  final VoidCallback onTap;
-
-  const _TimeBox({
-    required this.label,
-    required this.timeStr,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF142B36) : AppColors.limestoneGround,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+          // Tarjeta 1: Estadísticas y regla de retardo
+          ScheduleStatsCard(
+            activeDaysCount: activeCount,
+            weeklyHours: weeklyHours,
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  timeStr,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const Icon(
-                  Icons.access_time_rounded,
-                  size: 16,
-                  color: AppColors.accentLimnological,
-                ),
-              ],
-            ),
-          ],
-        ),
+          const SizedBox(height: 14),
+
+          // Tarjeta 2: Atajos rápidos
+          SchedulePresetsBar(onApplyPreset: _applyPresetToAll),
+          const SizedBox(height: 14),
+
+          // Lista de días de la semana
+          ...AppConstants.scheduleDaysMap.entries.map((entry) {
+            final dayIndex = entry.key;
+            final dayName = entry.value;
+            final form = _daysForm[dayIndex]!;
+
+            return ScheduleDayCard(
+              dayName: dayName,
+              isActive: form.isActive,
+              startTime: form.startTime,
+              endTime: form.endTime,
+              onToggleActive: (val) => setState(() => form.isActive = val),
+              onPickStartTime: () => _pickTime(dayIndex, true),
+              onPickEndTime: () => _pickTime(dayIndex, false),
+            );
+          }),
+          const SizedBox(height: 14),
+
+          ScheduleSaveButton(
+            isLoading: scheduleState.isLoading,
+            onSave: _saveAll,
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }

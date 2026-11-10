@@ -206,10 +206,10 @@ class SupabaseService {
     final activeRecord = await getActiveRecord(user.id);
     if (activeRecord != null) {
       // Si la entrada activa tiene más de 24 horas, la cerramos automáticamente
-      final now = DateTime.now();
-      if (now.difference(activeRecord.checkIn).inHours >= 24) {
+      final now = DateTime.now().toUtc();
+      if (now.difference(activeRecord.checkIn.toUtc()).inHours >= 24) {
         await client.from('attendance_records').update({
-          'check_out': activeRecord.checkIn.add(const Duration(hours: 4)).toIso8601String(),
+          'check_out': activeRecord.checkIn.toUtc().add(const Duration(hours: 4)).toIso8601String(),
           'hours_worked': 4.0,
           'early_departure_reason': 'Auto-cerrado por sistema (>24h)',
         }).eq('id', activeRecord.id);
@@ -232,7 +232,7 @@ class SupabaseService {
 
     final recordPayload = <String, dynamic>{
       'student_id': user.id,
-      'check_in': now.toIso8601String(),
+      'check_in': now.toUtc().toIso8601String(),
       'shift': shift,
       'room': finalRoom,
       'is_late': lateCheck.isLate,
@@ -301,12 +301,12 @@ class SupabaseService {
       );
     }
 
-    final checkInTime = activeRecord.checkIn;
-    final checkOutTime = DateTime.now();
+    final checkInTime = activeRecord.checkIn.toUtc();
+    final checkOutTime = DateTime.now().toUtc();
     final isEvent = activeRecord.isEvent;
 
-    double hoursWorkedRaw =
-        checkOutTime.difference(checkInTime).inMilliseconds / (1000 * 60 * 60);
+    final diffMs = checkOutTime.difference(checkInTime).inMilliseconds;
+    double hoursWorkedRaw = (diffMs < 0 ? 0 : diffMs) / (1000 * 60 * 60);
     if (isEvent) hoursWorkedRaw *= 2;
 
     final limit = isEvent ? AppConstants.maxEventHours : AppConstants.maxStandardHours;

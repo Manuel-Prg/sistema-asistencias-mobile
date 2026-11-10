@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/student_provider.dart';
+import 'dashboard/notification_banner.dart';
+import 'dashboard/punctuality_warning_dialog.dart';
 import 'widgets/attendance_heatmap_card.dart';
 import 'widgets/attendance_history_list.dart';
 import 'widgets/check_in_out_card.dart';
@@ -24,51 +27,17 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   @override
   void initState() {
     super.initState();
-    // Escuchar warnings de tardanzas/Skippy para mostrarlos en un diálogo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.listenManual(
         studentProvider.select((s) => s.lastWarningMessage),
         (previous, next) {
           if (next != null && next.isNotEmpty) {
-            _showWarningDialog(next);
+            PunctualityWarningDialog.show(context, next);
             ref.read(studentProvider.notifier).clearWarning();
           }
         },
       );
     });
-  }
-
-  void _showWarningDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return GlassDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.warning_amber_rounded,
-                  color: AppColors.amberTolerance, size: 28),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Aviso de Puntualidad',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(fontSize: 14, height: 1.4),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Entendido'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -77,7 +46,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     final studentState = ref.watch(studentProvider);
     final notificationState = ref.watch(notificationProvider);
 
-    final firstName = authState.profile?.fullName.split(' ').first ?? 'Estudiante';
+    final firstName =
+        authState.profile?.fullName.split(' ').first ?? 'Estudiante';
 
     if (studentState.isLoading && !studentState.isRefreshing) {
       return const Scaffold(
@@ -97,34 +67,53 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       );
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GlassScaffold(
-      appBar: GlassAppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '¡Hola, $firstName!',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-            ),
-            const Text(
-              'Casa Universitaria del Agua',
-              style: TextStyle(fontSize: 11, color: AppColors.signalAqua),
-            ),
-          ],
-        ),
-      ),
+      appBar: const GlassAppBar(),
       body: RefreshIndicator(
         onRefresh: () =>
             ref.read(studentProvider.notifier).loadData(isRefresh: true),
         color: AppColors.primary,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 130),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Banner de error si existe
-              if (studentState.errorMessage != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 4, bottom: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '¡Hola, $firstName!',
+                      style: TextStyle(
+                        fontFamily: AppTheme.brandFont,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.primary,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Casa Universitaria del Agua · Portal Alumnos',
+                      style: TextStyle(
+                        fontFamily: AppTheme.brandFont,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? AppColors.signalAqua
+                            : AppColors.accentLimnological,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (studentState.errorMessage != null)
                 GlassSurface(
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(12),
@@ -132,8 +121,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                   tintColor: AppColors.terracottaRule.withValues(alpha: 0.18),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline,
-                          color: AppColors.terracottaRule, size: 20),
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.terracottaRule,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -154,51 +146,13 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                     ],
                   ),
                 ),
-              ],
-
-              // Banner de invitación a activar notificaciones push
-              if (!notificationState.isEnabled && _showNotificationBanner) ...[
-                GlassSurface(
-                  margin: const EdgeInsets.only(bottom: 14),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  borderRadius: BorderRadius.circular(14),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.notifications_active_outlined,
-                          color: AppColors.accentLimnological, size: 22),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Text(
-                          'Activa las notificaciones para recordatorios de turnos y avisos.',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          await ref
-                              .read(notificationProvider.notifier)
-                              .setNotificationsEnabled(true);
-                        },
-                        child: const Text(
-                          'Activar',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.signalAqua,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 16),
-                        onPressed: () => setState(() => _showNotificationBanner = false),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
+              if (!notificationState.isEnabled && _showNotificationBanner)
+                NotificationBanner(
+                  onActivate: () => ref
+                      .read(notificationProvider.notifier)
+                      .setNotificationsEnabled(true),
+                  onClose: () => setState(() => _showNotificationBanner = false),
                 ),
-              ],
-
-              // 1. Tarjeta de Entrada y Salida (Foco operativo primario)
               RepaintBoundary(
                 child: CheckInOutCard(
                   activeRecord: studentState.activeRecord,
@@ -216,15 +170,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // 2. Tarjeta de Progreso de Horas
               if (studentState.student != null)
                 RepaintBoundary(
                   child: ProgressCard(student: studentState.student!),
                 ),
               const SizedBox(height: 16),
-
-              // 3. Tarjeta de Heatmap y Control de Infracciones
               if (studentState.infractions != null)
                 RepaintBoundary(
                   child: AttendanceHeatmapCard(
@@ -233,12 +183,10 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                   ),
                 ),
               const SizedBox(height: 20),
-
-              // 4. Historial Reciente de Asistencia
               RepaintBoundary(
                 child: AttendanceHistoryList(records: studentState.history),
               ),
-              const SizedBox(height: 120),
+              const SizedBox(height: 20),
             ],
           ),
         ),

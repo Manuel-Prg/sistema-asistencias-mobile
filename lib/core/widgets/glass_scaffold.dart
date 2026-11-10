@@ -1,7 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
-import 'glass_surface.dart';
+import '../../providers/theme_provider.dart';
 
 /// Scaffold con fondo ambiental orgánico estilo iOS Liquid Glass
 /// que permite que los componentes de vidrio refracten la luz y el color de fondo.
@@ -129,13 +131,14 @@ class GlassScaffold extends StatelessWidget {
   }
 }
 
-/// AppBar con acabado de vidrio líquido translúcido estilo iOS
-class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
+/// AppBar con acabado de vidrio líquido translúcido estilo iOS y branding oficial
+class GlassAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget? title;
   final List<Widget>? actions;
   final Widget? leading;
   final bool automaticallyImplyLeading;
   final double height;
+  final bool showBrandHeader;
 
   const GlassAppBar({
     super.key,
@@ -144,39 +147,116 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.automaticallyImplyLeading = true,
     this.height = kToolbarHeight,
+    this.showBrandHeader = true,
   });
 
   @override
   Size get preferredSize => Size.fromHeight(height);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final fg = isDark ? AppColors.darkTextPrimary : AppColors.primary;
 
-    return GlassSurface(
-      borderRadius: BorderRadius.zero,
-      enableRefraction: true,
-      child: AppBar(
-        title: title != null
-            ? DefaultTextStyle.merge(
-                style: TextStyle(
-                  fontFamily: AppTheme.brandFont,
-                  color: fg,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 19,
-                  letterSpacing: -0.2,
+    final Widget effectiveTitle;
+    if (title != null) {
+      effectiveTitle = DefaultTextStyle.merge(
+        style: TextStyle(
+          fontFamily: AppTheme.brandFont,
+          color: fg,
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
+          letterSpacing: -0.2,
+        ),
+        child: title!,
+      );
+    } else if (showBrandHeader) {
+      effectiveTitle = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/logo/iconoFavicon.webp',
+            width: 26,
+            height: 26,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.water_drop_rounded,
+              color: AppColors.signalAqua,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              'Casa Universitaria del Agua',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: AppTheme.brandFont,
+                color: fg,
+                fontWeight: FontWeight.w700,
+                fontSize: 16.5,
+                letterSpacing: -0.2,
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      effectiveTitle = const SizedBox.shrink();
+    }
+
+    final effectiveActions = actions ??
+        [
+          IconButton(
+            tooltip: isDark ? 'Modo claro' : 'Modo oscuro',
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, anim) => RotationTransition(
+                turns: anim,
+                child: FadeTransition(opacity: anim, child: child),
+              ),
+              child: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                key: ValueKey<bool>(isDark),
+                color: isDark ? AppColors.amberTolerance : AppColors.primary,
+                size: 21,
+              ),
+            ),
+            onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+          ),
+          const SizedBox(width: 4),
+        ];
+
+    return RepaintBoundary(
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xFF07161D).withValues(alpha: 0.82)
+                  : const Color(0xFFF9F6F0).withValues(alpha: 0.88),
+              border: Border(
+                bottom: BorderSide(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : const Color(0xFF0C3C4C).withValues(alpha: 0.07),
+                  width: 1,
                 ),
-                child: title!,
-              )
-            : null,
-        actions: actions,
-        leading: leading,
-        automaticallyImplyLeading: automaticallyImplyLeading,
-        backgroundColor: Colors.transparent,
-        foregroundColor: fg,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
+              ),
+            ),
+            child: AppBar(
+              title: effectiveTitle,
+              actions: effectiveActions,
+              leading: leading,
+              automaticallyImplyLeading: automaticallyImplyLeading,
+              backgroundColor: Colors.transparent,
+              foregroundColor: fg,
+              elevation: 0,
+              surfaceTintColor: Colors.transparent,
+              centerTitle: false,
+            ),
+          ),
+        ),
       ),
     );
   }

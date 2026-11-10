@@ -46,8 +46,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return GlassScaffold(
       body: SafeArea(
         child: Consumer(

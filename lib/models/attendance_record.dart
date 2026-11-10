@@ -45,9 +45,9 @@ class AttendanceRecord {
       id: json['id'] as String,
       studentId: json['student_id'] as String,
       studentType: json['student_type'] as String?,
-      checkIn: DateTime.parse(json['check_in'] as String),
+      checkIn: DateTime.parse(json['check_in'] as String).toLocal(),
       checkOut: json['check_out'] != null
-          ? DateTime.parse(json['check_out'] as String)
+          ? DateTime.parse(json['check_out'] as String).toLocal()
           : null,
       shift: json['shift'] as String? ?? 'matutino',
       room: json['room'] as String? ?? 'Sala 1',
@@ -57,7 +57,7 @@ class AttendanceRecord {
       isJustified: json['is_justified'] as bool? ?? false,
       lateMinutes: json['late_minutes'] as int?,
       createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'])
+          ? DateTime.tryParse(json['created_at'])?.toLocal()
           : null,
     );
   }
@@ -67,8 +67,8 @@ class AttendanceRecord {
       'id': id,
       'student_id': studentId,
       'student_type': studentType,
-      'check_in': checkIn.toIso8601String(),
-      'check_out': checkOut?.toIso8601String(),
+      'check_in': checkIn.toUtc().toIso8601String(),
+      'check_out': checkOut?.toUtc().toIso8601String(),
       'shift': shift,
       'room': room,
       'hours_worked': hoursWorked,

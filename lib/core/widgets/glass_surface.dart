@@ -186,11 +186,14 @@ class GlassDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: GlassSurface(
+        tintColor: isDark ? const Color(0xFF0C2430) : Colors.white.withValues(alpha: 0.96),
         borderRadius: borderRadius ?? BorderRadius.circular(24),
         padding: padding ?? const EdgeInsets.all(24),
         child: Column(

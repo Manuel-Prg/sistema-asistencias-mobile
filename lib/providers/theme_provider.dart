@@ -44,4 +44,6 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
               : 'system',
     );
   }
+
+  Future<void> setThemeMode(ThemeMode mode) => setTheme(mode);
 }

@@ -58,6 +58,7 @@ class _FreedomDialogState extends State<FreedomDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final quote = SkippyQuotes.getCompletedQuote(
       widget.studentType,
       widget.studentId,
@@ -74,6 +75,7 @@ class _FreedomDialogState extends State<FreedomDialog> {
             vertical: 40,
           ),
           child: GlassSurface(
+            tintColor: isDark ? const Color(0xFF0C2430) : Colors.white.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(24),
             padding: const EdgeInsets.all(24),
             enableRefraction: true,

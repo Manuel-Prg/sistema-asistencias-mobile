@@ -18,8 +18,8 @@ class GlassSettings {
     this.transparency = 0.50,
     this.showBorders = true,
     this.blurSigma = 10.0,
-    bool enableBlur = true,
-  }) : _enableBlur = enableBlur;
+    bool this._enableBlur = true,
+  });
 
   bool get enableBlur => _enableBlur ?? true;
 
@@ -43,8 +43,8 @@ class GlassSettings {
 
 final glassSettingsProvider =
     NotifierProvider<GlassSettingsNotifier, GlassSettings>(
-  GlassSettingsNotifier.new,
-);
+      GlassSettingsNotifier.new,
+    );
 
 class GlassSettingsNotifier extends Notifier<GlassSettings> {
   static const _transparencyKey = 'glass_transparency';

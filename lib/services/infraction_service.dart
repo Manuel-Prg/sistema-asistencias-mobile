@@ -250,7 +250,3 @@ class InfractionService {
   }
 }
 
-extension _ListPush<T> on List<T> {
-  void push(T item) => add(item);
-}
-

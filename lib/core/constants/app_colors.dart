@@ -21,7 +21,7 @@ class AppColors {
   static const Color sillarCard = Color(0xFFFAF8F3); // Tarjetas sillar
   static const Color stoneBorder = Color(0xFFD5CFC2); // Cortes secos 1px
   static const Color mineralInk = Color(0xFF12232B); // Texto primario
-  static const Color slateMuted = Color(0xFF465A63); // Texto secundario
+  static const Color slateMuted = Color(0xFF325766); // Texto secundario y subtítulos nítidos de alto contraste
 
   // Superficies Modo Oscuro
   static const Color abyssalGroundDark = Color(0xFF08171E); // Fondo oscuro
