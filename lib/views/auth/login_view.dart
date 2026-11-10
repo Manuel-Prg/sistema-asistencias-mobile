@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
@@ -55,7 +56,10 @@ class _LoginViewState extends State<LoginView> {
 
             return Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,14 +76,14 @@ class _LoginViewState extends State<LoginView> {
                           'assets/logo/logo_remove_background.png',
                           errorBuilder: (context, error, stackTrace) =>
                               Image.asset(
-                            'assets/logo/iconoFavicon.png',
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(
-                              Icons.water_drop_rounded,
-                              size: 48,
-                              color: AppColors.primary,
-                            ),
-                          ),
+                                'assets/logo/iconoFavicon.png',
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                      Icons.water_drop_rounded,
+                                      size: 48,
+                                      color: AppColors.primary,
+                                    ),
+                              ),
                         ),
                       ),
                     ),
@@ -118,141 +122,133 @@ class _LoginViewState extends State<LoginView> {
                             GlassSurface(
                               borderRadius: BorderRadius.circular(12),
                               padding: const EdgeInsets.all(12),
-                              tintColor: AppColors.terracottaRule.withValues(alpha: 0.16),
+                              tintColor: AppColors.terracottaRule.withValues(
+                                alpha: 0.16,
+                              ),
                               child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.error_outline_rounded,
-                              color: AppColors.terracottaRule,
-                              size: 20,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline_rounded,
+                                    color: AppColors.terracottaRule,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      authState.errorMessage!,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.terracottaRule,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => ref
+                                        .read(authProvider.notifier)
+                                        .clearError(),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 18,
+                                      color: AppColors.terracottaRule,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                authState.errorMessage!,
-                                style: const TextStyle(
+                            const SizedBox(height: 18),
+                          ],
+
+                          // Campos de formulario
+                          TextField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: const InputDecoration(
+                              labelText: 'Correo Electrónico',
+                              prefixIcon: Icon(Icons.email_outlined),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Olvidé mi contraseña
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordView(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text(
+                                '¿Olvidaste tu contraseña?',
+                                style: TextStyle(
                                   fontSize: 13,
-                                  color: AppColors.terracottaRule,
-                                  height: 1.3,
+                                  color: AppColors.accentLimnological,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () =>
-                                  ref.read(authProvider.notifier).clearError(),
-                              child: const Icon(
-                                Icons.close,
-                                size: 18,
-                                color: AppColors.terracottaRule,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                    ],
-
-                    // Campos de formulario
-                    TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        prefixIcon: Icon(Icons.email_outlined),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                          const SizedBox(height: 20),
 
-                    // Olvidé mi contraseña
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordView(),
-                            ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.accentLimnological,
-                            fontWeight: FontWeight.w600,
+                          // Botón de Inicio de Sesión
+                          ElevatedButton(
+                            onPressed: authState.isLoading
+                                ? null
+                                : () => _handleLogin(ref),
+                            child: authState.isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    'INGRESAR AL SISTEMA',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Botón de Inicio de Sesión
-                    ElevatedButton(
-                      onPressed: authState.isLoading ? null : () => _handleLogin(ref),
-                      child: authState.isLoading
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text(
-                              'INGRESAR AL SISTEMA',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-                    // Aviso aclaratorio para supervisores
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF102530) : AppColors.secondary.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        '📌 Nota: El rol de Supervisor se opera exclusivamente desde la versión Web.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.slateMuted,
-                          height: 1.3,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -263,4 +259,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-

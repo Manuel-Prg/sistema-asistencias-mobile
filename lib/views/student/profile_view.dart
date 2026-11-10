@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
@@ -50,7 +51,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     }
 
     setState(() => _isSavingName = true);
-    final success = await ref.read(authProvider.notifier).updateProfileName(newName);
+    final success = await ref
+        .read(authProvider.notifier)
+        .updateProfileName(newName);
     if (!mounted) return;
     setState(() => _isSavingName = false);
 
@@ -69,7 +72,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         ),
       );
     } else {
-      final error = ref.read(authProvider).errorMessage ?? 'Error al actualizar el nombre.';
+      final error =
+          ref.read(authProvider).errorMessage ??
+          'Error al actualizar el nombre.';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error),
@@ -100,8 +105,13 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               decoration: InputDecoration(
                 hintText: 'https://ejemplo.com/foto.jpg',
                 prefixIcon: const Icon(Icons.link_rounded),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
               ),
             ),
           ],
@@ -117,16 +127,22 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               if (url.isEmpty) return;
               Navigator.of(ctx).pop();
               setState(() => _isUpdatingPhoto = true);
-              final success = await ref.read(authProvider.notifier).updateProfileAvatar(url);
+              final success = await ref
+                  .read(authProvider.notifier)
+                  .updateProfileAvatar(url);
               if (!mounted) return;
               setState(() => _isUpdatingPhoto = false);
 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    success ? '¡Foto de perfil actualizada!' : 'No fue posible guardar la foto.',
+                    success
+                        ? '¡Foto de perfil actualizada!'
+                        : 'No fue posible guardar la foto.',
                   ),
-                  backgroundColor: success ? AppColors.primary : AppColors.terracottaRule,
+                  backgroundColor: success
+                      ? AppColors.primary
+                      : AppColors.terracottaRule,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -147,7 +163,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       context: context,
       builder: (ctx) => GlassDialog(
         title: const Text('Eliminar foto'),
-        content: const Text('¿Estás seguro de que deseas eliminar tu foto de perfil?'),
+        content: const Text(
+          '¿Estás seguro de que deseas eliminar tu foto de perfil?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -157,16 +175,22 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             onPressed: () async {
               Navigator.of(ctx).pop();
               setState(() => _isUpdatingPhoto = true);
-              final success = await ref.read(authProvider.notifier).updateProfileAvatar(null);
+              final success = await ref
+                  .read(authProvider.notifier)
+                  .updateProfileAvatar(null);
               if (!mounted) return;
               setState(() => _isUpdatingPhoto = false);
 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    success ? 'Foto de perfil eliminada.' : 'Error al eliminar la foto.',
+                    success
+                        ? 'Foto de perfil eliminada.'
+                        : 'Error al eliminar la foto.',
                   ),
-                  backgroundColor: success ? AppColors.terracottaRule : AppColors.terracottaRule,
+                  backgroundColor: success
+                      ? AppColors.terracottaRule
+                      : AppColors.terracottaRule,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -214,7 +238,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   fontSize: 14,
                   height: 1.45,
                   fontFamily: AppTheme.brandFont,
-                  color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                  color: isDark
+                      ? const Color(0xFFC5D7DF)
+                      : AppColors.slateMuted,
                 ),
               ),
               const SizedBox(height: 24),
@@ -230,7 +256,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     side: BorderSide(
-                      color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                      color: isDark
+                          ? AppColors.darkBorder
+                          : AppColors.stoneBorder,
                       width: 1.2,
                     ),
                     foregroundColor: isDark ? Colors.white : AppColors.primary,
@@ -254,14 +282,19 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   onPressed: () async {
                     try {
                       final uri = Uri.parse('https://xurl.es/bitacora');
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
                     } catch (_) {}
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isDark ? AppColors.signalAqua : AppColors.primary,
-                    foregroundColor:
-                        isDark ? const Color(0xFF07161D) : Colors.white,
+                    backgroundColor: isDark
+                        ? AppColors.signalAqua
+                        : AppColors.primary,
+                    foregroundColor: isDark
+                        ? const Color(0xFF07161D)
+                        : Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -296,8 +329,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     backgroundColor: isDark
                         ? Colors.white.withValues(alpha: 0.08)
                         : const Color(0xFFEFECE6),
-                    foregroundColor:
-                        isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                    foregroundColor: isDark
+                        ? const Color(0xFFC5D7DF)
+                        : AppColors.slateMuted,
                   ),
                   child: Text(
                     'Solo cerrar sesión',
@@ -322,7 +356,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       builder: (ctx) => GlassDialog(
         title: const Row(
           children: [
-            Icon(Icons.notifications_off_outlined, color: AppColors.amberTolerance, size: 24),
+            Icon(
+              Icons.notifications_off_outlined,
+              color: AppColors.amberTolerance,
+              size: 24,
+            ),
             SizedBox(width: 10),
             Expanded(child: Text('Permiso de Notificaciones')),
           ],
@@ -365,19 +403,22 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final student = studentState.student;
 
     final fullName = profile?.fullName ?? 'Estudiante';
-    final hasAvatar = profile?.avatarUrl != null && profile!.avatarUrl!.trim().isNotEmpty;
+    final hasAvatar =
+        profile?.avatarUrl != null && profile!.avatarUrl!.trim().isNotEmpty;
 
     // Sincronizar campo si cambió desde provider y no se está editando activamente
-    if (!_isSavingName && _nameController.text != fullName && fullName.isNotEmpty) {
+    if (!_isSavingName &&
+        _nameController.text != fullName &&
+        fullName.isNotEmpty) {
       _nameController.text = fullName;
     }
 
-    final secondaryTextColor = isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted;
+    final secondaryTextColor = isDark
+        ? const Color(0xFFC5D7DF)
+        : AppColors.slateMuted;
 
     return GlassScaffold(
-      appBar: const GlassAppBar(
-        title: Text('Mi Perfil'),
-      ),
+      appBar: const GlassAppBar(title: Text('Mi Perfil')),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         children: [
@@ -445,7 +486,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.35 : 0.08,
+                            ),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -454,13 +497,16 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       child: ClipOval(
                         child: hasAvatar
                             ? Image.network(
-                                profile!.avatarUrl!,
+                                profile.avatarUrl!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (ctx, err, stack) => _buildAvatarFallback(fullName),
+                                errorBuilder: (ctx, err, stack) =>
+                                    _buildAvatarFallback(fullName),
                                 loadingBuilder: (ctx, child, progress) {
                                   if (progress == null) return child;
                                   return const Center(
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   );
                                 },
                               )
@@ -478,7 +524,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         child: const Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -488,12 +536,21 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
                 // Botones Subir Foto y Eliminar Foto
                 OutlinedButton.icon(
-                  onPressed: _isUpdatingPhoto ? null : () => _showUploadPhotoDialog(context),
+                  onPressed: _isUpdatingPhoto
+                      ? null
+                      : () => _showUploadPhotoDialog(context),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     side: BorderSide(
-                      color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                      color: isDark
+                          ? AppColors.darkBorder
+                          : AppColors.stoneBorder,
                       width: 1.2,
                     ),
                     backgroundColor: isDark
@@ -509,15 +566,23 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 if (hasAvatar) ...[
                   const SizedBox(height: 6),
                   TextButton.icon(
-                    onPressed: _isUpdatingPhoto ? null : () => _confirmDeletePhoto(context),
+                    onPressed: _isUpdatingPhoto
+                        ? null
+                        : () => _confirmDeletePhoto(context),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.terracottaRule,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                     ),
                     icon: const Icon(Icons.delete_outline_rounded, size: 18),
                     label: const Text(
                       'Eliminar foto',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
@@ -574,23 +639,32 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         ? const Color(0xFF0F2631).withValues(alpha: 0.55)
                         : Colors.white.withValues(alpha: 0.8),
                     hintText: 'Ingresa tu nombre completo',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                        color: isDark
+                            ? AppColors.darkBorder
+                            : AppColors.stoneBorder,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                        color: isDark
+                            ? AppColors.darkBorder
+                            : AppColors.stoneBorder,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        color: isDark
+                            ? AppColors.signalAqua
+                            : AppColors.primary,
                         width: 1.5,
                       ),
                     ),
@@ -605,7 +679,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 2,
                     ),
                     icon: _isSavingName
@@ -740,11 +816,17 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       selectedBackgroundColor: isDark
                           ? AppColors.signalAqua.withValues(alpha: 0.25)
                           : AppColors.primary.withValues(alpha: 0.15),
-                      selectedForegroundColor: isDark ? AppColors.signalAqua : AppColors.primary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      selectedForegroundColor: isDark
+                          ? AppColors.signalAqua
+                          : AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onSelectionChanged: (Set<ThemeMode> newSelection) {
-                      ref.read(themeModeProvider.notifier).setTheme(newSelection.first);
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .setTheme(newSelection.first);
                     },
                   ),
                 ),
@@ -779,7 +861,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: notificationState.isEnabled
                             ? AppColors.signalAqua.withValues(alpha: 0.18)
@@ -797,7 +882,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: notificationState.isEnabled
-                              ? (isDark ? AppColors.signalAqua : AppColors.primary)
+                              ? (isDark
+                                    ? AppColors.signalAqua
+                                    : AppColors.primary)
                               : secondaryTextColor,
                         ),
                       ),
@@ -836,7 +923,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     ),
                   ),
                   value: notificationState.isEnabled,
-                  activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                  activeThumbColor: isDark
+                      ? AppColors.signalAqua
+                      : AppColors.primary,
                   onChanged: (val) async {
                     final success = await ref
                         .read(notificationProvider.notifier)
@@ -878,7 +967,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.signalAqua.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
@@ -891,7 +983,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: isDark ? AppColors.signalAqua : AppColors.primary,
+                          color: isDark
+                              ? AppColors.signalAqua
+                              : AppColors.primary,
                         ),
                       ),
                     ),
@@ -910,9 +1004,15 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 const SizedBox(height: 8),
                 SliderTheme(
                   data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: isDark ? AppColors.signalAqua : AppColors.primary,
-                    thumbColor: isDark ? AppColors.signalAqua : AppColors.primary,
-                    inactiveTrackColor: isDark ? AppColors.darkBorder : AppColors.stoneBorder,
+                    activeTrackColor: isDark
+                        ? AppColors.signalAqua
+                        : AppColors.primary,
+                    thumbColor: isDark
+                        ? AppColors.signalAqua
+                        : AppColors.primary,
+                    inactiveTrackColor: isDark
+                        ? AppColors.darkBorder
+                        : AppColors.stoneBorder,
                     trackHeight: 4,
                   ),
                   child: Slider(
@@ -921,7 +1021,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     max: 0.85,
                     divisions: 15,
                     onChanged: (val) {
-                      ref.read(glassSettingsProvider.notifier).setTransparency(val);
+                      ref
+                          .read(glassSettingsProvider.notifier)
+                          .setTransparency(val);
                     },
                   ),
                 ),
@@ -931,7 +1033,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   secondary: Icon(
                     Icons.border_style_rounded,
                     color: glassSettings.showBorders
-                        ? (isDark ? AppColors.signalAqua : AppColors.accentLimnological)
+                        ? (isDark
+                              ? AppColors.signalAqua
+                              : AppColors.accentLimnological)
                         : secondaryTextColor,
                   ),
                   title: Text(
@@ -952,9 +1056,13 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     ),
                   ),
                   value: glassSettings.showBorders,
-                  activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                  activeThumbColor: isDark
+                      ? AppColors.signalAqua
+                      : AppColors.primary,
                   onChanged: (val) {
-                    ref.read(glassSettingsProvider.notifier).setShowBorders(val);
+                    ref
+                        .read(glassSettingsProvider.notifier)
+                        .setShowBorders(val);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -969,10 +1077,17 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 ),
                 const SizedBox(height: 8),
                 GlassSurface(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   child: Row(
                     children: [
-                      const Icon(Icons.auto_awesome_rounded, color: AppColors.signalAqua, size: 20),
+                      const Icon(
+                        Icons.auto_awesome_rounded,
+                        color: AppColors.signalAqua,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -1013,9 +1128,14 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             onPressed: () => _confirmSignOut(context),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.terracottaRule,
-              side: const BorderSide(color: AppColors.terracottaRule, width: 1.5),
+              side: const BorderSide(
+                color: AppColors.terracottaRule,
+                width: 1.5,
+              ),
               padding: const EdgeInsets.symmetric(vertical: 13),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             icon: const Icon(Icons.logout_rounded, size: 20),
             label: Text(
@@ -1080,7 +1200,11 @@ class _ProfileInfoRow extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, size: 20, color: isDark ? AppColors.signalAqua : AppColors.accentLimnological),
+        Icon(
+          icon,
+          size: 20,
+          color: isDark ? AppColors.signalAqua : AppColors.accentLimnological,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Text(

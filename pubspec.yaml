@@ -79,7 +79,6 @@ flutter:
     - assets/logo/
     - assets/images/
     - assets/images/nuty/
-    - assets/fonts/archer/
 
   fonts:
     - family: Archer

@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/date_utils.dart';
@@ -110,7 +112,7 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                   boxShadow: hasActive
                       ? [
                           BoxShadow(
-                            color: AppColors.signalAqua.withOpacity(0.6),
+                            color: AppColors.signalAqua.withValues(alpha: 0.6),
                             blurRadius: 6,
                             spreadRadius: 1,
                           ),
@@ -157,7 +159,10 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                 child: DropdownButton<String>(
                   value: _selectedRoom,
                   dropdownColor: AppColors.primaryDeep,
-                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.signalAqua),
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: AppColors.signalAqua,
+                  ),
                   isExpanded: true,
                   style: const TextStyle(
                     color: Colors.white,
@@ -165,10 +170,7 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                     fontWeight: FontWeight.w600,
                   ),
                   items: AppConstants.rooms.map((room) {
-                    return DropdownMenuItem(
-                      value: room,
-                      child: Text(room),
-                    );
+                    return DropdownMenuItem(value: room, child: Text(room));
                   }).toList(),
                   onChanged: (val) {
                     if (val != null) setState(() => _selectedRoom = val);
@@ -193,7 +195,9 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                     label: 'Matutino',
                     timeRange: '11:00 - 14:00',
                     isSelected: _selectedShift == AppConstants.shiftMatutino,
-                    onTap: () => setState(() => _selectedShift = AppConstants.shiftMatutino),
+                    onTap: () => setState(
+                      () => _selectedShift = AppConstants.shiftMatutino,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -202,7 +206,9 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                     label: 'Vespertino',
                     timeRange: '14:00 - 18:00',
                     isSelected: _selectedShift == AppConstants.shiftVespertino,
-                    onTap: () => setState(() => _selectedShift = AppConstants.shiftVespertino),
+                    onTap: () => setState(
+                      () => _selectedShift = AppConstants.shiftVespertino,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -211,7 +217,9 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                     label: 'Completo',
                     timeRange: '11:00 - 18:00',
                     isSelected: _selectedShift == AppConstants.shiftCompleto,
-                    onTap: () => setState(() => _selectedShift = AppConstants.shiftCompleto),
+                    onTap: () => setState(
+                      () => _selectedShift = AppConstants.shiftCompleto,
+                    ),
                   ),
                 ),
               ],
@@ -256,9 +264,9 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.15)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
               ),
               child: Column(
                 children: [
@@ -297,10 +305,15 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                         children: [
                           const Text(
                             'Entrada:',
-                            style: TextStyle(fontSize: 11, color: Colors.white70),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white70,
+                            ),
                           ),
                           Text(
-                            AppDateUtils.formatTime(widget.activeRecord!.checkIn),
+                            AppDateUtils.formatTime(
+                              widget.activeRecord!.checkIn,
+                            ),
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -318,7 +331,11 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.timer_outlined, color: AppColors.signalAqua, size: 20),
+                      const Icon(
+                        Icons.timer_outlined,
+                        color: AppColors.signalAqua,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Flexible(
                         child: FittedBox(
@@ -339,17 +356,23 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                   if (widget.activeRecord!.isLate) ...[
                     const SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.amberTolerance.withOpacity(0.25),
+                        color: AppColors.amberTolerance.withValues(alpha: 0.25),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: AppColors.amberTolerance),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.schedule_rounded,
-                              size: 16, color: Colors.amberAccent),
+                          const Icon(
+                            Icons.schedule_rounded,
+                            size: 16,
+                            color: Colors.amberAccent,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'Entrada con retardo (${widget.activeRecord!.lateMinutes ?? 0} min)',
@@ -429,10 +452,14 @@ class _ShiftButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.06),
+          color: isSelected
+              ? Colors.white.withValues(alpha: 0.2)
+              : Colors.white.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? AppColors.signalAqua : Colors.white.withOpacity(0.15),
+            color: isSelected
+                ? AppColors.signalAqua
+                : Colors.white.withValues(alpha: 0.15),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -460,4 +487,3 @@ class _ShiftButton extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
 
@@ -52,11 +53,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recuperar Contraseña'),
-      ),
+      appBar: AppBar(title: const Text('Recuperar Contraseña')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -68,7 +66,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -110,8 +108,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isSuccess
-                        ? AppColors.statusOnTime.withOpacity(0.12)
-                        : AppColors.terracottaRule.withOpacity(0.12),
+                        ? AppColors.statusOnTime.withValues(alpha: 0.12)
+                        : AppColors.terracottaRule.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: _isSuccess
@@ -122,7 +120,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   child: Row(
                     children: [
                       Icon(
-                        _isSuccess ? Icons.check_circle_outline : Icons.error_outline,
+                        _isSuccess
+                            ? Icons.check_circle_outline
+                            : Icons.error_outline,
                         color: _isSuccess
                             ? AppColors.statusOnTime
                             : AppColors.terracottaRule,

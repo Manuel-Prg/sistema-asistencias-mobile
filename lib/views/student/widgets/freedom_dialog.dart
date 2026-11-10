@@ -1,5 +1,6 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/skippy_quotes.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -43,8 +44,9 @@ class _FreedomDialogState extends State<FreedomDialog> {
   @override
   void initState() {
     super.initState();
-    _confettiController =
-        ConfettiController(duration: const Duration(seconds: 4));
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 4),
+    );
     _confettiController.play();
   }
 
@@ -67,7 +69,10 @@ class _FreedomDialogState extends State<FreedomDialog> {
         Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 40,
+          ),
           child: GlassSurface(
             borderRadius: BorderRadius.circular(24),
             padding: const EdgeInsets.all(24),
@@ -80,7 +85,7 @@ class _FreedomDialogState extends State<FreedomDialog> {
                   width: 110,
                   height: 110,
                   decoration: BoxDecoration(
-                    color: AppColors.signalAqua.withOpacity(0.2),
+                    color: AppColors.signalAqua.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(12),
@@ -119,7 +124,7 @@ class _FreedomDialogState extends State<FreedomDialog> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.06),
+                    color: AppColors.primary.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.stoneBorder),
                   ),
@@ -138,7 +143,9 @@ class _FreedomDialogState extends State<FreedomDialog> {
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.slateMuted.withOpacity(0.9),
+                              color: AppColors.slateMuted.withValues(
+                                alpha: 0.9,
+                              ),
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -189,4 +196,3 @@ class _FreedomDialogState extends State<FreedomDialog> {
     );
   }
 }
-

@@ -172,14 +172,24 @@ class AuthNotifier extends Notifier<AppAuthState> {
       if (msg.contains('Invalid login credentials')) {
         msg = 'Correo o contraseña incorrectos.';
       } else if (msg.contains('Email not confirmed')) {
-        msg = 'Tu correo aún no ha sido confirmado. Revisa tu bandeja de entrada.';
+        msg =
+            'Tu correo aún no ha sido confirmado. Revisa tu bandeja de entrada.';
+      } else if (msg.contains('SocketException') ||
+          msg.contains('Failed host lookup') ||
+          msg.contains('ClientException') ||
+          msg.contains('Network') ||
+          msg.contains('connection') ||
+          msg.contains('errno = 7')) {
+        msg =
+            'Sin conexión a internet: No fue posible conectar con el servidor. Verifica que tu teléfono tenga Wi-Fi o datos móviles activos.';
       }
       state = state.copyWith(isLoading: false, errorMessage: msg);
       return false;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Error de conexión: Verifica tu acceso a internet.',
+        errorMessage:
+            'Sin conexión a internet: Verifica que tu teléfono tenga acceso a internet.',
       );
       return false;
     }

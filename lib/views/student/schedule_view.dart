@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
@@ -17,12 +18,42 @@ class ScheduleView extends ConsumerStatefulWidget {
 class _ScheduleViewState extends ConsumerState<ScheduleView> {
   // Mapa de días editables (1=Martes a 6=Domingo)
   final Map<int, _DayScheduleForm> _daysForm = {
-    1: _DayScheduleForm(dayOfWeek: 1, startTime: '11:00', endTime: '14:00', isActive: false),
-    2: _DayScheduleForm(dayOfWeek: 2, startTime: '11:00', endTime: '14:00', isActive: false),
-    3: _DayScheduleForm(dayOfWeek: 3, startTime: '11:00', endTime: '14:00', isActive: false),
-    4: _DayScheduleForm(dayOfWeek: 4, startTime: '11:00', endTime: '14:00', isActive: false),
-    5: _DayScheduleForm(dayOfWeek: 5, startTime: '11:00', endTime: '14:00', isActive: false),
-    6: _DayScheduleForm(dayOfWeek: 6, startTime: '11:00', endTime: '14:00', isActive: false),
+    1: _DayScheduleForm(
+      dayOfWeek: 1,
+      startTime: '11:00',
+      endTime: '14:00',
+      isActive: false,
+    ),
+    2: _DayScheduleForm(
+      dayOfWeek: 2,
+      startTime: '11:00',
+      endTime: '14:00',
+      isActive: false,
+    ),
+    3: _DayScheduleForm(
+      dayOfWeek: 3,
+      startTime: '11:00',
+      endTime: '14:00',
+      isActive: false,
+    ),
+    4: _DayScheduleForm(
+      dayOfWeek: 4,
+      startTime: '11:00',
+      endTime: '14:00',
+      isActive: false,
+    ),
+    5: _DayScheduleForm(
+      dayOfWeek: 5,
+      startTime: '11:00',
+      endTime: '14:00',
+      isActive: false,
+    ),
+    6: _DayScheduleForm(
+      dayOfWeek: 6,
+      startTime: '11:00',
+      endTime: '14:00',
+      isActive: false,
+    ),
   };
 
   bool _initialized = false;
@@ -104,9 +135,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
     }
 
     return GlassScaffold(
-      appBar: const GlassAppBar(
-        title: Text('Tu Horario Semanal'),
-      ),
+      appBar: const GlassAppBar(title: Text('Tu Horario Semanal')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -148,8 +177,8 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                 borderRadius: BorderRadius.circular(16),
                 tintColor: form.isActive
                     ? (isDark
-                        ? AppColors.primary.withValues(alpha: 0.35)
-                        : AppColors.signalAqua.withValues(alpha: 0.10))
+                          ? AppColors.primary.withValues(alpha: 0.35)
+                          : AppColors.signalAqua.withValues(alpha: 0.10))
                     : null,
                 child: Column(
                   children: [
@@ -164,7 +193,9 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                               decoration: BoxDecoration(
                                 color: form.isActive
                                     ? AppColors.statusOnTime
-                                    : AppColors.slateMuted.withOpacity(0.4),
+                                    : AppColors.slateMuted.withValues(
+                                        alpha: 0.4,
+                                      ),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -175,15 +206,21 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: form.isActive
-                                    ? (isDark ? AppColors.darkTextPrimary : AppColors.mineralInk)
-                                    : (isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
+                                    ? (isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.mineralInk)
+                                    : (isDark
+                                          ? const Color(0xFFC5D7DF)
+                                          : AppColors.slateMuted),
                               ),
                             ),
                           ],
                         ),
                         Switch(
                           value: form.isActive,
-                          activeColor: isDark ? AppColors.signalAqua : AppColors.primary,
+                          activeThumbColor: isDark
+                              ? AppColors.signalAqua
+                              : AppColors.primary,
                           onChanged: (val) {
                             setState(() {
                               form.isActive = val;
@@ -207,8 +244,13 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Icon(Icons.arrow_forward_rounded,
-                                size: 18, color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
+                            child: Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 18,
+                              color: isDark
+                                  ? const Color(0xFFC5D7DF)
+                                  : AppColors.slateMuted,
+                            ),
                           ),
                           Expanded(
                             child: _TimeBox(
@@ -312,8 +354,11 @@ class _TimeBox extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Icon(Icons.access_time_rounded,
-                    size: 16, color: AppColors.accentLimnological),
+                const Icon(
+                  Icons.access_time_rounded,
+                  size: 16,
+                  color: AppColors.accentLimnological,
+                ),
               ],
             ),
           ],
@@ -322,4 +367,3 @@ class _TimeBox extends StatelessWidget {
     );
   }
 }
-

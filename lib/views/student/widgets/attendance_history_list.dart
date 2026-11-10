@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -7,10 +8,7 @@ import '../../../models/attendance_record.dart';
 class AttendanceHistoryList extends StatelessWidget {
   final List<AttendanceRecord> records;
 
-  const AttendanceHistoryList({
-    super.key,
-    required this.records,
-  });
+  const AttendanceHistoryList({super.key, required this.records});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +29,7 @@ class AttendanceHistoryList extends StatelessWidget {
               const SizedBox(height: 8),
               const Text(
                 'Aún no tienes registros de asistencia',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.slateMuted,
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.slateMuted),
               ),
             ],
           ),
@@ -50,10 +45,7 @@ class AttendanceHistoryList extends StatelessWidget {
           children: [
             const Text(
               'Historial Reciente',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             Text(
               'Últimos ${records.length} registros',
@@ -98,9 +90,12 @@ class AttendanceHistoryList extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: badgeColor.withOpacity(0.12),
+                        color: badgeColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -135,7 +130,9 @@ class AttendanceHistoryList extends StatelessWidget {
                             '•  Turno ${record.shift}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                              color: isDark
+                                  ? const Color(0xFFC5D7DF)
+                                  : AppColors.slateMuted,
                             ),
                           ),
                         ],
@@ -149,7 +146,9 @@ class AttendanceHistoryList extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        color: isDark
+                            ? AppColors.signalAqua
+                            : AppColors.primary,
                       ),
                     ),
                   ],
@@ -157,19 +156,31 @@ class AttendanceHistoryList extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(Icons.access_time_rounded,
-                        size: 13, color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted),
+                    Icon(
+                      Icons.access_time_rounded,
+                      size: 13,
+                      color: isDark
+                          ? const Color(0xFFC5D7DF)
+                          : AppColors.slateMuted,
+                    ),
                     const SizedBox(width: 4),
                     Text(
-                      AppDateUtils.formatTimeRange(record.checkIn, record.checkOut),
+                      AppDateUtils.formatTimeRange(
+                        record.checkIn,
+                        record.checkOut,
+                      ),
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                        color: isDark
+                            ? const Color(0xFFC5D7DF)
+                            : AppColors.slateMuted,
                       ),
                     ),
                   ],
                 ),
-                if (record.isLate || record.isJustified || record.earlyDepartureReason != null) ...[
+                if (record.isLate ||
+                    record.isJustified ||
+                    record.earlyDepartureReason != null) ...[
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
@@ -177,7 +188,8 @@ class AttendanceHistoryList extends StatelessWidget {
                     children: [
                       if (record.isLate)
                         _Tag(
-                          text: 'Retardo ${record.lateMinutes != null ? "(${record.lateMinutes}m)" : ""}',
+                          text:
+                              'Retardo ${record.lateMinutes != null ? "(${record.lateMinutes}m)" : ""}',
                           color: AppColors.statusLate,
                         ),
                       if (record.isJustified)
@@ -214,7 +226,7 @@ class _Tag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -228,4 +240,3 @@ class _Tag extends StatelessWidget {
     );
   }
 }
-
