@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -130,21 +131,53 @@ class ProgressCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 14),
-              // Barra de progreso animada
+              // Barra de progreso animada con destello líquido en modo idle
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
+                child: Container(
                   height: 12,
-                  child: LinearProgressIndicator(
-                    value: animatedRatio,
-                    backgroundColor: isDark
-                        ? const Color(0xFF16323F)
-                        : AppColors.stoneBorder.withValues(alpha: 0.5),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      isCompleted
+                  width: double.infinity,
+                  color: isDark
+                      ? const Color(0xFF16323F)
+                      : AppColors.stoneBorder.withValues(alpha: 0.5),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxWidth = constraints.maxWidth;
+                      final barWidth =
+                          (maxWidth * animatedRatio).clamp(0.0, maxWidth);
+
+                      if (barWidth <= 0) return const SizedBox.shrink();
+
+                      final barColor = isCompleted
                           ? AppColors.statusOnTime
-                          : AppColors.accentLimnological,
-                    ),
+                          : AppColors.accentLimnological;
+
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          width: barWidth,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: barColor,
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              colors: [
+                                barColor,
+                                Color.lerp(barColor, Colors.white, 0.16) ??
+                                    barColor,
+                              ],
+                            ),
+                          ),
+                        )
+                            .animate(onPlay: (c) => c.repeat())
+                            .shimmer(
+                              delay: 1400.ms,
+                              duration: 2200.ms,
+                              color: Colors.white.withValues(alpha: 0.45),
+                              curve: Curves.easeInOutCubic,
+                            ),
+                      );
+                    },
                   ),
                 ),
               ),

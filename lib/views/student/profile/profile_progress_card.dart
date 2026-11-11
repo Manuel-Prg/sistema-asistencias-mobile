@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
@@ -33,6 +34,8 @@ class ProfileProgressCard extends StatelessWidget {
         curve: Curves.easeOutCubic,
         builder: (context, animatedRatio, _) {
           final animatedPercent = (animatedRatio * 100).toStringAsFixed(1);
+          final barColor =
+              isDark ? AppColors.signalAqua : AppColors.accentLimnological;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,16 +81,49 @@ class ProfileProgressCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 14),
+              // Barra de progreso animada con destello líquido en modo idle
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(
-                  value: animatedRatio,
-                  minHeight: 8,
-                  backgroundColor: isDark
+                child: Container(
+                  height: 10,
+                  width: double.infinity,
+                  color: isDark
                       ? Colors.white.withValues(alpha: 0.10)
                       : AppColors.secondary.withValues(alpha: 0.5),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    isDark ? AppColors.signalAqua : AppColors.accentLimnological,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxWidth = constraints.maxWidth;
+                      final barWidth =
+                          (maxWidth * animatedRatio).clamp(0.0, maxWidth);
+
+                      if (barWidth <= 0) return const SizedBox.shrink();
+
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          width: barWidth,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: barColor,
+                            borderRadius: BorderRadius.circular(6),
+                            gradient: LinearGradient(
+                              colors: [
+                                barColor,
+                                Color.lerp(barColor, Colors.white, 0.16) ??
+                                    barColor,
+                              ],
+                            ),
+                          ),
+                        )
+                            .animate(onPlay: (c) => c.repeat())
+                            .shimmer(
+                              delay: 1400.ms,
+                              duration: 2200.ms,
+                              color: Colors.white.withValues(alpha: 0.45),
+                              curve: Curves.easeInOutCubic,
+                            ),
+                      );
+                    },
                   ),
                 ),
               ),
