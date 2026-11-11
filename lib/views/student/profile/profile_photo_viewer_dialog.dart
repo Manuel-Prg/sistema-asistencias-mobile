@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 
 class ProfilePhotoViewerDialog extends StatelessWidget {
@@ -93,7 +92,7 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
                               color: Colors.black38,
                               child: const Center(
                                 child: CircularProgressIndicator(
-                                  color: AppColors.signalAqua,
+                                  color: Colors.white,
                                 ),
                               ),
                             );
@@ -144,7 +143,7 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
                           const Icon(
                             Icons.zoom_in_rounded,
                             size: 16,
-                            color: AppColors.signalAqua,
+                            color: Colors.white,
                           ),
                           const SizedBox(width: 8),
                           Text(

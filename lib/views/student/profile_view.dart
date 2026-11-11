@@ -59,15 +59,15 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Row(
+        SnackBar(
+          content: const Row(
             children: [
               Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
               SizedBox(width: 10),
               Expanded(child: Text('¡Nombre actualizado con éxito!')),
             ],
           ),
-          backgroundColor: AppColors.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -135,7 +135,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 fontSize: 24,
                 fontFamily: AppTheme.brandFont,
                 fontWeight: FontWeight.w800,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
                 letterSpacing: -0.4,
               ),
             ),

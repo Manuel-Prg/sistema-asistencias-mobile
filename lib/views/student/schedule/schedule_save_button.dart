@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 
 class ScheduleSaveButton extends StatelessWidget {
   final bool isLoading;
@@ -13,6 +12,8 @@ class ScheduleSaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themePrimary = Theme.of(context).colorScheme.primary;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -26,17 +27,19 @@ class ScheduleSaveButton extends StatelessWidget {
                   color: Colors.white,
                 ),
               )
-            : const Icon(Icons.check_rounded, size: 20),
+            : const Icon(Icons.check_rounded, size: 20, color: Colors.white),
         label: Text(
           isLoading ? 'Guardando horario...' : 'Guardar Horario Semanal',
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
+            color: Colors.white,
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: themePrimary,
           foregroundColor: Colors.white,
+          iconColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),

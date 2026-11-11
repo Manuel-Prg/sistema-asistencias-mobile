@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 
 class NotificationBanner extends StatelessWidget {
@@ -15,6 +14,7 @@ class NotificationBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       margin: const EdgeInsets.only(bottom: 14),
@@ -22,9 +22,9 @@ class NotificationBanner extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.notifications_active_outlined,
-            color: AppColors.accentLimnological,
+            color: isDark ? Colors.white : themePrimary,
             size: 22,
           ),
           const SizedBox(width: 10),
@@ -40,7 +40,7 @@ class NotificationBanner extends StatelessWidget {
               'Activar',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                color: isDark ? AppColors.signalAqua : AppColors.primary,
+                color: isDark ? Colors.white : themePrimary,
               ),
             ),
           ),

@@ -87,8 +87,8 @@ class ProfileHeroCard extends StatelessWidget {
                                 Icons.person_rounded,
                                 size: 48,
                                 color: isDark
-                                    ? AppColors.signalAqua
-                                    : AppColors.primary,
+                                    ? Colors.white70
+                                    : activeThemeColor,
                               )
                             : null,
                   ),
@@ -186,10 +186,10 @@ class ProfileHeroCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.meeting_room_rounded,
                       size: 13,
-                      color: AppColors.accentLimnological,
+                      color: isDark ? Colors.white70 : activeThemeColor,
                     ),
                     const SizedBox(width: 5),
                     Text(
@@ -197,7 +197,7 @@ class ProfileHeroCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                        color: isDark ? AppColors.darkTextPrimary : activeThemeColor,
                       ),
                     ),
                   ],

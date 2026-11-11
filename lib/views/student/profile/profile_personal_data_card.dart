@@ -18,6 +18,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       padding: const EdgeInsets.all(18),
@@ -29,7 +30,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.badge_rounded,
-                color: isDark ? AppColors.signalAqua : AppColors.primary,
+                color: isDark ? Colors.white : themePrimary,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -39,7 +40,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
                   fontFamily: AppTheme.brandFont,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                  color: isDark ? AppColors.darkTextPrimary : themePrimary,
                 ),
               ),
             ],
@@ -57,7 +58,11 @@ class ProfilePersonalDataCard extends StatelessWidget {
           TextField(
             controller: nameController,
             decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.edit_rounded, size: 18),
+              prefixIcon: Icon(
+                Icons.edit_rounded,
+                size: 18,
+                color: isDark ? Colors.white70 : themePrimary,
+              ),
               filled: true,
               fillColor: isDark
                   ? Colors.white.withValues(alpha: 0.06)
@@ -88,11 +93,15 @@ class ProfilePersonalDataCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Icon(Icons.save_rounded, size: 18),
-              label: Text(isSavingName ? 'Guardando...' : 'Guardar Cambios'),
+                  : const Icon(Icons.save_rounded, size: 18, color: Colors.white),
+              label: Text(
+                isSavingName ? 'Guardando...' : 'Guardar Cambios',
+                style: const TextStyle(color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: themePrimary,
                 foregroundColor: Colors.white,
+                iconColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

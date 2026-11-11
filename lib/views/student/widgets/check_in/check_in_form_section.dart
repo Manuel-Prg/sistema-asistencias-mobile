@@ -108,8 +108,9 @@ class CheckInFormSection extends StatelessWidget {
         ElevatedButton(
           onPressed: isLoading ? null : onSubmit,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.limestoneGround,
-            foregroundColor: AppColors.primary,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Colors.white,
+            iconColor: Colors.white,
             minimumSize: const Size.fromHeight(52),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -119,12 +120,15 @@ class CheckInFormSection extends StatelessWidget {
               ? const SizedBox(
                   width: 22,
                   height: 22,
-                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
                 )
               : const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.login_rounded, size: 20),
+                    Icon(Icons.login_rounded, size: 20, color: Colors.white),
                     SizedBox(width: 8),
                     Text(
                       'REGISTRAR ENTRADA',
@@ -132,6 +136,7 @@ class CheckInFormSection extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -168,7 +173,7 @@ class _ShiftButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
-                ? AppColors.signalAqua
+                ? Colors.white
                 : Colors.white.withValues(alpha: 0.15),
             width: isSelected ? 1.5 : 1,
           ),
@@ -180,7 +185,7 @@ class _ShiftButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.signalAqua : Colors.white,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 2),

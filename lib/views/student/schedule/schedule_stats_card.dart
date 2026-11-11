@@ -16,6 +16,7 @@ class ScheduleStatsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       padding: const EdgeInsets.all(16),
@@ -29,7 +30,7 @@ class ScheduleStatsCard extends StatelessWidget {
                   icon: Icons.calendar_today_rounded,
                   label: 'Días pactados',
                   value: '$activeDaysCount días',
-                  color: isDark ? AppColors.signalAqua : AppColors.primary,
+                  color: isDark ? Colors.white : themePrimary,
                 ),
               ),
               const SizedBox(width: 8),
@@ -56,16 +57,15 @@ class ScheduleStatsCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                  .withValues(alpha: 0.08),
+              color: themePrimary.withValues(alpha: isDark ? 0.20 : 0.08),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.info_outline_rounded,
                   size: 16,
-                  color: AppColors.accentLimnological,
+                  color: isDark ? Colors.white70 : themePrimary,
                 ),
                 const SizedBox(width: 8),
                 Expanded(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 
 class EventsBannerCard extends StatelessWidget {
@@ -9,11 +8,12 @@ class EventsBannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       padding: const EdgeInsets.all(18),
       borderRadius: BorderRadius.circular(18),
-      tintColor: isDark ? const Color(0xFF0C2430) : AppColors.primary,
+      tintColor: isDark ? const Color(0xFF0C2430) : themePrimary,
       child: Row(
         children: [
           Container(

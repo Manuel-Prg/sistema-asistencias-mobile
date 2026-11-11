@@ -49,7 +49,7 @@ class ProgressCard extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(
+                      color: activeThemeColor.withValues(
                         alpha: isDark ? 0.3 : 0.08,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -230,18 +230,20 @@ class ProgressCard extends ConsumerWidget {
                       studentId: student.id,
                       accumulatedHours: student.accumulatedHours,
                     ),
-                    icon: const Icon(Icons.workspace_premium_rounded, size: 20),
+                    icon: const Icon(Icons.workspace_premium_rounded, size: 20, color: Colors.white),
                     label: const Text(
                       'TRAMITAR CARTA DE LIBERACIÓN',
                       style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.4,
+                        color: Colors.white,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.statusOnTime,
                       foregroundColor: Colors.white,
+                      iconColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

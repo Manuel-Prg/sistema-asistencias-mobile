@@ -52,7 +52,7 @@ class ProfileProgressCard extends ConsumerWidget {
                     children: [
                       Icon(
                         Icons.insights_rounded,
-                        color: activeThemeColor,
+                        color: isDark ? Colors.white : activeThemeColor,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -62,7 +62,7 @@ class ProfileProgressCard extends ConsumerWidget {
                           fontFamily: AppTheme.brandFont,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                          color: isDark ? AppColors.darkTextPrimary : activeThemeColor,
                         ),
                       ),
                     ],
@@ -138,7 +138,7 @@ class ProfileProgressCard extends ConsumerWidget {
                     child: _MetricTile(
                       label: 'Acumuladas',
                       value: '${accumulatedHours.toStringAsFixed(1)}h',
-                      color: isDark ? AppColors.signalAqua : AppColors.primary,
+                      color: activeThemeColor,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -154,7 +154,7 @@ class ProfileProgressCard extends ConsumerWidget {
                     child: _MetricTile(
                       label: 'Meta total',
                       value: '${requiredHours.toInt()}h',
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                      color: isDark ? AppColors.darkTextPrimary : activeThemeColor,
                     ),
                   ),
                 ],

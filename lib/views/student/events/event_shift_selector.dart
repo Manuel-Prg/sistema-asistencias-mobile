@@ -64,7 +64,7 @@ class _EventShiftOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? AppColors.signalAqua : AppColors.primary;
+    final activeColor = Theme.of(context).colorScheme.primary;
 
     return InkWell(
       onTap: onTap,
@@ -74,13 +74,15 @@ class _EventShiftOption extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected
-              ? activeColor.withValues(alpha: 0.18)
+              ? activeColor.withValues(alpha: isDark ? 0.35 : 0.18)
               : (isDark
                   ? Colors.white.withValues(alpha: 0.05)
                   : const Color(0xFFF2EFE9)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? activeColor : Colors.transparent,
+            color: isSelected
+                ? (isDark ? Colors.white70 : activeColor)
+                : Colors.transparent,
             width: 1.2,
           ),
         ),
@@ -92,7 +94,7 @@ class _EventShiftOption extends StatelessWidget {
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                 color: isSelected
-                    ? activeColor
+                    ? (isDark ? Colors.white : activeColor)
                     : (isDark ? Colors.white70 : AppColors.mineralInk),
               ),
             ),

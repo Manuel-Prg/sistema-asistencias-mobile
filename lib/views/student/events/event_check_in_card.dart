@@ -29,6 +29,7 @@ class EventCheckInCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       padding: const EdgeInsets.all(18),
@@ -40,7 +41,7 @@ class EventCheckInCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.event_available_rounded,
-                color: isDark ? AppColors.signalAqua : AppColors.primary,
+                color: isDark ? Colors.white : themePrimary,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -50,7 +51,7 @@ class EventCheckInCard extends StatelessWidget {
                   fontFamily: AppTheme.brandFont,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                  color: isDark ? AppColors.darkTextPrimary : themePrimary,
                 ),
               ),
             ],
@@ -101,17 +102,15 @@ class EventCheckInCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? (isDark
-                            ? AppColors.signalAqua.withValues(alpha: 0.25)
-                            : AppColors.primary.withValues(alpha: 0.12))
+                            ? themePrimary.withValues(alpha: 0.35)
+                            : themePrimary.withValues(alpha: 0.12))
                         : (isDark
                             ? Colors.white.withValues(alpha: 0.05)
                             : const Color(0xFFF0ECE6)),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
-                          ? (isDark
-                              ? AppColors.signalAqua
-                              : AppColors.primary)
+                          ? (isDark ? Colors.white70 : themePrimary)
                           : Colors.transparent,
                     ),
                   ),
@@ -121,7 +120,7 @@ class EventCheckInCard extends StatelessWidget {
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                       color: isSelected
-                          ? (isDark ? AppColors.signalAqua : AppColors.primary)
+                          ? (isDark ? Colors.white : themePrimary)
                           : (isDark ? Colors.white70 : AppColors.slateMuted),
                     ),
                   ),
@@ -147,19 +146,20 @@ class EventCheckInCard extends StatelessWidget {
           const SizedBox(height: 18),
           ElevatedButton.icon(
             onPressed: hasActiveSession || isLoading ? null : onSubmit,
-            icon: const Icon(Icons.how_to_reg_rounded, size: 20),
+            icon: const Icon(Icons.how_to_reg_rounded, size: 20, color: Colors.white),
             label: const Text(
               'REGISTRAR ENTRADA A EVENTO',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
+                color: Colors.white,
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isDark ? AppColors.signalAqua : AppColors.primary,
-              foregroundColor: isDark ? const Color(0xFF07161D) : Colors.white,
+              backgroundColor: themePrimary,
+              foregroundColor: Colors.white,
+              iconColor: Colors.white,
               minimumSize: const Size.fromHeight(50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),

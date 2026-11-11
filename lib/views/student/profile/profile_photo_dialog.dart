@@ -238,6 +238,7 @@ class _ProfilePhotoDialogContentState
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
     final currentText = _urlController.text.trim();
     final hasValidUrl = currentText.startsWith('http://') ||
         currentText.startsWith('https://');
@@ -249,14 +250,13 @@ class _ProfilePhotoDialogContentState
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                  .withValues(alpha: 0.15),
+              color: themePrimary.withValues(alpha: isDark ? 0.22 : 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.photo_library_rounded,
               size: 20,
-              color: isDark ? AppColors.signalAqua : AppColors.primary,
+              color: isDark ? Colors.white : themePrimary,
             ),
           ),
           const SizedBox(width: 12),
@@ -267,7 +267,7 @@ class _ProfilePhotoDialogContentState
                 fontFamily: AppTheme.brandFont,
                 fontWeight: FontWeight.w800,
                 fontSize: 18,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                color: isDark ? AppColors.darkTextPrimary : themePrimary,
               ),
             ),
           ),
@@ -370,18 +370,15 @@ class _ProfilePhotoDialogContentState
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _isSaving ? null : () => _pickImage(ImageSource.gallery),
-                    icon: const Icon(Icons.photo_library_rounded, size: 18),
+                    icon: const Icon(Icons.photo_library_rounded, size: 18, color: Colors.white),
                     label: const Text(
                       'Galería',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isDark
-                          ? AppColors.signalAqua
-                          : AppColors.primary,
-                      foregroundColor: isDark
-                          ? AppColors.abyssalGroundDark
-                          : Colors.white,
+                      backgroundColor: themePrimary,
+                      foregroundColor: Colors.white,
+                      iconColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -394,20 +391,21 @@ class _ProfilePhotoDialogContentState
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _isSaving ? null : () => _pickImage(ImageSource.camera),
-                    icon: const Icon(Icons.photo_camera_rounded, size: 18),
-                    label: const Text(
+                    icon: Icon(Icons.photo_camera_rounded, size: 18, color: isDark ? Colors.white : themePrimary),
+                    label: Text(
                       'Cámara',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : themePrimary,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isDark
-                          ? AppColors.signalAqua
-                          : AppColors.primary,
+                      foregroundColor: isDark ? Colors.white : themePrimary,
+                      iconColor: isDark ? Colors.white : themePrimary,
                       side: BorderSide(
-                        color: (isDark
-                                ? AppColors.signalAqua
-                                : AppColors.primary)
-                            .withValues(alpha: 0.4),
+                        color: (isDark ? Colors.white38 : themePrimary)
+                            .withValues(alpha: 0.5),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -520,10 +518,9 @@ class _ProfilePhotoDialogContentState
         ElevatedButton(
           onPressed: _isSaving || !hasSelection ? null : _submit,
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-                isDark ? AppColors.signalAqua : AppColors.primary,
-            foregroundColor:
-                isDark ? AppColors.abyssalGroundDark : Colors.white,
+            backgroundColor: themePrimary,
+            foregroundColor: Colors.white,
+            iconColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             minimumSize: const Size(100, 42),
             shape: RoundedRectangleBorder(
@@ -534,11 +531,14 @@ class _ProfilePhotoDialogContentState
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
               : const Text(
                   'Guardar',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                  style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
                 ),
         ),
       ],

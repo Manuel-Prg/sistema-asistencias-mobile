@@ -15,6 +15,7 @@ class ResourceCategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -33,21 +34,17 @@ class ResourceCategoryChips extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? (isDark
-                          ? AppColors.signalAqua
-                          : AppColors.primary)
+                      ? themePrimary
                       : (isDark
                           ? Colors.white.withValues(alpha: 0.06)
                           : Colors.white.withValues(alpha: 0.65)),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
-                        ? (isDark
-                            ? AppColors.signalAqua
-                            : AppColors.primary)
+                        ? (isDark ? Colors.white70 : themePrimary)
                         : (isDark
                             ? AppColors.darkBorder
-                            : AppColors.primary.withValues(alpha: 0.15)),
+                            : themePrimary.withValues(alpha: 0.15)),
                     width: 1,
                   ),
                 ),
@@ -57,9 +54,7 @@ class ResourceCategoryChips extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                     color: isSelected
-                        ? (isDark
-                            ? AppColors.abyssalGroundDark
-                            : Colors.white)
+                        ? Colors.white
                         : (isDark
                             ? AppColors.darkTextPrimary
                             : AppColors.mineralInk),

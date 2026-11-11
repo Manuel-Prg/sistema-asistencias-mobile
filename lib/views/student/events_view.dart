@@ -78,7 +78,7 @@ class _EventsViewState extends ConsumerState<EventsView> {
                 fontSize: 24,
                 fontFamily: AppTheme.brandFont,
                 fontWeight: FontWeight.w800,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
                 letterSpacing: -0.4,
               ),
             ),

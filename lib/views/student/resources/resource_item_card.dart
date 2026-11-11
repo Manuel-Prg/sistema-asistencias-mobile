@@ -20,6 +20,7 @@ class ResourceItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       margin: const EdgeInsets.only(bottom: 14),
@@ -124,21 +125,20 @@ class ResourceItemCard extends StatelessWidget {
                         icon: const Icon(
                           Icons.open_in_new_rounded,
                           size: 16,
+                          color: Colors.white,
                         ),
                         label: const Text(
                           'Abrir recurso',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
+                            color: Colors.white,
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark
-                              ? AppColors.signalAqua
-                              : AppColors.primary,
-                          foregroundColor: isDark
-                              ? AppColors.abyssalGroundDark
-                              : Colors.white,
+                          backgroundColor: themePrimary,
+                          foregroundColor: Colors.white,
+                          iconColor: Colors.white,
                           minimumSize: const Size.fromHeight(42),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -160,9 +160,9 @@ class ResourceItemCard extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           side: BorderSide(
                             color: isCopied
-                                ? AppColors.signalAqua
+                                ? themePrimary
                                 : (isDark
-                                    ? AppColors.darkBorder
+                                    ? Colors.white24
                                     : AppColors.stoneBorder),
                             width: 1.2,
                           ),
@@ -176,9 +176,9 @@ class ResourceItemCard extends StatelessWidget {
                               : Icons.copy_rounded,
                           size: 18,
                           color: isCopied
-                              ? AppColors.signalAqua
+                              ? (isDark ? Colors.white : themePrimary)
                               : (isDark
-                                  ? AppColors.darkTextPrimary
+                                  ? Colors.white70
                                   : AppColors.mineralInk),
                         ),
                       ),

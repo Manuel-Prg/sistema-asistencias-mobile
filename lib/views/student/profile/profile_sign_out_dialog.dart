@@ -102,13 +102,24 @@ class ProfileSignOutDialog {
                     await launchUrl(uri, mode: LaunchMode.platformDefault);
                   }
                 },
-                icon: const Icon(Icons.edit_note_rounded, size: 18),
-                label: const Text('Llenar Bitácora'),
+                icon: Icon(
+                  Icons.edit_note_rounded,
+                  size: 18,
+                  color: isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
+                ),
+                label: Text(
+                  'Llenar Bitácora',
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
+                  ),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor:
-                      isDark ? AppColors.signalAqua : AppColors.primary,
+                      isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
+                  iconColor:
+                      isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
                   side: BorderSide(
-                    color: (isDark ? AppColors.signalAqua : AppColors.primary)
+                    color: (isDark ? Colors.white38 : Theme.of(ctx).colorScheme.primary)
                         .withValues(alpha: 0.5),
                   ),
                   padding: const EdgeInsets.symmetric(

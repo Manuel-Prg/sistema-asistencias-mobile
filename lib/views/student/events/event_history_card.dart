@@ -18,6 +18,7 @@ class EventHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       padding: const EdgeInsets.all(18),
@@ -32,7 +33,7 @@ class EventHistoryCard extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.history_edu_rounded,
-                    color: isDark ? AppColors.signalAqua : AppColors.primary,
+                    color: isDark ? Colors.white : themePrimary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -44,7 +45,7 @@ class EventHistoryCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: isDark
                           ? AppColors.darkTextPrimary
-                          : AppColors.primary,
+                          : themePrimary,
                     ),
                   ),
                 ],
@@ -55,8 +56,7 @@ class EventHistoryCard extends StatelessWidget {
                   vertical: 3,
                 ),
                 decoration: BoxDecoration(
-                  color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                      .withValues(alpha: 0.12),
+                  color: themePrimary.withValues(alpha: isDark ? 0.22 : 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -64,7 +64,7 @@ class EventHistoryCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: isDark ? AppColors.signalAqua : AppColors.primary,
+                    color: isDark ? Colors.white : themePrimary,
                   ),
                 ),
               ),
@@ -104,6 +104,7 @@ class _EventHistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -119,13 +120,12 @@ class _EventHistoryItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                  .withValues(alpha: 0.10),
+              color: themePrimary.withValues(alpha: isDark ? 0.25 : 0.12),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.stars_rounded,
-              color: isDark ? AppColors.signalAqua : const Color(0xFFC26D2D),
+              color: isDark ? Colors.white : themePrimary,
               size: 16,
             ),
           ),
@@ -142,7 +142,7 @@ class _EventHistoryItem extends StatelessWidget {
                     fontFamily: AppTheme.brandFont,
                     color: isDark
                         ? AppColors.darkTextPrimary
-                        : AppColors.primary,
+                        : themePrimary,
                   ),
                 ),
                 Text(

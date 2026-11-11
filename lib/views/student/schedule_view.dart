@@ -117,7 +117,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Horario ($start - $end) aplicado a días activos.'),
-        backgroundColor: AppColors.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),

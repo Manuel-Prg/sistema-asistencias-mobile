@@ -42,7 +42,7 @@ class QuickResourceCard extends StatelessWidget {
                 Icon(
                   Icons.arrow_outward_rounded,
                   size: 15,
-                  color: isDark ? AppColors.signalAqua : AppColors.primary,
+                  color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -55,7 +55,7 @@ class QuickResourceCard extends StatelessWidget {
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,
                 fontFamily: AppTheme.brandFont,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 2),

@@ -26,6 +26,7 @@ class ScheduleDayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
       margin: const EdgeInsets.only(bottom: 10),
@@ -33,8 +34,8 @@ class ScheduleDayCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       tintColor: isActive
           ? (isDark
-              ? AppColors.primary.withValues(alpha: 0.35)
-              : AppColors.signalAqua.withValues(alpha: 0.10))
+              ? themePrimary.withValues(alpha: 0.35)
+              : themePrimary.withValues(alpha: 0.10))
           : null,
       child: Column(
         children: [
@@ -48,7 +49,7 @@ class ScheduleDayCard extends StatelessWidget {
                     height: 38,
                     decoration: BoxDecoration(
                       color: isActive
-                          ? (isDark ? AppColors.signalAqua : AppColors.primary)
+                          ? themePrimary
                           : (isDark ? Colors.white10 : const Color(0xFFE5E2DC)),
                       shape: BoxShape.circle,
                     ),
@@ -59,9 +60,7 @@ class ScheduleDayCard extends StatelessWidget {
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: isActive
-                              ? (isDark
-                                  ? const Color(0xFF07161D)
-                                  : Colors.white)
+                              ? Colors.white
                               : (isDark ? Colors.white54 : AppColors.slateMuted),
                         ),
                       ),
@@ -80,7 +79,7 @@ class ScheduleDayCard extends StatelessWidget {
                           color: isActive
                               ? (isDark
                                   ? AppColors.darkTextPrimary
-                                  : AppColors.primary)
+                                  : themePrimary)
                               : (isDark ? Colors.white54 : AppColors.slateMuted),
                         ),
                       ),
@@ -90,8 +89,8 @@ class ScheduleDayCard extends StatelessWidget {
                           fontSize: 11,
                           color: isActive
                               ? (isDark
-                                  ? AppColors.signalAqua
-                                  : AppColors.accentLimnological)
+                                  ? Colors.white70
+                                  : themePrimary)
                               : (isDark ? Colors.white38 : AppColors.slateMuted),
                         ),
                       ),
@@ -170,8 +169,8 @@ class _TimePickerButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.access_time_rounded,
-                size: 14, color: AppColors.signalAqua),
+            Icon(Icons.access_time_rounded,
+                size: 14, color: isDark ? Colors.white70 : Theme.of(context).colorScheme.primary),
             const SizedBox(width: 6),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +187,7 @@ class _TimePickerButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : AppColors.primary,
+                    color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],

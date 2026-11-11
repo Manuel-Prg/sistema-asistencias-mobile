@@ -68,13 +68,14 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassScaffold(
       appBar: const GlassAppBar(),
       body: RefreshIndicator(
         onRefresh: () =>
             ref.read(studentProvider.notifier).loadData(isRefresh: true),
-        color: AppColors.primary,
+        color: themePrimary,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 130),
@@ -94,7 +95,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         fontWeight: FontWeight.w800,
                         color: isDark
                             ? AppColors.darkTextPrimary
-                            : AppColors.primary,
+                            : themePrimary,
                         letterSpacing: -0.4,
                       ),
                     ),
@@ -106,8 +107,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: isDark
-                            ? AppColors.signalAqua
-                            : AppColors.accentLimnological,
+                            ? Colors.white70
+                            : themePrimary,
                       ),
                     ),
                   ],

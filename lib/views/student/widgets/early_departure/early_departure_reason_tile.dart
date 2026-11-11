@@ -18,6 +18,7 @@ class EarlyDepartureReasonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -29,16 +30,14 @@ class EarlyDepartureReasonTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? (isDark
-                    ? AppColors.signalAqua.withValues(alpha: 0.15)
-                    : AppColors.primary.withValues(alpha: 0.08))
+                ? themePrimary.withValues(alpha: isDark ? 0.30 : 0.12)
                 : (isDark
                     ? const Color(0xFF0F2631).withValues(alpha: 0.5)
                     : Colors.white.withValues(alpha: 0.7)),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
-                  ? (isDark ? AppColors.signalAqua : AppColors.primary)
+                  ? (isDark ? Colors.white70 : themePrimary)
                   : (isDark ? AppColors.darkBorder : AppColors.stoneBorder),
               width: isSelected ? 1.8 : 1.0,
             ),
@@ -52,7 +51,7 @@ class EarlyDepartureReasonTile extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isSelected
-                        ? (isDark ? AppColors.signalAqua : AppColors.primary)
+                        ? (isDark ? Colors.white : themePrimary)
                         : (isDark
                             ? const Color(0xFF536E7B)
                             : AppColors.slateMuted),
@@ -66,9 +65,7 @@ class EarlyDepartureReasonTile extends StatelessWidget {
                           height: 10,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: isDark
-                                ? AppColors.signalAqua
-                                : AppColors.primary,
+                            color: isDark ? Colors.white : themePrimary,
                           ),
                         ),
                       )
@@ -88,7 +85,7 @@ class EarlyDepartureReasonTile extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
-                        ? (isDark ? Colors.white : AppColors.primary)
+                        ? (isDark ? Colors.white : themePrimary)
                         : (isDark
                             ? const Color(0xFFC5D7DF)
                             : AppColors.slateMuted),

@@ -77,7 +77,7 @@ class _ResourcesViewState extends State<ResourcesView> {
         SnackBar(
           content: Text('Enlace de "$title" copiado al portapapeles.'),
           duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
     }
@@ -116,7 +116,7 @@ class _ResourcesViewState extends State<ResourcesView> {
                   fontSize: 24,
                   fontFamily: AppTheme.brandFont,
                   fontWeight: FontWeight.w800,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                  color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
                   letterSpacing: -0.4,
                 ),
               ),

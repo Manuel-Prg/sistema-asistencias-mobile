@@ -72,13 +72,17 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.limestoneGround,
+          foregroundColor: Colors.white,
+          iconColor: Colors.white,
           minimumSize: const Size.fromHeight(50),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           elevation: 0,
         ),
+      ),
+      iconTheme: const IconThemeData(
+        color: AppColors.primary,
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -175,24 +179,29 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.signalAqua,
-          foregroundColor: AppColors.abyssalGroundDark,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          iconColor: Colors.white,
           minimumSize: const Size.fromHeight(50),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.signalAqua,
+          foregroundColor: Colors.white,
+          iconColor: Colors.white,
           minimumSize: const Size.fromHeight(50),
           side: const BorderSide(color: AppColors.darkBorder, width: 1.5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
       ),
@@ -210,7 +219,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.signalAqua, width: 2),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
     );
@@ -221,39 +230,70 @@ class AppTheme {
     AppColorPalette palette, {
     required bool isDark,
   }) {
-    if (palette.isDefault) {
-      return baseTheme;
-    }
+    final Color primaryColor = palette.isDefault
+        ? (isDark ? AppColors.primary : AppColors.primary)
+        : (isDark ? palette.accent : palette.primary);
 
-    final primary = palette.primary;
-    final accent = palette.accent;
+    final Color accentColor = palette.isDefault
+        ? AppColors.accentLimnological
+        : palette.accent;
 
     return baseTheme.copyWith(
       colorScheme: baseTheme.colorScheme.copyWith(
-        primary: isDark ? accent : primary,
-        secondary: accent,
+        primary: primaryColor,
+        secondary: accentColor,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+      ),
+      iconTheme: IconThemeData(
+        color: isDark ? Colors.white : primaryColor,
+      ),
+      primaryIconTheme: const IconThemeData(
+        color: Colors.white,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDark ? accent : primary,
-          foregroundColor: isDark ? Colors.black87 : Colors.white,
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          iconColor: Colors.white,
+          disabledForegroundColor: Colors.white60,
+          disabledIconColor: Colors.white38,
           minimumSize: const Size.fromHeight(50),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           elevation: 0,
+          textStyle: const TextStyle(
+            fontFamily: brandFont,
+            fontSize: 14.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.3,
+            color: Colors.white,
+          ),
         ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          iconColor: Colors.white,
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: isDark ? accent : primary,
+          foregroundColor: isDark ? Colors.white : primaryColor,
+          iconColor: isDark ? Colors.white : primaryColor,
           minimumSize: const Size.fromHeight(50),
           side: BorderSide(
-            color: isDark ? accent.withValues(alpha: 0.5) : primary,
+            color: isDark ? Colors.white38 : primaryColor.withValues(alpha: 0.5),
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
       ),

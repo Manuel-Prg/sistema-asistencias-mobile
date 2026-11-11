@@ -23,7 +23,7 @@ class SchedulePresetsBar extends StatelessWidget {
               fontSize: 12,
               fontWeight: FontWeight.w700,
               fontFamily: AppTheme.brandFont,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+              color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -65,6 +65,7 @@ class _PresetButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
 
     return InkWell(
       onTap: onTap,
@@ -72,12 +73,11 @@ class _PresetButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: (isDark ? AppColors.signalAqua : AppColors.primary)
-              .withValues(alpha: 0.12),
+          color: themePrimary.withValues(alpha: isDark ? 0.25 : 0.12),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                .withValues(alpha: 0.3),
+            color: (isDark ? Colors.white38 : themePrimary)
+                .withValues(alpha: 0.35),
           ),
         ),
         child: Text(
@@ -85,7 +85,7 @@ class _PresetButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: isDark ? AppColors.signalAqua : AppColors.primary,
+            color: isDark ? Colors.white : themePrimary,
           ),
         ),
       ),

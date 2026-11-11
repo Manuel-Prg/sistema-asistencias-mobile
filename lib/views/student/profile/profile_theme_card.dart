@@ -40,12 +40,12 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: activeAccent.withValues(alpha: 0.15),
+                  color: activeAccent.withValues(alpha: isDark ? 0.25 : 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.palette_rounded,
-                  color: activeAccent,
+                  color: isDark ? Colors.white : activeAccent,
                   size: 20,
                 ),
               ),
@@ -57,7 +57,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
                     fontFamily: AppTheme.brandFont,
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                    color: isDark ? AppColors.darkTextPrimary : activeAccent,
                   ),
                 ),
               ),
@@ -72,7 +72,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               fontSize: 14,
               fontFamily: AppTheme.brandFont,
               fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+              color: isDark ? AppColors.darkTextPrimary : activeAccent,
             ),
           ),
           const SizedBox(height: 10),
@@ -148,7 +148,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               fontSize: 14,
               fontFamily: AppTheme.brandFont,
               fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+              color: isDark ? AppColors.darkTextPrimary : activeAccent,
             ),
           ),
           const SizedBox(height: 4),
@@ -293,7 +293,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
                 fontSize: 14,
                 fontFamily: AppTheme.brandFont,
                 fontWeight: FontWeight.w700,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                color: isDark ? AppColors.darkTextPrimary : activeAccent,
               ),
             ),
             subtitle: Text(
@@ -322,7 +322,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               fontSize: 14,
               fontFamily: AppTheme.brandFont,
               fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+              color: isDark ? AppColors.darkTextPrimary : activeAccent,
             ),
           ),
           const SizedBox(height: 10),
@@ -414,7 +414,7 @@ class _ThemeChip extends StatelessWidget {
               icon,
               size: 20,
               color: isSelected
-                  ? activeColor
+                  ? (isDark ? Colors.white : activeColor)
                   : (isDark ? Colors.white60 : AppColors.slateMuted),
             ),
             const SizedBox(height: 4),
@@ -424,7 +424,7 @@ class _ThemeChip extends StatelessWidget {
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected
-                    ? activeColor
+                    ? (isDark ? Colors.white : activeColor)
                     : (isDark ? Colors.white70 : AppColors.slateMuted),
               ),
             ),

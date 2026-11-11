@@ -30,10 +30,10 @@ class AttendanceHeatmapCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.shield_outlined,
                 size: 20,
-                color: AppColors.primary,
+                color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 8),
               const Expanded(
