@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 import '../../../models/student.dart';
+import '../../../providers/color_theme_provider.dart';
 import 'freedom_dialog.dart';
 
-class ProgressCard extends StatelessWidget {
+class ProgressCard extends ConsumerWidget {
   final Student student;
 
   const ProgressCard({super.key, required this.student});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorPalette = ref.watch(colorThemeProvider);
+    final activeThemeColor = isDark
+        ? (colorPalette.isDefault ? AppColors.signalAqua : colorPalette.accent)
+        : colorPalette.primary;
+
     final percentage = student.progressPercentage;
     final isCompleted = student.isCompleted;
     final targetRatio = (percentage / 100).clamp(0.0, 1.0);
@@ -57,7 +64,7 @@ class ProgressCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        color: activeThemeColor,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -71,7 +78,7 @@ class ProgressCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isCompleted
                           ? AppColors.statusOnTime.withValues(alpha: 0.15)
-                          : AppColors.accentLimnological.withValues(alpha: 0.12),
+                          : activeThemeColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -81,7 +88,7 @@ class ProgressCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         color: isCompleted
                             ? AppColors.statusOnTime
-                            : AppColors.accentLimnological,
+                            : activeThemeColor,
                       ),
                     ),
                   ),
@@ -150,7 +157,7 @@ class ProgressCard extends StatelessWidget {
 
                       final barColor = isCompleted
                           ? AppColors.statusOnTime
-                          : AppColors.accentLimnological;
+                          : activeThemeColor;
 
                       return Align(
                         alignment: Alignment.centerLeft,

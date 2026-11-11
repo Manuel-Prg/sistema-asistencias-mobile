@@ -8,6 +8,7 @@ import 'core/constants/app_constants.dart';
 import 'core/constants/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/color_theme_provider.dart';
 import 'providers/theme_provider.dart';
 import 'views/auth/login_view.dart';
 import 'views/navigation/main_navigation_view.dart';
@@ -38,13 +39,22 @@ class SistemaAsistenciaApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final colorPalette = ref.watch(colorThemeProvider);
     final authState = ref.watch(authProvider);
 
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.getThemeWithPalette(
+        AppTheme.lightTheme,
+        colorPalette,
+        isDark: false,
+      ),
+      darkTheme: AppTheme.getThemeWithPalette(
+        AppTheme.darkTheme,
+        colorPalette,
+        isDark: true,
+      ),
       themeMode: themeMode,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

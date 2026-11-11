@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
+import '../../../providers/color_theme_provider.dart';
 import '../../../providers/glass_settings_provider.dart';
 import '../../../providers/theme_provider.dart';
 
@@ -14,40 +15,317 @@ class ProfileThemeCard extends ConsumerStatefulWidget {
 }
 
 class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
-  bool _showAdvancedGlass = false;
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentThemeMode = ref.watch(themeModeProvider);
+    final selectedPalette = ref.watch(colorThemeProvider);
     final glassSettings = ref.watch(glassSettingsProvider);
 
+    final activeAccent = isDark
+        ? (selectedPalette.isDefault
+            ? AppColors.signalAqua
+            : selectedPalette.accent)
+        : selectedPalette.primary;
+
     return GlassSurface(
-      padding: const EdgeInsets.all(18),
-      borderRadius: BorderRadius.circular(18),
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Encabezado
           Row(
             children: [
-              Icon(
-                Icons.palette_rounded,
-                color: isDark ? AppColors.signalAqua : AppColors.primary,
-                size: 20,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: activeAccent.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.palette_rounded,
+                  color: activeAccent,
+                  size: 20,
+                ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Tema y Rendimiento',
-                style: TextStyle(
-                  fontFamily: AppTheme.brandFont,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Tema y Personalización',
+                  style: TextStyle(
+                    fontFamily: AppTheme.brandFont,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                  ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 18),
+
+          // ─── 1. Selector de Colores de Tema ─────────────────────────────────
+          Text(
+            'Colores',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: AppTheme.brandFont,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 12,
+            runSpacing: 10,
+            children: AppPalettes.all.map((palette) {
+              final isSelected = palette.id == selectedPalette.id;
+              return GestureDetector(
+                onTap: () => ref
+                    .read(colorThemeProvider.notifier)
+                    .setColorTheme(palette),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: palette.previewColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      if (isSelected)
+                        BoxShadow(
+                          color: palette.previewColor.withValues(alpha: 0.45),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                    ],
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.white
+                          : Colors.black.withValues(alpha: 0.12),
+                      width: isSelected ? 2.5 : 1.2,
+                    ),
+                  ),
+                  child: isSelected
+                      ? const Center(
+                          child: Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          ),
+                        )
+                      : null,
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: activeAccent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              selectedPalette.name,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: activeAccent,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+          const Divider(height: 1),
+          const SizedBox(height: 16),
+
+          // ─── 2. Transparencia del vidrio ───────────────────────────────────
+          Text(
+            'Transparencia del vidrio',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: AppTheme.brandFont,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Ajusta la transparencia en los menús y la navegación de la app. Se conserva el contraste del texto.',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              height: 1.35,
+            ),
+          ),
           const SizedBox(height: 14),
+
+          // Mini reproductor / chip de cristal interactivo (Live Preview)
+          Center(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    activeAccent.withValues(
+                      alpha: (0.35 + (1.0 - glassSettings.transparency) * 0.45)
+                          .clamp(0.25, 0.90),
+                    ),
+                    (selectedPalette.isDefault
+                            ? AppColors.accentLimnological
+                            : selectedPalette.accent)
+                        .withValues(
+                      alpha: (0.25 + (1.0 - glassSettings.transparency) * 0.40)
+                          .clamp(0.20, 0.85),
+                    ),
+                  ],
+                ),
+                border: glassSettings.showBorders
+                    ? Border.all(
+                        color: Colors.white.withValues(alpha: 0.35),
+                        width: 1.2,
+                      )
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: activeAccent.withValues(alpha: 0.25),
+                    blurRadius: 18,
+                    spreadRadius: -2,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.water_drop_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Casa del Agua • ${selectedPalette.name}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Slider de transparencia
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: activeAccent,
+              thumbColor: activeAccent,
+              overlayColor: activeAccent.withValues(alpha: 0.2),
+              inactiveTrackColor: isDark
+                  ? Colors.white12
+                  : AppColors.stoneBorder.withValues(alpha: 0.5),
+            ),
+            child: Slider(
+              value: glassSettings.transparency,
+              min: 0.10,
+              max: 0.85,
+              onChanged: (val) => ref
+                  .read(glassSettingsProvider.notifier)
+                  .setTransparency(val),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tintado sólido',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.slateMuted,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => ref
+                      .read(glassSettingsProvider.notifier)
+                      .setTransparency(0.50),
+                  child: Text(
+                    'Restablecer',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: activeAccent,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+
+          // ─── 3. Contornos de vidrio ─────────────────────────────────────────
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              'Contornos de vidrio',
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: AppTheme.brandFont,
+                fontWeight: FontWeight.w700,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+              ),
+            ),
+            subtitle: Text(
+              'Mostrar bordes decorativos alrededor del cristal. Si desactivas esta opción, se mantendrán el desenfoque y la refracción.',
+              style: TextStyle(
+                fontSize: 11.5,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                height: 1.35,
+              ),
+            ),
+            value: glassSettings.showBorders,
+            activeTrackColor: activeAccent,
+            onChanged: (show) => ref
+                .read(glassSettingsProvider.notifier)
+                .setShowBorders(show),
+          ),
+
+          const SizedBox(height: 10),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
+
+          // ─── 4. Modo de Tema (Claro / Oscuro / Auto) ────────────────────────
+          Text(
+            'Modo de Tema',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: AppTheme.brandFont,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
@@ -55,6 +333,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
                   label: 'Claro',
                   icon: Icons.light_mode_rounded,
                   isSelected: currentThemeMode == ThemeMode.light,
+                  activeColor: activeAccent,
                   onTap: () => ref
                       .read(themeModeProvider.notifier)
                       .setTheme(ThemeMode.light),
@@ -66,6 +345,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
                   label: 'Oscuro',
                   icon: Icons.dark_mode_rounded,
                   isSelected: currentThemeMode == ThemeMode.dark,
+                  activeColor: activeAccent,
                   onTap: () => ref
                       .read(themeModeProvider.notifier)
                       .setTheme(ThemeMode.dark),
@@ -77,96 +357,13 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
                   label: 'Auto',
                   icon: Icons.brightness_auto_rounded,
                   isSelected: currentThemeMode == ThemeMode.system,
+                  activeColor: activeAccent,
                   onTap: () => ref
                       .read(themeModeProvider.notifier)
                       .setTheme(ThemeMode.system),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          SwitchListTile.adaptive(
-            contentPadding: EdgeInsets.zero,
-            title: const Text(
-              'Modo Rendimiento',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-            subtitle: const Text(
-              'Optimiza animaciones y desactiva blur para máxima fluidez',
-              style: TextStyle(fontSize: 12, color: AppColors.slateMuted),
-            ),
-            value: !glassSettings.enableBlur,
-            activeTrackColor: AppColors.signalAqua,
-            onChanged: (val) => ref
-                .read(glassSettingsProvider.notifier)
-                .setEnableBlur(!val),
-          ),
-          Theme(
-            data: Theme.of(context).copyWith(
-              dividerColor: Colors.transparent,
-            ),
-            child: ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              initiallyExpanded: _showAdvancedGlass,
-              onExpansionChanged: (exp) =>
-                  setState(() => _showAdvancedGlass = exp),
-              title: const Text(
-                'Personalización de Cristal (iOS Glass)',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.accentLimnological,
-                ),
-              ),
-              children: [
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Intensidad de Desenfoque (Blur):',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    Text(
-                      '${glassSettings.blurSigma.toInt()} px',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                Slider(
-                  value: glassSettings.blurSigma,
-                  min: 4,
-                  max: 20,
-                  divisions: 16,
-                  activeColor: AppColors.signalAqua,
-                  onChanged: (sigma) => ref
-                      .read(glassSettingsProvider.notifier)
-                      .setBlurSigma(sigma),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Contornos de Cristal:',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    Switch.adaptive(
-                      value: glassSettings.showBorders,
-                      activeTrackColor: AppColors.signalAqua,
-                      onChanged: (show) => ref
-                          .read(glassSettingsProvider.notifier)
-                          .setShowBorders(show),
-                    ),
-                  ],
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -178,19 +375,20 @@ class _ThemeChip extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool isSelected;
+  final Color activeColor;
   final VoidCallback onTap;
 
   const _ThemeChip({
     required this.label,
     required this.icon,
     required this.isSelected,
+    required this.activeColor,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? AppColors.signalAqua : AppColors.primary;
 
     return InkWell(
       onTap: onTap,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../providers/color_theme_provider.dart';
 import '../constants/app_colors.dart';
 
 class AppTheme {
@@ -210,6 +211,50 @@ class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.signalAqua, width: 2),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData getThemeWithPalette(
+    ThemeData baseTheme,
+    AppColorPalette palette, {
+    required bool isDark,
+  }) {
+    if (palette.isDefault) {
+      return baseTheme;
+    }
+
+    final primary = palette.primary;
+    final accent = palette.accent;
+
+    return baseTheme.copyWith(
+      colorScheme: baseTheme.colorScheme.copyWith(
+        primary: isDark ? accent : primary,
+        secondary: accent,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDark ? accent : primary,
+          foregroundColor: isDark ? Colors.black87 : Colors.white,
+          minimumSize: const Size.fromHeight(50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: isDark ? accent : primary,
+          minimumSize: const Size.fromHeight(50),
+          side: BorderSide(
+            color: isDark ? accent.withValues(alpha: 0.5) : primary,
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
     );

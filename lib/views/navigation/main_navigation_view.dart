@@ -105,7 +105,7 @@ class _GlassNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? AppColors.signalAqua : AppColors.primary;
+    final activeColor = Theme.of(context).colorScheme.primary;
     final inactiveColor =
         isDark ? AppColors.darkTextSecondary : AppColors.slateMuted;
 
@@ -119,16 +119,12 @@ class _GlassNavItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
             color: isSelected
-                ? (isDark
-                    ? AppColors.signalAqua.withValues(alpha: 0.18)
-                    : AppColors.primary.withValues(alpha: 0.08))
+                ? activeColor.withValues(alpha: isDark ? 0.22 : 0.12)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(22),
             border: isSelected
                 ? Border.all(
-                    color: isDark
-                        ? AppColors.signalAqua.withValues(alpha: 0.35)
-                        : AppColors.primary.withValues(alpha: 0.16),
+                    color: activeColor.withValues(alpha: isDark ? 0.40 : 0.25),
                     width: 1,
                   )
                 : null,

@@ -48,6 +48,7 @@ class ProfileHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeThemeColor = Theme.of(context).colorScheme.primary;
     final hasAvatar = avatarUrl != null && avatarUrl!.isNotEmpty;
 
     return GlassSurface(
@@ -99,7 +100,7 @@ class ProfileHeroCard extends StatelessWidget {
                 right: -2,
                 bottom: -2,
                 child: Material(
-                  color: isDark ? AppColors.signalAqua : AppColors.primary,
+                  color: activeThemeColor,
                   shape: const CircleBorder(),
                   elevation: 4,
                   child: InkWell(
@@ -147,12 +148,10 @@ class ProfileHeroCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                      .withValues(alpha: 0.14),
+                  color: activeThemeColor.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                        .withValues(alpha: 0.35),
+                    color: activeThemeColor.withValues(alpha: 0.35),
                   ),
                 ),
                 child: Row(
@@ -161,7 +160,7 @@ class ProfileHeroCard extends StatelessWidget {
                     Icon(
                       Icons.school_rounded,
                       size: 13,
-                      color: isDark ? AppColors.signalAqua : AppColors.primary,
+                      color: activeThemeColor,
                     ),
                     const SizedBox(width: 5),
                     Text(
@@ -169,7 +168,7 @@ class ProfileHeroCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        color: activeThemeColor,
                       ),
                     ),
                   ],

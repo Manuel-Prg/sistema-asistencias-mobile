@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_colors.dart';
+import '../../providers/color_theme_provider.dart';
 import '../../providers/glass_settings_provider.dart';
 
 /// Superficie con efecto de vidrio esmerilado translúcido estilo iOS (Liquid Glass)
@@ -77,12 +78,14 @@ class GlassSurface extends ConsumerWidget {
             ],
     );
 
+    final colorPalette = ref.watch(colorThemeProvider);
+
     // Contorno decorativo de cristal
     final border = settings.showBorders
         ? Border.all(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.22)
-                : const Color(0xFF0C3C4C).withValues(alpha: 0.14),
+                : colorPalette.primary.withValues(alpha: 0.14),
             width: 1.2,
           )
         : null;

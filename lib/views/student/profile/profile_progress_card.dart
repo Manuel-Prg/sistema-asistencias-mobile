@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
+import '../../../providers/color_theme_provider.dart';
 
-class ProfileProgressCard extends StatelessWidget {
+class ProfileProgressCard extends ConsumerWidget {
   final double accumulatedHours;
   final num requiredHours;
 
@@ -22,8 +24,12 @@ class ProfileProgressCard extends StatelessWidget {
       requiredHours > 0 ? (accumulatedHours / requiredHours).clamp(0.0, 1.0) : 0.0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorPalette = ref.watch(colorThemeProvider);
+    final activeThemeColor = isDark
+        ? (colorPalette.isDefault ? AppColors.signalAqua : colorPalette.accent)
+        : colorPalette.primary;
 
     return GlassSurface(
       padding: const EdgeInsets.all(18),
@@ -34,8 +40,7 @@ class ProfileProgressCard extends StatelessWidget {
         curve: Curves.easeOutCubic,
         builder: (context, animatedRatio, _) {
           final animatedPercent = (animatedRatio * 100).toStringAsFixed(1);
-          final barColor =
-              isDark ? AppColors.signalAqua : AppColors.accentLimnological;
+          final barColor = activeThemeColor;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +52,7 @@ class ProfileProgressCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.insights_rounded,
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        color: activeThemeColor,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -65,8 +70,7 @@ class ProfileProgressCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: (isDark ? AppColors.signalAqua : AppColors.primary)
-                          .withValues(alpha: 0.12),
+                      color: activeThemeColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -74,7 +78,7 @@ class ProfileProgressCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
+                        color: activeThemeColor,
                       ),
                     ),
                   ),
