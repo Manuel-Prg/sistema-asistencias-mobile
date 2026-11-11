@@ -22,6 +22,26 @@ class StudentResource {
 
 const List<StudentResource> kStudentResources = [
   StudentResource(
+    id: 'cal-2026-2027',
+    title: 'Calendario Escolar 2026 - 2027 (Vigente)',
+    url: 'local:cal-2026-2027',
+    description:
+        'Calendario oficial de Licenciatura con Internado (Vigente). Fechas clave, evaluaciones, vacaciones e inhábiles.',
+    category: 'Calendarios',
+    iconEmoji: '📅',
+    accentColor: Color(0xFF8B5CF6),
+  ),
+  StudentResource(
+    id: 'cal-2025-2026',
+    title: 'Calendario Escolar 2025 - 2026',
+    url: 'local:cal-2025-2026',
+    description:
+        'Calendario de Licenciatura y TSU del ciclo previo para consulta histórica y equivalencias.',
+    category: 'Calendarios',
+    iconEmoji: '🗓️',
+    accentColor: Color(0xFF0EA5E9),
+  ),
+  StudentResource(
     id: 'manual-guardianes',
     title: 'Manual de Guardianes',
     url: 'https://xurl.es/manualCUA',
@@ -107,6 +127,7 @@ const List<StudentResource> kStudentResources = [
 
 const List<String> kResourceCategories = [
   'Todos',
+  'Calendarios',
   'Capacitación',
   'Manuales',
   'Didáctico',

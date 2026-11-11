@@ -6,6 +6,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
 import '../../models/student_schedule.dart';
 import '../../providers/schedule_provider.dart';
+import 'schedule/academic_calendar_banner_card.dart';
 import 'schedule/day_schedule_form.dart';
 import 'schedule/schedule_day_card.dart';
 import 'schedule/schedule_header.dart';
@@ -192,6 +193,10 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 130),
         children: [
           const ScheduleHeader(),
+
+          // Banner: Calendario Escolar Oficial
+          const AcademicCalendarBannerCard(),
+          const SizedBox(height: 14),
 
           // Tarjeta 1: Estadísticas y regla de retardo
           ScheduleStatsCard(

@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_surface.dart';
+import 'calendar/academic_calendar_view.dart';
 import 'resources/bitacora_banner_card.dart';
 import 'resources/quick_resource_card.dart';
 import 'resources/regulations_section.dart';
@@ -34,6 +36,14 @@ class _ResourcesViewState extends State<ResourcesView> {
   }
 
   Future<void> _openUrl(String url) async {
+    if (url.startsWith('local:cal-')) {
+      AcademicCalendarView.open(
+        context,
+        initialIndex: url.endsWith('2025-2026') ? 1 : 0,
+      );
+      return;
+    }
+
     try {
       final uri = Uri.parse(url.trim());
       bool launched = false;
@@ -70,6 +80,14 @@ class _ResourcesViewState extends State<ResourcesView> {
   }
 
   Future<void> _copyUrl(String id, String url, String title) async {
+    if (url.startsWith('local:cal-')) {
+      AcademicCalendarView.open(
+        context,
+        initialIndex: url.endsWith('2025-2026') ? 1 : 0,
+      );
+      return;
+    }
+
     await Clipboard.setData(ClipboardData(text: url));
     setState(() => _copiedId = id);
     if (mounted) {
@@ -132,6 +150,104 @@ class _ResourcesViewState extends State<ResourcesView> {
                 ),
               ),
             ),
+            // Tarjeta destacada: Calendario Escolar Oficial
+            InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () => AcademicCalendarView.open(context),
+              child: GlassSurface(
+                borderRadius: BorderRadius.circular(18),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                tintColor: isDark ? const Color(0xFF141418) : null,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).colorScheme.primary.withValues(
+                              alpha: isDark ? 0.22 : 0.12,
+                            ),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary.withValues(
+                                alpha: isDark ? 0.45 : 0.25,
+                              ),
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.calendar_month_rounded,
+                          size: 22,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Calendario Escolar',
+                                style: TextStyle(
+                                  fontFamily: AppTheme.brandFont,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: isDark
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.mineralInk,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 1.5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '2026 - 2027',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Consulta inicio de cursos, vacaciones e internado',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.slateMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(

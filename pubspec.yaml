@@ -45,6 +45,7 @@ dependencies:
   confetti: ^0.8.0
   flutter_animate: ^4.5.2
   image_picker: ^1.2.4
+  syncfusion_flutter_pdfviewer: ^35.1.46
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,7 @@ flutter:
     - assets/logo/
     - assets/images/
     - assets/images/nuty/
+    - assets/docs/
 
   fonts:
     - family: Archer
