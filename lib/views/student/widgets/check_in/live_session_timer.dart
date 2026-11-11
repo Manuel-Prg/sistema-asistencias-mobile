@@ -9,12 +9,15 @@ class LiveSessionTimer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
+        Icon(
           Icons.timer_outlined,
-          color: AppColors.signalAqua,
+          color: isDark ? Colors.white : themePrimary,
           size: 20,
         )
             .animate(
@@ -35,11 +38,11 @@ class LiveSessionTimer extends StatelessWidget {
               builder: (context, elapsed, _) {
                 return Text(
                   '${elapsed.inHours}h ${(elapsed.inMinutes % 60).toString().padLeft(2, '0')}m ${(elapsed.inSeconds % 60).toString().padLeft(2, '0')}s transcurridos',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    fontFeatures: [FontFeature.tabularFigures()],
+                    color: isDark ? Colors.white : AppColors.mineralInk,
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 );
               },

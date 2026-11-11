@@ -132,3 +132,4 @@ class ColorThemeNotifier extends Notifier<AppColorPalette> {
     await prefs.setString(_prefKey, palette.id);
   }
 }
+

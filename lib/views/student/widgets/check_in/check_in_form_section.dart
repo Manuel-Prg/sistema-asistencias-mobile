@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/glass_surface.dart';
 
 class CheckInFormSection extends StatelessWidget {
   final String selectedRoom;
@@ -20,8 +22,166 @@ class CheckInFormSection extends StatelessWidget {
     required this.onSubmit,
   });
 
+  void _showGlassRoomPicker(
+    BuildContext context,
+    String currentRoom,
+    ValueChanged<String> onSelected,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.50),
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: GlassSurface(
+            borderRadius: BorderRadius.circular(24),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            tintColor: isDark ? const Color(0xFF0C2430) : themePrimary,
+            enableRefraction: true,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white30 : Colors.black26,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : themePrimary.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.meeting_room_rounded,
+                        size: 18,
+                        color: isDark ? Colors.white : themePrimary,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Selecciona tu sala asignada',
+                      style: TextStyle(
+                        fontFamily: AppTheme.brandFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : AppColors.mineralInk,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 340),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: AppConstants.rooms.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 6),
+                    itemBuilder: (context, index) {
+                      final room = AppConstants.rooms[index];
+                      final isSelected = room == currentRoom;
+                      return InkWell(
+                        onTap: () {
+                          onSelected(room);
+                          Navigator.of(ctx).pop();
+                        },
+                        borderRadius: BorderRadius.circular(14),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? themePrimary.withValues(
+                                    alpha: isDark ? 0.35 : 0.18,
+                                  )
+                                : (isDark
+                                    ? Colors.white.withValues(alpha: 0.05)
+                                    : Colors.white.withValues(alpha: 0.65)),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: isSelected
+                                  ? (isDark ? Colors.white70 : themePrimary)
+                                  : (isDark
+                                      ? Colors.white12
+                                      : AppColors.stoneBorder),
+                              width: isSelected ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.door_sliding_outlined,
+                                size: 18,
+                                color: isSelected
+                                    ? (isDark ? Colors.white : themePrimary)
+                                    : (isDark
+                                        ? Colors.white60
+                                        : AppColors.slateMuted),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  room,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: isSelected
+                                        ? (isDark ? Colors.white : themePrimary)
+                                        : (isDark
+                                            ? Colors.white
+                                            : AppColors.mineralInk),
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  size: 18,
+                                  color: isDark ? Colors.white : themePrimary,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 6),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -29,38 +189,58 @@ class CheckInFormSection extends StatelessWidget {
           'Selecciona tu sala asignada:',
           style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Colors.white.withValues(alpha: 0.88),
+            fontWeight: FontWeight.w700,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.90)
+                : AppColors.mineralInk,
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+        InkWell(
+          onTap: () => _showGlassRoomPicker(
+            context,
+            selectedRoom,
+            onRoomChanged,
           ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: selectedRoom,
-              dropdownColor: AppColors.primaryDeep,
-              icon: const Icon(
-                Icons.arrow_drop_down,
-                color: AppColors.signalAqua,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : Colors.white.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.22)
+                    : themePrimary.withValues(alpha: 0.35),
+                width: 1.2,
               ),
-              isExpanded: true,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-              items: AppConstants.rooms.map((room) {
-                return DropdownMenuItem(value: room, child: Text(room));
-              }).toList(),
-              onChanged: (val) {
-                if (val != null) onRoomChanged(val);
-              },
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.meeting_room_rounded,
+                  size: 18,
+                  color: isDark ? Colors.white70 : themePrimary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    selectedRoom,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : AppColors.mineralInk,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: isDark ? Colors.white70 : themePrimary,
+                  size: 22,
+                ),
+              ],
             ),
           ),
         ),
@@ -69,8 +249,10 @@ class CheckInFormSection extends StatelessWidget {
           'Turno de trabajo:',
           style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Colors.white.withValues(alpha: 0.88),
+            fontWeight: FontWeight.w700,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.90)
+                : AppColors.mineralInk,
           ),
         ),
         const SizedBox(height: 8),
@@ -162,19 +344,29 @@ class _ShiftButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.white.withValues(alpha: 0.2)
-              : Colors.white.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(10),
+              ? (isDark
+                  ? themePrimary.withValues(alpha: 0.35)
+                  : themePrimary.withValues(alpha: 0.20))
+              : (isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.white.withValues(alpha: 0.65)),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? Colors.white
-                : Colors.white.withValues(alpha: 0.15),
+                ? (isDark ? Colors.white : themePrimary)
+                : (isDark
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : AppColors.stoneBorder),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -184,8 +376,10 @@ class _ShiftButton extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: Colors.white,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                color: isSelected
+                    ? (isDark ? Colors.white : themePrimary)
+                    : (isDark ? Colors.white : AppColors.mineralInk),
               ),
             ),
             const SizedBox(height: 2),
@@ -193,7 +387,10 @@ class _ShiftButton extends StatelessWidget {
               timeRange,
               style: TextStyle(
                 fontSize: 10,
-                color: isSelected ? Colors.white : Colors.white60,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? (isDark ? Colors.white : themePrimary)
+                    : (isDark ? Colors.white60 : AppColors.slateMuted),
               ),
             ),
           ],

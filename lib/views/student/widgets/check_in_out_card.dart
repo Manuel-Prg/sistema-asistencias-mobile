@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/glass_surface.dart';
 import '../../../models/attendance_record.dart';
@@ -113,12 +114,17 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: hasActive ? (isDark ? Colors.white : themePrimary) : Colors.white54,
+                  color: hasActive
+                      ? (isDark ? Colors.white : themePrimary)
+                      : (isDark
+                          ? Colors.white54
+                          : themePrimary.withValues(alpha: 0.5)),
                   shape: BoxShape.circle,
                   boxShadow: hasActive
                       ? [
                           BoxShadow(
-                            color: (isDark ? Colors.white : themePrimary).withValues(alpha: 0.6),
+                            color: (isDark ? Colors.white : themePrimary)
+                                .withValues(alpha: 0.6),
                             blurRadius: 6,
                             spreadRadius: 1,
                           ),
@@ -131,10 +137,10 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                 child: Text(
                   hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : AppColors.mineralInk,
                     letterSpacing: 0.8,
                   ),
                 ),

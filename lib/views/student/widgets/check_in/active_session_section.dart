@@ -20,15 +20,24 @@ class ActiveSessionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themePrimary = Theme.of(context).colorScheme.primary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.white.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.15)
+                  : themePrimary.withValues(alpha: 0.25),
+            ),
           ),
           child: Column(
             children: [
@@ -43,19 +52,19 @@ class ActiveSessionSection extends StatelessWidget {
                           record.cleanEventName,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: isDark ? Colors.white : AppColors.mineralInk,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           'Turno ${record.shift.toUpperCase()}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.signalAqua,
-                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white70 : themePrimary,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -65,19 +74,19 @@ class ActiveSessionSection extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
+                      Text(
                         'Entrada:',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.white70,
+                          color: isDark ? Colors.white70 : AppColors.slateMuted,
                         ),
                       ),
                       Text(
                         AppDateUtils.formatTime(record.checkIn),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: isDark ? Colors.white : AppColors.mineralInk,
                         ),
                       ),
                     ],
@@ -85,7 +94,10 @@ class ActiveSessionSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 14),
-              const Divider(color: Colors.white24, height: 1),
+              Divider(
+                color: isDark ? Colors.white24 : AppColors.stoneBorder,
+                height: 1,
+              ),
               const SizedBox(height: 14),
               LiveSessionTimer(elapsedNotifier: elapsedNotifier),
               if (record.isLate) ...[
