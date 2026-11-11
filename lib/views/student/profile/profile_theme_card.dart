@@ -30,9 +30,9 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.palette_rounded,
-                color: AppColors.signalAqua,
+                color: isDark ? AppColors.signalAqua : AppColors.primary,
                 size: 20,
               ),
               const SizedBox(width: 8),

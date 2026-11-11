@@ -161,6 +161,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             onUploadPhoto: () => ProfilePhotoDialog.show(
               context,
               ref,
+              currentAvatarUrl: avatarUrl,
               onStartUpdate: () => setState(() => _isUpdatingPhoto = true),
               onFinishUpdate: () {
                 if (mounted) setState(() => _isUpdatingPhoto = false);

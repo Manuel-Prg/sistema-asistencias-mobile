@@ -25,9 +25,9 @@ class ResourceSearchBar extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
-          icon: const Icon(
+          icon: Icon(
             Icons.search_rounded,
-            color: AppColors.signalAqua,
+            color: isDark ? AppColors.signalAqua : AppColors.slateMuted,
             size: 22,
           ),
           hintText: 'Buscar por nombre o descripción...',

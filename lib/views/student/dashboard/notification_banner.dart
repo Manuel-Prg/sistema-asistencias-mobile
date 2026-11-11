@@ -14,6 +14,8 @@ class NotificationBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GlassSurface(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -34,11 +36,11 @@ class NotificationBanner extends StatelessWidget {
           ),
           TextButton(
             onPressed: onActivate,
-            child: const Text(
+            child: Text(
               'Activar',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                color: AppColors.signalAqua,
+                color: isDark ? AppColors.signalAqua : AppColors.primary,
               ),
             ),
           ),

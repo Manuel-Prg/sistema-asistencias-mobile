@@ -36,9 +36,9 @@ class ProfileProgressCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.insights_rounded,
-                    color: AppColors.signalAqua,
+                    color: isDark ? AppColors.signalAqua : AppColors.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -56,15 +56,16 @@ class ProfileProgressCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.signalAqua.withValues(alpha: 0.16),
+                  color: (isDark ? AppColors.signalAqua : AppColors.primary)
+                      .withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '$progressPercent%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.signalAqua,
+                    color: isDark ? AppColors.signalAqua : AppColors.primary,
                   ),
                 ),
               ),
@@ -79,8 +80,8 @@ class ProfileProgressCard extends StatelessWidget {
               backgroundColor: isDark
                   ? Colors.white.withValues(alpha: 0.10)
                   : AppColors.secondary.withValues(alpha: 0.5),
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.signalAqua,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                isDark ? AppColors.signalAqua : AppColors.accentLimnological,
               ),
             ),
           ),

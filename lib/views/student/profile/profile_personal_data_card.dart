@@ -27,9 +27,9 @@ class ProfilePersonalDataCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.badge_rounded,
-                color: AppColors.signalAqua,
+                color: isDark ? AppColors.signalAqua : AppColors.primary,
                 size: 20,
               ),
               const SizedBox(width: 8),

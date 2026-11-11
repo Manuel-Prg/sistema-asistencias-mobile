@@ -46,7 +46,7 @@ class RegulationsSection extends StatelessWidget {
           SizedBox(height: 10),
           RegulationCard(
             icon: Icons.stars_rounded,
-            iconColor: AppColors.signalAqua,
+            iconColor: Color(0xFFC26D2D),
             title: 'Eventos Especiales y Horas Dobles',
             description:
                 'Las actividades especiales en fin de semana, talleres comunitarios y eventos acreditados otorgan horas al doble (2x). Debes registrarlos seleccionando el turno correspondiente.',

@@ -39,10 +39,10 @@ class QuickResourceCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(iconEmoji, style: const TextStyle(fontSize: 22)),
-                const Icon(
+                Icon(
                   Icons.arrow_outward_rounded,
                   size: 15,
-                  color: AppColors.signalAqua,
+                  color: isDark ? AppColors.signalAqua : AppColors.primary,
                 ),
               ],
             ),

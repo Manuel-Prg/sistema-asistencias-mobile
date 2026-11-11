@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
+import 'profile_photo_viewer_dialog.dart';
 
 class ProfileHeroCard extends StatelessWidget {
   final String fullName;
@@ -25,9 +27,28 @@ class ProfileHeroCard extends StatelessWidget {
     required this.onDeletePhoto,
   });
 
+  void _handlePhotoLongPress(BuildContext context) {
+    if (avatarUrl != null && avatarUrl!.isNotEmpty) {
+      HapticFeedback.mediumImpact();
+      ProfilePhotoViewerDialog.show(
+        context,
+        imageUrl: avatarUrl!,
+        fullName: fullName,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Aún no tienes una foto de perfil asignada.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasAvatar = avatarUrl != null && avatarUrl!.isNotEmpty;
 
     return GlassSurface(
       padding: const EdgeInsets.all(20),
@@ -35,39 +56,60 @@ class ProfileHeroCard extends StatelessWidget {
       child: Column(
         children: [
           Stack(
+            clipBehavior: Clip.none,
             alignment: Alignment.bottomRight,
             children: [
-              CircleAvatar(
-                radius: 46,
-                backgroundColor: isDark
-                    ? AppColors.primaryDeep
-                    : AppColors.signalAqua.withValues(alpha: 0.18),
-                backgroundImage: (avatarUrl != null && avatarUrl!.isNotEmpty)
-                    ? NetworkImage(avatarUrl!)
-                    : null,
-                child: (avatarUrl == null || avatarUrl!.isEmpty)
-                    ? Icon(
-                        Icons.person_rounded,
-                        size: 46,
-                        color: isDark ? AppColors.signalAqua : AppColors.primary,
-                      )
-                    : null,
+              // Avatar con soporte de Tap (cambiar foto) y LongPress (expandir foto)
+              Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: isUpdatingPhoto ? null : onUploadPhoto,
+                  onLongPress: () => _handlePhotoLongPress(context),
+                  child: CircleAvatar(
+                    radius: 48,
+                    backgroundColor: isDark
+                        ? AppColors.primaryDeep
+                        : AppColors.signalAqua.withValues(alpha: 0.18),
+                    backgroundImage: hasAvatar ? NetworkImage(avatarUrl!) : null,
+                    child: isUpdatingPhoto
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: AppColors.signalAqua,
+                            ),
+                          )
+                        : (!hasAvatar)
+                            ? Icon(
+                                Icons.person_rounded,
+                                size: 48,
+                                color: isDark
+                                    ? AppColors.signalAqua
+                                    : AppColors.primary,
+                              )
+                            : null,
+                  ),
+                ),
               ),
+
+              // Botón flotante de cámara para cambiar foto
               Positioned(
-                right: 0,
-                bottom: 0,
+                right: -2,
+                bottom: -2,
                 child: Material(
                   color: isDark ? AppColors.signalAqua : AppColors.primary,
                   shape: const CircleBorder(),
-                  elevation: 3,
+                  elevation: 4,
                   child: InkWell(
                     customBorder: const CircleBorder(),
                     onTap: isUpdatingPhoto ? null : onUploadPhoto,
                     child: const Padding(
-                      padding: EdgeInsets.all(7),
+                      padding: EdgeInsets.all(9),
                       child: Icon(
                         Icons.camera_alt_rounded,
-                        size: 16,
+                        size: 18,
                         color: Colors.white,
                       ),
                     ),
@@ -164,12 +206,15 @@ class ProfileHeroCard extends StatelessWidget {
               ),
             ],
           ),
-          if (avatarUrl != null && avatarUrl!.isNotEmpty) ...[
+          if (hasAvatar) ...[
             const SizedBox(height: 12),
             TextButton.icon(
               onPressed: isUpdatingPhoto ? null : onDeletePhoto,
-              icon: const Icon(Icons.delete_outline,
-                  size: 16, color: AppColors.terracottaRule),
+              icon: const Icon(
+                Icons.delete_outline,
+                size: 16,
+                color: AppColors.terracottaRule,
+              ),
               label: const Text(
                 'Eliminar foto',
                 style: TextStyle(
@@ -185,4 +230,3 @@ class ProfileHeroCard extends StatelessWidget {
     );
   }
 }
-

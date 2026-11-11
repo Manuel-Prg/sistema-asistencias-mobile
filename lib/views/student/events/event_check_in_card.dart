@@ -38,9 +38,9 @@ class EventCheckInCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.event_available_rounded,
-                color: AppColors.signalAqua,
+                color: isDark ? AppColors.signalAqua : AppColors.primary,
                 size: 20,
               ),
               const SizedBox(width: 8),

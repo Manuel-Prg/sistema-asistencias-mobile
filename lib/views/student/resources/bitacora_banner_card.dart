@@ -27,9 +27,9 @@ class BitacoraBannerCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.assignment_turned_in_rounded,
-                  color: AppColors.signalAqua,
+                  color: isDark ? AppColors.signalAqua : AppColors.primary,
                   size: 22,
                 ),
               ),

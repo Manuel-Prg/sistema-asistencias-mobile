@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/constants/app_constants.dart';
 import '../core/utils/skippy_quotes.dart';
@@ -105,6 +106,52 @@ class SupabaseService {
       data['avatar_url'] = avatarUrl;
     }
     await client.from('profiles').update(data).eq('id', userId);
+  }
+
+  static Future<String> uploadProfileAvatar({
+    required String userId,
+    required Uint8List bytes,
+    String? currentAvatarUrl,
+  }) async {
+    String bucket = 'avatars';
+    if (currentAvatarUrl != null && currentAvatarUrl.isNotEmpty) {
+      final uri = Uri.tryParse(currentAvatarUrl);
+      if (uri != null) {
+        final segments = uri.pathSegments;
+        final publicIdx = segments.indexOf('public');
+        if (publicIdx != -1 && publicIdx + 1 < segments.length) {
+          bucket = segments[publicIdx + 1];
+        }
+      }
+    }
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final filePath = '$userId/avatar_$timestamp.jpg';
+
+    try {
+      await client.storage.from(bucket).uploadBinary(
+            filePath,
+            bytes,
+            fileOptions: const FileOptions(
+              contentType: 'image/jpeg',
+              upsert: true,
+            ),
+          );
+      return client.storage.from(bucket).getPublicUrl(filePath);
+    } catch (e) {
+      if (bucket != 'avatars') {
+        await client.storage.from('avatars').uploadBinary(
+              filePath,
+              bytes,
+              fileOptions: const FileOptions(
+                contentType: 'image/jpeg',
+                upsert: true,
+              ),
+            );
+        return client.storage.from('avatars').getPublicUrl(filePath);
+      }
+      rethrow;
+    }
   }
 
   // ─── Horarios del Estudiante ("Tu Horario") ──────────────────────────────────

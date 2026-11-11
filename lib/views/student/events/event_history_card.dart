@@ -30,9 +30,9 @@ class EventHistoryCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.history_edu_rounded,
-                    color: AppColors.signalAqua,
+                    color: isDark ? AppColors.signalAqua : AppColors.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -55,15 +55,16 @@ class EventHistoryCard extends StatelessWidget {
                   vertical: 3,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.signalAqua.withValues(alpha: 0.16),
+                  color: (isDark ? AppColors.signalAqua : AppColors.primary)
+                      .withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '${totalEventHours.toStringAsFixed(1)} hrs (2x)',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.signalAqua,
+                    color: isDark ? AppColors.signalAqua : AppColors.primary,
                   ),
                 ),
               ),
@@ -118,12 +119,13 @@ class _EventHistoryItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: AppColors.signalAqua.withValues(alpha: 0.15),
+              color: (isDark ? AppColors.signalAqua : AppColors.primary)
+                  .withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.stars_rounded,
-              color: AppColors.signalAqua,
+              color: isDark ? AppColors.signalAqua : const Color(0xFFC26D2D),
               size: 16,
             ),
           ),
@@ -155,10 +157,10 @@ class _EventHistoryItem extends StatelessWidget {
           ),
           Text(
             '+${record.hoursWorked?.toStringAsFixed(1) ?? '0.0'} hrs',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: AppColors.signalAqua,
+              color: isDark ? AppColors.signalAqua : AppColors.accentLimnological,
             ),
           ),
         ],

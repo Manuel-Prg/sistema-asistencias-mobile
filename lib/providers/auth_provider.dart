@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../models/profile.dart';
@@ -235,6 +236,22 @@ class AuthNotifier extends Notifier<AppAuthState> {
       return true;
     } catch (e) {
       state = state.copyWith(errorMessage: 'Error al actualizar foto: $e');
+      return false;
+    }
+  }
+
+  Future<bool> uploadAndSetProfileAvatar(Uint8List bytes) async {
+    final current = state.profile;
+    if (current == null) return false;
+    try {
+      final publicUrl = await SupabaseService.uploadProfileAvatar(
+        userId: current.id,
+        bytes: bytes,
+        currentAvatarUrl: current.avatarUrl,
+      );
+      return await updateProfileAvatar(publicUrl);
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Error al subir foto: $e');
       return false;
     }
   }

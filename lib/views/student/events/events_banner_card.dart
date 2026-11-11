@@ -8,25 +8,33 @@ class EventsBannerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GlassSurface(
       padding: const EdgeInsets.all(18),
       borderRadius: BorderRadius.circular(18),
-      tintColor: AppColors.accentLimnological,
+      tintColor: isDark ? const Color(0xFF0C2430) : AppColors.primary,
       child: Row(
         children: [
-          Icon(
-            Icons.stars_rounded,
-            color: AppColors.signalAqua,
-            size: 38,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.stars_rounded,
+              color: Color(0xFFFFB800),
+              size: 30,
+            ),
           )
               .animate(onPlay: (controller) => controller.repeat(reverse: true))
               .scale(
-                begin: const Offset(0.95, 0.95),
-                end: const Offset(1.14, 1.14),
+                begin: const Offset(0.96, 0.96),
+                end: const Offset(1.08, 1.08),
                 duration: 1500.ms,
                 curve: Curves.easeInOut,
-              )
-              .shimmer(duration: 2200.ms, color: Colors.white60),
+              ),
           const SizedBox(width: 14),
           const Expanded(
             child: Column(
@@ -57,4 +65,3 @@ class EventsBannerCard extends StatelessWidget {
     );
   }
 }
-
