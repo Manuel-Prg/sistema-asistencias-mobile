@@ -33,7 +33,7 @@ class EventHistoryCard extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.history_edu_rounded,
-                    color: isDark ? Colors.white : themePrimary,
+                    color: themePrimary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -43,9 +43,7 @@ class EventHistoryCard extends StatelessWidget {
                       fontFamily: AppTheme.brandFont,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: isDark
-                          ? AppColors.darkTextPrimary
-                          : themePrimary,
+                      color: themePrimary,
                     ),
                   ),
                 ],
@@ -64,7 +62,7 @@ class EventHistoryCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : themePrimary,
+                    color: themePrimary,
                   ),
                 ),
               ),

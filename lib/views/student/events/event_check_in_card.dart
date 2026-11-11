@@ -41,7 +41,7 @@ class EventCheckInCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.event_available_rounded,
-                color: isDark ? Colors.white : themePrimary,
+                color: themePrimary,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -51,7 +51,7 @@ class EventCheckInCard extends StatelessWidget {
                   fontFamily: AppTheme.brandFont,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : themePrimary,
+                  color: themePrimary,
                 ),
               ),
             ],
@@ -63,7 +63,7 @@ class EventCheckInCard extends StatelessWidget {
             decoration: InputDecoration(
               labelText: 'Nombre del Evento',
               hintText: 'Ej. Noche de Museos, Taller del Agua...',
-              prefixIcon: const Icon(Icons.event_note_rounded, size: 20),
+              prefixIcon: Icon(Icons.event_note_rounded, size: 20, color: themePrimary),
               filled: true,
               fillColor: isDark
                   ? Colors.white.withValues(alpha: 0.06)

@@ -77,9 +77,7 @@ class ScheduleDayCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                           fontFamily: AppTheme.brandFont,
                           color: isActive
-                              ? (isDark
-                                  ? AppColors.darkTextPrimary
-                                  : themePrimary)
+                              ? themePrimary
                               : (isDark ? Colors.white54 : AppColors.slateMuted),
                         ),
                       ),
@@ -88,9 +86,7 @@ class ScheduleDayCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           color: isActive
-                              ? (isDark
-                                  ? Colors.white70
-                                  : themePrimary)
+                              ? themePrimary
                               : (isDark ? Colors.white38 : AppColors.slateMuted),
                         ),
                       ),

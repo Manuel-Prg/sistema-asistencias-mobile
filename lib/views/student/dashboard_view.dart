@@ -67,7 +67,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       );
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassScaffold(
@@ -93,9 +92,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         fontFamily: AppTheme.brandFont,
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
-                        color: isDark
-                            ? AppColors.darkTextPrimary
-                            : themePrimary,
+                        color: themePrimary,
                         letterSpacing: -0.4,
                       ),
                     ),
@@ -106,9 +103,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         fontFamily: AppTheme.brandFont,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? Colors.white70
-                            : themePrimary,
+                        color: themePrimary,
                       ),
                     ),
                   ],

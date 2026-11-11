@@ -116,7 +116,7 @@ class _ResourcesViewState extends State<ResourcesView> {
                   fontSize: 24,
                   fontFamily: AppTheme.brandFont,
                   fontWeight: FontWeight.w800,
-                  color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   letterSpacing: -0.4,
                 ),
               ),

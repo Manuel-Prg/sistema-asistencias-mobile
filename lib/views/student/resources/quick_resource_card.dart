@@ -55,7 +55,7 @@ class QuickResourceCard extends StatelessWidget {
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,
                 fontFamily: AppTheme.brandFont,
-                color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 2),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
 
@@ -10,7 +9,6 @@ class SchedulePresetsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GlassSurface(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -23,7 +21,7 @@ class SchedulePresetsBar extends StatelessWidget {
               fontSize: 12,
               fontWeight: FontWeight.w700,
               fontFamily: AppTheme.brandFont,
-              color: isDark ? AppColors.darkTextPrimary : Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(width: 8),

@@ -30,7 +30,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.badge_rounded,
-                color: isDark ? Colors.white : themePrimary,
+                color: themePrimary,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -40,7 +40,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
                   fontFamily: AppTheme.brandFont,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : themePrimary,
+                  color: themePrimary,
                 ),
               ),
             ],
@@ -61,7 +61,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
               prefixIcon: Icon(
                 Icons.edit_rounded,
                 size: 18,
-                color: isDark ? Colors.white70 : themePrimary,
+                color: themePrimary,
               ),
               filled: true,
               fillColor: isDark
