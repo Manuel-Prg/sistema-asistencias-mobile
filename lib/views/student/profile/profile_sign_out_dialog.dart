@@ -28,7 +28,7 @@ class ProfileSignOutDialog {
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: GlassSurface(
-          tintColor: isDark ? const Color(0xFF0C2430) : Colors.white.withValues(alpha: 0.96),
+          tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Column(

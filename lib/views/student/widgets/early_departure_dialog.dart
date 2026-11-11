@@ -108,7 +108,7 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: GlassSurface(
-          tintColor: isDark ? const Color(0xFF0C2430) : Colors.white.withValues(alpha: 0.96),
+          tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           padding: const EdgeInsets.all(22),
           child: SingleChildScrollView(

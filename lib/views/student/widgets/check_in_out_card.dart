@@ -101,7 +101,7 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
     final themePrimary = Theme.of(context).colorScheme.primary;
 
     return GlassSurface(
-      tintColor: isDark ? const Color(0xFF0C2B38) : themePrimary,
+      tintColor: isDark ? const Color(0xFF141418) : themePrimary,
       borderRadius: BorderRadius.circular(20),
       padding: const EdgeInsets.all(22),
       enableRefraction: true,

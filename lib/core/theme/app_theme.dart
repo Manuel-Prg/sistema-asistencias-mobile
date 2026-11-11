@@ -207,7 +207,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF0F2B38),
+        fillColor: const Color(0xFF141416),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -219,7 +219,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.signalAqua, width: 2),
         ),
       ),
     );
@@ -231,7 +231,7 @@ class AppTheme {
     required bool isDark,
   }) {
     final Color primaryColor = palette.isDefault
-        ? (isDark ? AppColors.primary : AppColors.primary)
+        ? (isDark ? AppColors.signalAqua : AppColors.primary)
         : (isDark ? palette.accent : palette.primary);
 
     final Color accentColor = palette.isDefault

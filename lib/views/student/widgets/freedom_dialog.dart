@@ -75,7 +75,7 @@ class _FreedomDialogState extends State<FreedomDialog> {
             vertical: 40,
           ),
           child: GlassSurface(
-            tintColor: isDark ? const Color(0xFF0C2430) : Colors.white.withValues(alpha: 0.96),
+            tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(24),
             padding: const EdgeInsets.all(24),
             enableRefraction: true,

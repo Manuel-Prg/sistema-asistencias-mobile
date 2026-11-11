@@ -50,11 +50,11 @@ class GlassSurface extends ConsumerWidget {
         ? (0.38 + (1.0 - settings.transparency) * 0.44).clamp(0.30, 0.85)
         : opacity;
 
-    // Gradiente de refracción de vidrio estilo iOS
-    final darkTop = tintColor ?? const Color(0xFF133644);
+    // Gradiente de refracción de vidrio estilo iOS sobre negro AMOLED
+    final darkTop = tintColor ?? const Color(0xFF18181C);
     final darkBottom = tintColor != null
         ? tintColor!.withValues(alpha: 0.80)
-        : const Color(0xFF091C24);
+        : const Color(0xFF0F0F12);
 
     final gradient = LinearGradient(
       begin: Alignment.topLeft,
@@ -196,7 +196,7 @@ class GlassDialog extends StatelessWidget {
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: GlassSurface(
-        tintColor: isDark ? const Color(0xFF0C2430) : Colors.white.withValues(alpha: 0.96),
+        tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
         borderRadius: borderRadius ?? BorderRadius.circular(24),
         padding: padding ?? const EdgeInsets.all(24),
         child: Column(

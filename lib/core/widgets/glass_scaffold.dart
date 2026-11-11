@@ -47,9 +47,8 @@ class GlassScaffold extends StatelessWidget {
                           end: Alignment.bottomRight,
                           colors: isDark
                               ? const [
-                                  Color(0xFF07161D),
-                                  Color(0xFF0B2633),
-                                  Color(0xFF06141B),
+                                  Color(0xFF000000),
+                                  Color(0xFF000000),
                                 ]
                               : const [
                                   Color(0xFFF8F5EE),
@@ -60,64 +59,60 @@ class GlassScaffold extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: -60,
-                    right: -60,
-                    width: 280,
-                    height: 280,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            isDark
-                                ? AppColors.signalAqua.withValues(alpha: 0.16)
-                                : AppColors.signalAqua.withValues(alpha: 0.22),
-                            Colors.transparent,
-                          ],
+                  if (!isDark) ...[
+                    Positioned(
+                      top: -60,
+                      right: -60,
+                      width: 280,
+                      height: 280,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              AppColors.signalAqua.withValues(alpha: 0.22),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: 280,
-                    right: -90,
-                    width: 300,
-                    height: 300,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            isDark
-                                ? const Color(0xFF0C4656).withValues(alpha: 0.20)
-                                : const Color(0xFFD2EBE7).withValues(alpha: 0.28),
-                            Colors.transparent,
-                          ],
+                    Positioned(
+                      top: 280,
+                      right: -90,
+                      width: 300,
+                      height: 300,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              const Color(0xFFD2EBE7).withValues(alpha: 0.28),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 120,
-                    left: -80,
-                    width: 280,
-                    height: 280,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            isDark
-                                ? const Color(0xFF0C3847).withValues(alpha: 0.28)
-                                : AppColors.accentLimnological
-                                    .withValues(alpha: 0.10),
-                            Colors.transparent,
-                          ],
+                    Positioned(
+                      bottom: 120,
+                      left: -80,
+                      width: 280,
+                      height: 280,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              AppColors.accentLimnological
+                                  .withValues(alpha: 0.10),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
@@ -233,7 +228,7 @@ class GlassAppBar extends ConsumerWidget implements PreferredSizeWidget {
           child: Container(
             decoration: BoxDecoration(
               color: isDark
-                  ? const Color(0xFF07161D).withValues(alpha: 0.82)
+                  ? const Color(0xFF000000).withValues(alpha: 0.85)
                   : const Color(0xFFF9F6F0).withValues(alpha: 0.88),
               border: Border(
                 bottom: BorderSide(

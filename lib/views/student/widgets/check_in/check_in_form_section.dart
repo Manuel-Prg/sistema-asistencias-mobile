@@ -41,7 +41,7 @@ class CheckInFormSection extends StatelessWidget {
           child: GlassSurface(
             borderRadius: BorderRadius.circular(24),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            tintColor: isDark ? const Color(0xFF0C2430) : themePrimary,
+            tintColor: isDark ? const Color(0xFF141418) : themePrimary,
             enableRefraction: true,
             child: Column(
               mainAxisSize: MainAxisSize.min,
