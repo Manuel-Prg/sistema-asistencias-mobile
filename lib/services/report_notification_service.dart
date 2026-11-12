@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../core/utils/mexican_business_days.dart';
+import '../core/utils/skippy_quotes.dart';
 
 class ScheduledReminderItem {
   final int id;
@@ -113,9 +114,8 @@ class ReportNotificationService {
 
         if (scheduledDateTime.isAfter(now)) {
           final id = 1000 + m * 10 + (i + 1);
-          final title = '📝 Llenado de Reporte Mensual (Día ${i + 1} de 5)';
-          final body =
-              '¡Buen día! Hoy es día hábil para realizar el llenado de tu reporte mensual en la Casa Universitaria del Agua.';
+          final title = SkippyQuotes.getStartOfMonthTitle(i + 1);
+          final body = SkippyQuotes.getStartOfMonthBody(i + 1);
 
           await _scheduleNotification(
             id: id,
@@ -135,9 +135,9 @@ class ReportNotificationService {
 
         if (scheduledDateTime.isAfter(now)) {
           final id = 2000 + m * 10 + (j + 1);
-          final title = '📤 ¡Cierre de Mes! Sube tu reporte';
-          final body =
-              'Estamos a fin de mes. Recuerda subir tu reporte mensual debidamente firmado a la plataforma de la universidad.';
+          final remaining = last3Days.length - j;
+          final title = SkippyQuotes.getEndOfMonthTitle(remaining);
+          final body = SkippyQuotes.getEndOfMonthBody(remaining);
 
           await _scheduleNotification(
             id: id,
@@ -219,16 +219,16 @@ class ReportNotificationService {
     if (isStartOfMonth) {
       await _plugin.show(
         id: 9991,
-        title: '📝 Llenado de Reporte Mensual (Día 1 de 5)',
-        body: 'Villahermosa: Recuerda realizar el llenado de tu reporte en los primeros 5 días hábiles.',
+        title: SkippyQuotes.getStartOfMonthTitle(1),
+        body: SkippyQuotes.getStartOfMonthBody(1),
         notificationDetails: details,
         payload: 'test_start_of_month',
       );
     } else {
       await _plugin.show(
         id: 9992,
-        title: '📤 ¡Cierre de Mes! Sube tu reporte a la plataforma',
-        body: 'Villahermosa: Recuerda subir tu reporte firmado a la plataforma de la universidad.',
+        title: SkippyQuotes.getEndOfMonthTitle(1),
+        body: SkippyQuotes.getEndOfMonthBody(1),
         notificationDetails: details,
         payload: 'test_end_of_month',
       );
@@ -262,8 +262,8 @@ class ReportNotificationService {
         items.add(
           ScheduledReminderItem(
             id: 1000 + m * 10 + (i + 1),
-            title: 'Llenado de Reporte (Día ${i + 1} de 5)',
-            body: 'Inicio de mes: Llenar reporte de actividades CUA',
+            title: SkippyQuotes.getStartOfMonthTitle(i + 1),
+            body: SkippyQuotes.getStartOfMonthBody(i + 1),
             scheduledDate: dt,
             isStartOfMonth: true,
           ),
@@ -275,11 +275,12 @@ class ReportNotificationService {
       for (var j = 0; j < last3.length; j++) {
         final bDay = last3[j];
         final dt = DateTime(bDay.year, bDay.month, bDay.day, 10, 0);
+        final remaining = last3.length - j;
         items.add(
           ScheduledReminderItem(
             id: 2000 + m * 10 + (j + 1),
-            title: 'Subir Reporte a Plataforma (Cierre)',
-            body: 'Fin de mes: Subir reporte a la plataforma universitaria',
+            title: SkippyQuotes.getEndOfMonthTitle(remaining),
+            body: SkippyQuotes.getEndOfMonthBody(remaining),
             scheduledDate: dt,
             isStartOfMonth: false,
           ),

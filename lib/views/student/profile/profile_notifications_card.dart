@@ -213,7 +213,7 @@ class ProfileNotificationsCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Recordatorios de Reportes',
+                      'Alertas de Nuty: Reportes',
                       style: TextStyle(
                         fontFamily: AppTheme.brandFont,
                         fontSize: 16,
@@ -226,7 +226,7 @@ class ProfileNotificationsCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Alertas de llenado y entrega a plataforma',
+                      'Recordatorios estilo Skippy para tus reportes',
                       style: TextStyle(
                         fontFamily: AppTheme.brandFont,
                         fontSize: 12,
@@ -347,15 +347,15 @@ class ProfileNotificationsCard extends ConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Notificación de prueba enviada'),
-                          duration: Duration(seconds: 2),
+                          content: Text('¡Nuty te envió una notificación de prueba! Revisa tu barra de notificaciones.'),
+                          duration: Duration(seconds: 3),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
                     }
                   },
                   icon: const Icon(Icons.send_rounded, size: 16),
-                  label: const Text('Probar alerta'),
+                  label: const Text('Probar a Nuty'),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(0, 40),
                     padding: const EdgeInsets.symmetric(horizontal: 10),

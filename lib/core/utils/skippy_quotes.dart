@@ -44,6 +44,38 @@ class SkippyQuotes {
     ],
   };
 
+  // ─── Frases de Nuty para Llenado de Reporte Mensual (Días hábiles 1 a 5) ───
+
+  static const Map<int, String> nutyStartOfMonthTitles = {
+    1: "¡Bum-bum-be-dum-bum! Nuty al habla 📝",
+    2: "Aviso de Nuty: Reporte pendiente 📋",
+    3: "¡Telemetría de Nuty! Mitad del plazo ⏳",
+    4: "¡Alerta amarilla de Nuty! ⚠️",
+    5: "🚨 ¡ÚLTIMO DÍA HÁBIL! - Alerta de Nuty",
+  };
+
+  static const Map<int, String> nutyStartOfMonthBodies = {
+    1: "¡Iniciamos mes, choom! Es el día hábil 1 de 5. Mi procesador detecta que debes rellenar tu reporte mensual en la Casa del Agua antes de que se acumule la burocracia.",
+    2: "Día hábil 2 de 5 en Villahermosa. Mi ciber-visor indica que tu reporte mensual sigue en blanco. ¡No lo dejes para el final, colega!",
+    3: "¡Bum-bum-be-dum-bum! Vamos a la mitad de los 5 días hábiles. Dedícale unos minutos a llenar tu reporte mensual. Tu supervisor te lo agradecerá.",
+    4: "Día hábil 4 de 5. Mi algoritmo de supervivencia calcula que el tiempo se agota. ¡Rellena ese reporte mensual hoy mismo, choom!",
+    5: "¡Nuty en pánico! Hoy es el día 5 de 5, último día hábil para llenar tu reporte. ¡Hazlo de una vez antes de que se congelen tus horas!",
+  };
+
+  // ─── Frases de Nuty para Subida de Reporte a Plataforma (Fin de mes) ────────
+
+  static const Map<int, String> nutyEndOfMonthTitles = {
+    3: "Nuty te recuerda: Cierre de mes 📤",
+    2: "¡Alerta de Nuty! Sube tu reporte 📑",
+    1: "🚨 ¡HOY CIERRA PLATAFORMA! - Nuty",
+  };
+
+  static const Map<int, String> nutyEndOfMonthBodies = {
+    3: "¡Bum-bum-be-dum-bum! Quedan 3 días hábiles para finalizar el mes. Asegúrate de tener tu reporte mensual firmado y listo para la plataforma.",
+    2: "Diagnóstico de Nuty: El mes casi termina en Villahermosa. Sube tu reporte a la plataforma de la universidad antes de que colapse el servidor.",
+    1: "¡Bum-bum-be-dum-bum! Último día hábil del mes. Nuty exige que subas tu reporte a la plataforma ahora mismo. ¡Evita dolores de cabeza, colega!",
+  };
+
   static int hashCodeString(String input) {
     int hash = 0;
     for (int i = 0; i < input.length; i++) {
@@ -73,5 +105,29 @@ class SkippyQuotes {
     final index = studentId != null ? (hashCodeString(studentId) % pool.length) : 0;
     return pool[index];
   }
-}
 
+  /// Título de notificación estilo Nuty para los primeros 5 días hábiles
+  static String getStartOfMonthTitle(int businessDayNumber) {
+    return nutyStartOfMonthTitles[businessDayNumber] ??
+        "¡Bum-bum-be-dum-bum! Nuty al habla 📝";
+  }
+
+  /// Mensaje de notificación estilo Nuty para los primeros 5 días hábiles
+  static String getStartOfMonthBody(int businessDayNumber) {
+    return nutyStartOfMonthBodies[businessDayNumber] ??
+        "Nuty te recuerda que debes rellenar tu reporte mensual en estos primeros días hábiles.";
+  }
+
+  /// Título de notificación estilo Nuty para fin de mes
+  /// [remainingDays]: 3 = antepenúltimo día hábil, 2 = penúltimo, 1 = último día hábil
+  static String getEndOfMonthTitle(int remainingDays) {
+    return nutyEndOfMonthTitles[remainingDays] ??
+        "Nuty te recuerda: Cierre de mes 📤";
+  }
+
+  /// Mensaje de notificación estilo Nuty para fin de mes
+  static String getEndOfMonthBody(int remainingDays) {
+    return nutyEndOfMonthBodies[remainingDays] ??
+        "Nuty te recuerda subir tu reporte firmado a la plataforma de la universidad antes de que termine el mes.";
+  }
+}
