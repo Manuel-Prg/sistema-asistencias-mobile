@@ -1,6 +1,8 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
 import '../../providers/theme_provider.dart';
@@ -46,10 +48,7 @@ class GlassScaffold extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: isDark
-                              ? const [
-                                  Color(0xFF000000),
-                                  Color(0xFF000000),
-                                ]
+                              ? const [Color(0xFF000000), Color(0xFF000000)]
                               : const [
                                   Color(0xFFF8F5EE),
                                   Color(0xFFE8F6F4),
@@ -104,8 +103,9 @@ class GlassScaffold extends StatelessWidget {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              AppColors.accentLimnological
-                                  .withValues(alpha: 0.10),
+                              AppColors.accentLimnological.withValues(
+                                alpha: 0.10,
+                              ),
                               Colors.transparent,
                             ],
                           ),
@@ -199,7 +199,8 @@ class GlassAppBar extends ConsumerWidget implements PreferredSizeWidget {
       effectiveTitle = const SizedBox.shrink();
     }
 
-    final effectiveActions = actions ??
+    final effectiveActions =
+        actions ??
         [
           IconButton(
             tooltip: isDark ? 'Modo claro' : 'Modo oscuro',

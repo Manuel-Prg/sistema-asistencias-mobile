@@ -4,14 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
+import '../../../core/widgets/progress_bar_style.dart';
 import '../../../models/student.dart';
 import '../../../providers/color_theme_provider.dart';
 import 'freedom_dialog.dart';
 
 class ProgressCard extends ConsumerWidget {
   final Student student;
+  final ProgressBarStyle barStyle;
 
-  const ProgressCard({super.key, required this.student});
+  const ProgressCard({
+    super.key,
+    required this.student,
+    this.barStyle = ProgressBarStyle.defaultStyle,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,55 +144,33 @@ class ProgressCard extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 14),
-              // Barra de progreso animada con destello líquido en modo idle
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  height: 12,
-                  width: double.infinity,
-                  color: isDark
-                      ? const Color(0xFF16323F)
-                      : AppColors.stoneBorder.withValues(alpha: 0.5),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final maxWidth = constraints.maxWidth;
-                      final barWidth =
-                          (maxWidth * animatedRatio).clamp(0.0, maxWidth);
+              // Barra de progreso animada con estilo configurable
+              Builder(
+                builder: (context) {
+                  final barColor = isCompleted
+                      ? AppColors.statusOnTime
+                      : activeThemeColor;
 
-                      if (barWidth <= 0) return const SizedBox.shrink();
+                  final bar = StyledProgressBar(
+                    ratio: animatedRatio,
+                    barColor: barColor,
+                    isDark: isDark,
+                    style: barStyle,
+                    height: 12,
+                  );
 
-                      final barColor = isCompleted
-                          ? AppColors.statusOnTime
-                          : activeThemeColor;
-
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: barWidth,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: barColor,
-                            borderRadius: BorderRadius.circular(8),
-                            gradient: LinearGradient(
-                              colors: [
-                                barColor,
-                                Color.lerp(barColor, Colors.white, 0.16) ??
-                                    barColor,
-                              ],
-                            ),
-                          ),
-                        )
-                            .animate(onPlay: (c) => c.repeat())
-                            .shimmer(
-                              delay: 1400.ms,
-                              duration: 2200.ms,
-                              color: Colors.white.withValues(alpha: 0.45),
-                              curve: Curves.easeInOutCubic,
-                            ),
-                      );
-                    },
-                  ),
-                ),
+                  if (barStyle == ProgressBarStyle.defaultStyle) {
+                    return bar
+                        .animate(onPlay: (c) => c.repeat())
+                        .shimmer(
+                          delay: 1400.ms,
+                          duration: 2200.ms,
+                          color: Colors.white.withValues(alpha: 0.28),
+                          curve: Curves.easeInOutCubic,
+                        );
+                  }
+                  return bar;
+                },
               ),
               if (isCompleted) ...[
                 const SizedBox(height: 16),

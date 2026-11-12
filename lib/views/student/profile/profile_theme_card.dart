@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
+import '../../../core/widgets/progress_bar_style.dart';
 import '../../../providers/color_theme_provider.dart';
 import '../../../providers/glass_settings_provider.dart';
+import '../../../providers/progress_bar_style_provider.dart';
 import '../../../providers/theme_provider.dart';
 
 class ProfileThemeCard extends ConsumerStatefulWidget {
@@ -21,6 +23,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
     final currentThemeMode = ref.watch(themeModeProvider);
     final selectedPalette = ref.watch(colorThemeProvider);
     final glassSettings = ref.watch(glassSettingsProvider);
+    final selectedBarStyle = ref.watch(progressBarStyleProvider);
 
     final activeAccent = isDark
         ? (selectedPalette.isDefault
@@ -365,7 +368,171 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               ),
             ],
           ),
+
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
+
+          // ─── 5. Estilo de Barra de Progreso ──────────────────────────────────
+          Text(
+            'Estilo de Barra de Progreso',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: AppTheme.brandFont,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkTextPrimary : activeAccent,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Elige cómo se ven las barras de progreso de horas acumuladas.',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Vista previa en vivo
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.white.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : AppColors.stoneBorder.withValues(alpha: 0.5),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Vista previa',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.slateMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  StyledProgressBar(
+                    ratio: 0.65,
+                    barColor: activeAccent,
+                    isDark: isDark,
+                    style: selectedBarStyle,
+                    height: 12,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Chips de selección de estilo
+          Row(
+            children: ProgressBarStyle.values.map((style) {
+              final isSelected = style == selectedBarStyle;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _BarStyleChip(
+                    style: style,
+                    isSelected: isSelected,
+                    activeColor: activeAccent,
+                    isDark: isDark,
+                    onTap: () => ref
+                        .read(progressBarStyleProvider.notifier)
+                        .setStyle(style),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _BarStyleChip extends StatelessWidget {
+  final ProgressBarStyle style;
+  final bool isSelected;
+  final Color activeColor;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _BarStyleChip({
+    required this.style,
+    required this.isSelected,
+    required this.activeColor,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  IconData get _icon {
+    switch (style) {
+      case ProgressBarStyle.defaultStyle:
+        return Icons.water_drop_rounded;
+      case ProgressBarStyle.gradient:
+        return Icons.waves_rounded;
+      case ProgressBarStyle.segmented:
+        return Icons.view_week_rounded;
+      case ProgressBarStyle.glowing:
+        return Icons.auto_awesome_rounded;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? activeColor.withValues(alpha: 0.18)
+              : (isDark
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : const Color(0xFFEFECE6)),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? activeColor : Colors.transparent,
+            width: 1.2,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              _icon,
+              size: 20,
+              color: isSelected
+                  ? activeColor
+                  : (isDark ? Colors.white60 : AppColors.slateMuted),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              style.label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected
+                    ? activeColor
+                    : (isDark ? Colors.white70 : AppColors.slateMuted),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

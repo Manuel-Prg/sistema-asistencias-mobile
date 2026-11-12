@@ -5,16 +5,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
+import '../../../core/widgets/progress_bar_style.dart';
 import '../../../providers/color_theme_provider.dart';
 
 class ProfileProgressCard extends ConsumerWidget {
   final double accumulatedHours;
   final num requiredHours;
+  final ProgressBarStyle barStyle;
 
   const ProfileProgressCard({
     super.key,
     required this.accumulatedHours,
     required this.requiredHours,
+    this.barStyle = ProgressBarStyle.defaultStyle,
   });
 
   double get remainingHours =>
@@ -85,51 +88,29 @@ class ProfileProgressCard extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 14),
-              // Barra de progreso animada con destello líquido en modo idle
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  height: 10,
-                  width: double.infinity,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.10)
-                      : AppColors.secondary.withValues(alpha: 0.5),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final maxWidth = constraints.maxWidth;
-                      final barWidth =
-                          (maxWidth * animatedRatio).clamp(0.0, maxWidth);
+              // Barra de progreso animada con estilo configurable
+              Builder(
+                builder: (context) {
+                  final bar = StyledProgressBar(
+                    ratio: animatedRatio,
+                    barColor: barColor,
+                    isDark: isDark,
+                    style: barStyle,
+                    height: 12,
+                  );
 
-                      if (barWidth <= 0) return const SizedBox.shrink();
-
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: barWidth,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: barColor,
-                            borderRadius: BorderRadius.circular(6),
-                            gradient: LinearGradient(
-                              colors: [
-                                barColor,
-                                Color.lerp(barColor, Colors.white, 0.16) ??
-                                    barColor,
-                              ],
-                            ),
-                          ),
-                        )
-                            .animate(onPlay: (c) => c.repeat())
-                            .shimmer(
-                              delay: 1400.ms,
-                              duration: 2200.ms,
-                              color: Colors.white.withValues(alpha: 0.45),
-                              curve: Curves.easeInOutCubic,
-                            ),
-                      );
-                    },
-                  ),
-                ),
+                  if (barStyle == ProgressBarStyle.defaultStyle) {
+                    return bar
+                        .animate(onPlay: (c) => c.repeat())
+                        .shimmer(
+                          delay: 1400.ms,
+                          duration: 2200.ms,
+                          color: Colors.white.withValues(alpha: 0.28),
+                          curve: Curves.easeInOutCubic,
+                        );
+                  }
+                  return bar;
+                },
               ),
               const SizedBox(height: 14),
               Row(
