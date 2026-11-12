@@ -200,8 +200,13 @@ class ReportNotificationService {
     }
   }
 
-  /// Envía una notificación instantánea de prueba para verificar en el dispositivo
-  static Future<void> sendTestNotification({required bool isStartOfMonth}) async {
+  /// Dispara una notificación de prueba específica de Nuty en el dispositivo:
+  /// - [isStartOfMonth]: true para inicio de mes (días 1 a 5), false para fin de mes (3, 2, 1 días antes)
+  /// - [index]: 1..5 para inicio, o 1..3 para fin de mes (3 = 3 días antes, 1 = último día)
+  static Future<void> triggerSpecificTestNotification({
+    required bool isStartOfMonth,
+    required int index,
+  }) async {
     await initialize();
 
     final androidDetails = AndroidNotificationDetails(
@@ -216,23 +221,37 @@ class ReportNotificationService {
 
     final details = NotificationDetails(android: androidDetails);
 
+    final String title;
+    final String body;
+    final int id;
+
     if (isStartOfMonth) {
-      await _plugin.show(
-        id: 9991,
-        title: SkippyQuotes.getStartOfMonthTitle(1),
-        body: SkippyQuotes.getStartOfMonthBody(1),
-        notificationDetails: details,
-        payload: 'test_start_of_month',
-      );
+      final safeIndex = index.clamp(1, 5);
+      title = SkippyQuotes.getStartOfMonthTitle(safeIndex);
+      body = SkippyQuotes.getStartOfMonthBody(safeIndex);
+      id = 9910 + safeIndex;
     } else {
-      await _plugin.show(
-        id: 9992,
-        title: SkippyQuotes.getEndOfMonthTitle(1),
-        body: SkippyQuotes.getEndOfMonthBody(1),
-        notificationDetails: details,
-        payload: 'test_end_of_month',
-      );
+      final safeRemaining = index.clamp(1, 3);
+      title = SkippyQuotes.getEndOfMonthTitle(safeRemaining);
+      body = SkippyQuotes.getEndOfMonthBody(safeRemaining);
+      id = 9920 + safeRemaining;
     }
+
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+      payload: 'manual_test_${isStartOfMonth ? 'start' : 'end'}_$index',
+    );
+  }
+
+  /// Envía una notificación instantánea de prueba para verificar en el dispositivo
+  static Future<void> sendTestNotification({required bool isStartOfMonth}) async {
+    await triggerSpecificTestNotification(
+      isStartOfMonth: isStartOfMonth,
+      index: 1,
+    );
   }
 
   /// Cancela todas las notificaciones de reportes

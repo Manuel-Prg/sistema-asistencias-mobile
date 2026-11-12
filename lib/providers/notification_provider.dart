@@ -89,6 +89,16 @@ class NotificationNotifier extends Notifier<NotificationState> {
     );
   }
 
+  Future<void> sendSpecificTestReminder({
+    required bool isStartOfMonth,
+    required int index,
+  }) async {
+    await ReportNotificationService.triggerSpecificTestNotification(
+      isStartOfMonth: isStartOfMonth,
+      index: index,
+    );
+  }
+
   Future<void> openSettings() async {
     await NotificationService.openNotificationSettings();
     // Volver a comprobar el estado tras regresar de ajustes
