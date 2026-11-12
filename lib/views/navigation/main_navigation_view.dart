@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_surface.dart';
+import '../../services/update_service.dart';
+import '../common/update_dialog.dart';
 import '../student/dashboard_view.dart';
 import '../student/events_view.dart';
 import '../student/profile_view.dart';
@@ -85,6 +87,25 @@ class _MainNavigationViewState extends State<MainNavigationView>
       curve: Curves.easeInOutCubicEmphasized,
       reverseCurve: Curves.easeInOutCubic,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAppUpdates();
+    });
+  }
+
+  Future<void> _checkAppUpdates() async {
+    try {
+      final result = await UpdateService.checkForUpdates();
+      if (result.hasUpdate && result.updateInfo != null && mounted) {
+        UpdateDialog.show(
+          context,
+          updateInfo: result.updateInfo!,
+          currentVersion: result.currentVersion,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error en verificación de actualización: $e');
+    }
   }
 
   @override
