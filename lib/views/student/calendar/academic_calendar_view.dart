@@ -37,8 +37,7 @@ class AcademicCalendarView extends StatefulWidget {
       id: 'cal-2026-2027',
       title: 'Calendario Escolar 2026 - 2027',
       subtitle: 'Licenciatura con Internado (Vigente)',
-      assetPath:
-          'assets/docs/Calendario Escolar de Licenciatura 2026- 2027 FINAL con INTERNADO.pdf',
+      assetPath: 'assets/docs/calendario_escolar_2026_2027.pdf',
       cycle: '2026 - 2027',
       isCurrent: true,
     ),
@@ -46,7 +45,7 @@ class AcademicCalendarView extends StatefulWidget {
       id: 'cal-2025-2026',
       title: 'Calendario Escolar 2025 - 2026',
       subtitle: 'Licenciatura y TSU (Ciclo Previo)',
-      assetPath: 'assets/docs/CE-Licenciatura-y-TSU-2025-2026.pdf',
+      assetPath: 'assets/docs/calendario_escolar_2025_2026.pdf',
       cycle: '2025 - 2026',
       isCurrent: false,
     ),
@@ -67,6 +66,7 @@ class AcademicCalendarView extends StatefulWidget {
 class _AcademicCalendarViewState extends State<AcademicCalendarView> {
   late int _selectedCalendarIndex;
   late PdfViewerController _pdfViewerController;
+  Uint8List? _pdfBytes;
   int _pageCount = 1;
   int _currentPage = 1;
   bool _isLoading = true;
@@ -80,6 +80,7 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
       AcademicCalendarView.calendars.length - 1,
     );
     _pdfViewerController = PdfViewerController();
+    _loadPdf();
   }
 
   @override
@@ -88,16 +89,42 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
     super.dispose();
   }
 
+  Future<void> _loadPdf() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+      _pdfBytes = null;
+    });
+
+    try {
+      final activeDoc = AcademicCalendarView.calendars[_selectedCalendarIndex];
+      final byteData = await rootBundle.load(activeDoc.assetPath);
+      final bytes = byteData.buffer.asUint8List();
+
+      if (mounted) {
+        setState(() {
+          _pdfBytes = bytes;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'No se pudo cargar el archivo desde el dispositivo:\n$e';
+        });
+      }
+    }
+  }
+
   void _onCalendarChanged(int index) {
     if (_selectedCalendarIndex != index) {
       HapticFeedback.selectionClick();
       setState(() {
         _selectedCalendarIndex = index;
-        _isLoading = true;
-        _errorMessage = null;
         _currentPage = 1;
         _pageCount = 1;
       });
+      _loadPdf();
     }
   }
 
@@ -299,41 +326,44 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
                   ),
                   child: Stack(
                     children: [
-                      // Visor de PDF nativo con pinch-to-zoom
-                      SfPdfViewer.asset(
-                        activeDoc.assetPath,
-                        key: ValueKey(activeDoc.assetPath),
-                        controller: _pdfViewerController,
-                        enableDoubleTapZooming: true,
-                        pageLayoutMode: PdfPageLayoutMode.continuous,
-                        canShowScrollHead: true,
-                        canShowScrollStatus: true,
-                        onDocumentLoaded: (PdfDocumentLoadedDetails details) {
-                          if (mounted) {
-                            setState(() {
-                              _isLoading = false;
-                              _pageCount = details.document.pages.count;
-                              _currentPage = 1;
-                            });
-                          }
-                        },
-                        onDocumentLoadFailed:
-                            (PdfDocumentLoadFailedDetails details) {
-                          if (mounted) {
-                            setState(() {
-                              _isLoading = false;
-                              _errorMessage = details.description;
-                            });
-                          }
-                        },
-                        onPageChanged: (PdfPageChangedDetails details) {
-                          if (mounted) {
-                            setState(() {
-                              _currentPage = details.newPageNumber;
-                            });
-                          }
-                        },
-                      ),
+                      // Visor de PDF nativo con pinch-to-zoom alimentado con bytes en memoria
+                      if (_pdfBytes != null)
+                        SfPdfViewer.memory(
+                          _pdfBytes!,
+                          key: ValueKey(
+                            '${activeDoc.assetPath}_$_selectedCalendarIndex',
+                          ),
+                          controller: _pdfViewerController,
+                          enableDoubleTapZooming: true,
+                          pageLayoutMode: PdfPageLayoutMode.continuous,
+                          canShowScrollHead: true,
+                          canShowScrollStatus: true,
+                          onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+                            if (mounted) {
+                              setState(() {
+                                _isLoading = false;
+                                _pageCount = details.document.pages.count;
+                                _currentPage = 1;
+                              });
+                            }
+                          },
+                          onDocumentLoadFailed:
+                              (PdfDocumentLoadFailedDetails details) {
+                            if (mounted) {
+                              setState(() {
+                                _isLoading = false;
+                                _errorMessage = details.description;
+                              });
+                            }
+                          },
+                          onPageChanged: (PdfPageChangedDetails details) {
+                            if (mounted) {
+                              setState(() {
+                                _currentPage = details.newPageNumber;
+                              });
+                            }
+                          },
+                        ),
 
                       // Indicador de carga
                       if (_isLoading)
@@ -361,7 +391,7 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
                           ),
                         ),
 
-                      // Mensaje en caso de error
+                      // Mensaje en caso de error con botón de reintentar
                       if (_errorMessage != null)
                         Center(
                           child: Padding(
@@ -386,13 +416,27 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
                                         : AppColors.mineralInk,
                                   ),
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: 8),
                                 Text(
                                   _errorMessage!,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.slateMuted,
+                                    color: isDark
+                                        ? Colors.white60
+                                        : AppColors.slateMuted,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton.icon(
+                                  onPressed: _loadPdf,
+                                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                                  label: const Text('Reintentar lectura'),
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: const Size(180, 44),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
                               ],

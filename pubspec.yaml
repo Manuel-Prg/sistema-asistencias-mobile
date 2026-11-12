@@ -82,6 +82,8 @@ flutter:
     - assets/images/
     - assets/images/nuty/
     - assets/docs/
+    - assets/docs/calendario_escolar_2026_2027.pdf
+    - assets/docs/calendario_escolar_2025_2026.pdf
 
   fonts:
     - family: Archer
