@@ -216,7 +216,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                     ),
                     child: SingleChildScrollView(
                       child: Text(
-                        widget.updateInfo.changelog!,
+                        widget.updateInfo.changelog!.replaceAll(r'\n', '\n'),
                         style: TextStyle(
                           fontSize: 12,
                           height: 1.35,
@@ -286,42 +286,61 @@ class _UpdateDialogState extends State<UpdateDialog> {
                   ),
                   const SizedBox(height: 12),
                 ],
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (!widget.updateInfo.isMandatory && !_isDownloading)
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text(
-                          'Más tarde',
-                          style: TextStyle(
-                            color: isDark ? Colors.white60 : AppColors.slateMuted,
-                          ),
+                if (!_isDownloading && _errorMessage == null) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: _startUpdate,
+                      icon: const Icon(Icons.download_rounded, size: 20),
+                      label: const Text(
+                        'Descargar e Instalar',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    const SizedBox(width: 8),
-                    if (_errorMessage != null)
-                      OutlinedButton.icon(
-                        onPressed: _openBrowserFallback,
-                        icon: const Icon(Icons.open_in_browser_rounded, size: 16),
-                        label: const Text('Descargar vía web'),
-                      ),
-                    if (!_isDownloading && _errorMessage == null)
-                      ElevatedButton.icon(
-                        onPressed: _startUpdate,
-                        icon: const Icon(Icons.download_rounded, size: 18),
-                        label: const Text('Descargar e Instalar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themePrimary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: themePrimary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
+                if (_errorMessage != null) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _openBrowserFallback,
+                      icon: const Icon(Icons.open_in_browser_rounded, size: 18),
+                      label: const Text('Descargar desde el navegador'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                if (!widget.updateInfo.isMandatory && !_isDownloading) ...[
+                  const SizedBox(height: 6),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Más tarde',
+                        style: TextStyle(
+                          color: isDark ? Colors.white60 : AppColors.slateMuted,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
