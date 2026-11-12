@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/student_provider.dart';
 import 'profile/profile_footer.dart';
 import 'profile/profile_hero_card.dart';
+import 'profile/profile_notifications_card.dart';
 import 'profile/profile_personal_data_card.dart';
 import 'profile/profile_photo_dialog.dart';
 import 'profile/profile_progress_card.dart';
@@ -180,6 +181,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             isSavingName: _isSavingName,
             onSaveName: _handleSaveName,
           ),
+          const SizedBox(height: 16),
+          const ProfileNotificationsCard(),
           const SizedBox(height: 16),
           const ProfileThemeCard(),
           const SizedBox(height: 24),

@@ -10,6 +10,7 @@ import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/color_theme_provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/report_notification_service.dart';
 import 'views/auth/login_view.dart';
 import 'views/navigation/main_navigation_view.dart';
 
@@ -18,6 +19,9 @@ Future<void> main() async {
 
   // Inicializar localización en español (México)
   await initializeDateFormatting('es_MX', null);
+
+  // Inicializar notificaciones locales y zona horaria (Villahermosa, Tabasco UTC-6)
+  await ReportNotificationService.initialize();
 
   // Inicializar Supabase
   await Supabase.initialize(

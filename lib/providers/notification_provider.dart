@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
+import '../services/report_notification_service.dart';
 
 class NotificationState {
   final bool isEnabled;
@@ -39,12 +40,17 @@ class NotificationNotifier extends Notifier<NotificationState> {
     final prefs = await SharedPreferences.getInstance();
     final savedEnabled = prefs.getBool(_prefKey) ?? false;
     final deviceGranted = await NotificationService.areNotificationsEnabled();
+    final effectiveEnabled = savedEnabled && deviceGranted;
 
     state = NotificationState(
-      isEnabled: savedEnabled && deviceGranted,
+      isEnabled: effectiveEnabled,
       isDeviceGranted: deviceGranted,
       isChecking: false,
     );
+
+    if (effectiveEnabled) {
+      await ReportNotificationService.scheduleMonthlyReportReminders();
+    }
   }
 
   /// Cambia el estado de activación de notificaciones push
@@ -53,6 +59,7 @@ class NotificationNotifier extends Notifier<NotificationState> {
 
     if (!enable) {
       await prefs.setBool(_prefKey, false);
+      await ReportNotificationService.cancelAllReportReminders();
       state = state.copyWith(isEnabled: false);
       return true;
     }
@@ -61,14 +68,25 @@ class NotificationNotifier extends Notifier<NotificationState> {
     final granted = await NotificationService.requestNotificationPermission();
     if (granted) {
       await prefs.setBool(_prefKey, true);
+      await ReportNotificationService.scheduleMonthlyReportReminders();
       state = state.copyWith(isEnabled: true, isDeviceGranted: true);
       return true;
     } else {
       // El permiso fue denegado a nivel de sistema
       final stillGranted = await NotificationService.areNotificationsEnabled();
+      if (stillGranted) {
+        await prefs.setBool(_prefKey, true);
+        await ReportNotificationService.scheduleMonthlyReportReminders();
+      }
       state = state.copyWith(isEnabled: stillGranted, isDeviceGranted: stillGranted);
       return stillGranted;
     }
+  }
+
+  Future<void> sendTestReminder({required bool isStartOfMonth}) async {
+    await ReportNotificationService.sendTestNotification(
+      isStartOfMonth: isStartOfMonth,
+    );
   }
 
   Future<void> openSettings() async {
@@ -77,9 +95,15 @@ class NotificationNotifier extends Notifier<NotificationState> {
     final deviceGranted = await NotificationService.areNotificationsEnabled();
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getBool(_prefKey) ?? false;
+    final effective = saved && deviceGranted;
+
+    if (effective) {
+      await ReportNotificationService.scheduleMonthlyReportReminders();
+    }
+
     state = state.copyWith(
       isDeviceGranted: deviceGranted,
-      isEnabled: saved && deviceGranted,
+      isEnabled: effective,
     );
   }
 
@@ -87,9 +111,15 @@ class NotificationNotifier extends Notifier<NotificationState> {
     final deviceGranted = await NotificationService.areNotificationsEnabled();
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getBool(_prefKey) ?? false;
+    final effective = saved && deviceGranted;
+
+    if (effective) {
+      await ReportNotificationService.scheduleMonthlyReportReminders();
+    }
+
     state = state.copyWith(
       isDeviceGranted: deviceGranted,
-      isEnabled: saved && deviceGranted,
+      isEnabled: effective,
     );
   }
 }

@@ -30,7 +30,7 @@ class NotificationBanner extends StatelessWidget {
           const SizedBox(width: 10),
           const Expanded(
             child: Text(
-              'Activa las notificaciones para recordatorios de turnos y avisos.',
+              'Activa las notificaciones para avisarte del llenado de reporte en los primeros 5 días hábiles y su entrega a fin de mes.',
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
