@@ -169,6 +169,8 @@ class ReportNotificationService {
         priority: Priority.high,
         playSound: true,
         enableVibration: true,
+        icon: '@mipmap/ic_launcher',
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
       );
 
       final details = NotificationDetails(android: androidDetails);
@@ -217,6 +219,8 @@ class ReportNotificationService {
       priority: Priority.high,
       playSound: true,
       enableVibration: true,
+      icon: '@mipmap/ic_launcher',
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
 
     final details = NotificationDetails(android: androidDetails);
