@@ -72,6 +72,53 @@ class ScheduleNotifier extends Notifier<ScheduleState> {
     }
   }
 
+  Future<bool> saveAllSchedules(List<dynamic> dayForms) async {
+    final uid = _userId;
+    if (uid == null) {
+      state = state.copyWith(errorMessage: 'No se encontró la sesión del usuario.');
+      return false;
+    }
+    state = state.copyWith(isSaving: true, clearMessages: true);
+
+    try {
+      final existingMap = {for (var s in state.schedules) s.dayOfWeek: s.id};
+
+      final payload = dayForms.map((f) {
+        final start = f.startTime as String;
+        final end = f.endTime as String;
+        final data = <String, dynamic>{
+          'student_id': uid,
+          'day_of_week': f.dayOfWeek as int,
+          'start_time': start.length == 5 ? '$start:00' : start,
+          'end_time': end.length == 5 ? '$end:00' : end,
+          'is_active': f.isActive as bool,
+        };
+        if (existingMap.containsKey(f.dayOfWeek)) {
+          data['id'] = existingMap[f.dayOfWeek];
+        }
+        return data;
+      }).toList();
+
+      await SupabaseService.saveAllSchedules(
+        userId: uid,
+        schedules: payload,
+      );
+
+      await loadSchedules();
+      state = state.copyWith(
+        isSaving: false,
+        successMessage: '¡Horario semanal guardado correctamente!',
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isSaving: false,
+        errorMessage: 'Error al guardar horario: $e',
+      );
+      return false;
+    }
+  }
+
   Future<bool> saveSchedule({
     required int dayOfWeek,
     required String startTime,

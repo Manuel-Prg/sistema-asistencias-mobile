@@ -185,7 +185,22 @@ class SupabaseService {
       'start_time': startTime,
       'end_time': endTime,
       'is_active': isActive,
-    }, onConflict: 'student_id, day_of_week');
+    }, onConflict: 'student_id,day_of_week');
+  }
+
+  static Future<void> saveAllSchedules({
+    required String userId,
+    required List<Map<String, dynamic>> schedules,
+  }) async {
+    try {
+      await client.from('student_schedules').upsert(
+        schedules,
+        onConflict: 'student_id,day_of_week',
+      );
+    } catch (_) {
+      // Fallback en caso de que la tabla resuelva conflicto por la clave primaria 'id'
+      await client.from('student_schedules').upsert(schedules);
+    }
   }
 
   // ─── Asistencia (Check-in & Check-out) ──────────────────────────────────────

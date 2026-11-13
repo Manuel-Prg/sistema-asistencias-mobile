@@ -23,6 +23,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   bool _obscurePassword = true;
   bool _rememberMe = false;
   bool _hasAutoFilled = false;
+  bool _hasTriggeredAutoBiometrics = false;
 
   @override
   void dispose() {
@@ -106,6 +107,20 @@ class _LoginViewState extends ConsumerState<LoginView> {
           _passwordController.text = securityState.savedPassword!;
         }
       }
+    }
+
+    // Disparar autenticación biométrica automática enseguida si está configurada
+    if (securityState.isReady &&
+        securityState.isBiometricEnabled &&
+        securityState.hasSavedCredentials &&
+        !_hasTriggeredAutoBiometrics &&
+        !authState.isLoading) {
+      _hasTriggeredAutoBiometrics = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _handleBiometricLogin();
+        }
+      });
     }
 
     return GlassScaffold(

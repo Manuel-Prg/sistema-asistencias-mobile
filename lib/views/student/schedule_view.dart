@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_toast.dart';
 import '../../models/student_schedule.dart';
 import '../../providers/schedule_provider.dart';
 import 'schedule/academic_calendar_banner_card.dart';
@@ -115,43 +115,35 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
         }
       }
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Horario ($start - $end) aplicado a días activos.'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
+    AppGlassToast.show(
+      context,
+      message: 'Horario ($start - $end) aplicado a días activos.',
+      type: GlassToastType.info,
     );
   }
 
   Future<void> _saveAll() async {
     final notifier = ref.read(scheduleProvider.notifier);
-    bool allSuccess = true;
+    final ok = await notifier.saveAllSchedules(_daysForm.values.toList());
 
-    for (final dayForm in _daysForm.values) {
-      final ok = await notifier.saveSchedule(
-        dayOfWeek: dayForm.dayOfWeek,
-        startTime: dayForm.startTime,
-        endTime: dayForm.endTime,
-        isActive: dayForm.isActive,
+    if (!mounted) return;
+
+    if (ok) {
+      AppGlassToast.show(
+        context,
+        title: 'Horario Guardado',
+        message: '¡Tu horario semanal se actualizó con éxito!',
+        type: GlassToastType.success,
       );
-      if (!ok) allSuccess = false;
-    }
-
-    if (mounted && allSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
-              SizedBox(width: 10),
-              Expanded(child: Text('¡Horario guardado correctamente!')),
-            ],
-          ),
-          backgroundColor: AppColors.statusOnTime,
-          behavior: SnackBarBehavior.floating,
-        ),
+    } else {
+      final error =
+          ref.read(scheduleProvider).errorMessage ??
+          'No fue posible guardar el horario. Revisa tu conexión a internet.';
+      AppGlassToast.show(
+        context,
+        title: 'Error al Guardar',
+        message: error,
+        type: GlassToastType.error,
       );
     }
   }
@@ -228,7 +220,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
           const SizedBox(height: 14),
 
           ScheduleSaveButton(
-            isLoading: scheduleState.isLoading,
+            isLoading: scheduleState.isSaving,
             onSave: _saveAll,
           ),
           const SizedBox(height: 20),
