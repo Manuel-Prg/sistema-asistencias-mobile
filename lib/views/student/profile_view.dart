@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_surface.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/progress_bar_style_provider.dart';
 import '../../providers/student_provider.dart';
@@ -13,7 +14,7 @@ import 'profile/profile_personal_data_card.dart';
 import 'profile/profile_photo_dialog.dart';
 import 'profile/profile_progress_card.dart';
 import 'profile/profile_sign_out_dialog.dart';
-import 'profile/profile_theme_card.dart';
+import 'settings_view.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
@@ -53,8 +54,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     }
 
     setState(() => _isSavingName = true);
-    final success =
-        await ref.read(authProvider.notifier).updateProfileName(newName);
+    final success = await ref
+        .read(authProvider.notifier)
+        .updateProfileName(newName);
     if (!mounted) return;
     setState(() => _isSavingName = false);
 
@@ -87,8 +89,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
   Future<void> _handleDeletePhoto() async {
     setState(() => _isUpdatingPhoto = true);
-    final success =
-        await ref.read(authProvider.notifier).updateProfileAvatar(null);
+    final success = await ref
+        .read(authProvider.notifier)
+        .updateProfileAvatar(null);
     if (!mounted) return;
     setState(() => _isUpdatingPhoto = false);
 
@@ -99,8 +102,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               ? 'Foto de perfil eliminada.'
               : 'No fue posible eliminar la foto.',
         ),
-        backgroundColor:
-            success ? AppColors.primary : AppColors.terracottaRule,
+        backgroundColor: success ? AppColors.primary : AppColors.terracottaRule,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -123,9 +125,24 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final assignedRoom = student?.assignedRoom ?? 'Por asignar';
     final requiredHours = student?.requiredHours ?? 480;
     final accumulatedHours = student?.accumulatedHours ?? 0.0;
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return GlassScaffold(
-      appBar: const GlassAppBar(),
+      appBar: GlassAppBar(
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.settings_outlined,
+              color: isDark ? AppColors.darkTextPrimary : primaryColor,
+              size: 22,
+            ),
+            tooltip: 'Configuraciones',
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const SettingsView())),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 130),
         children: [
@@ -137,7 +154,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 fontSize: 24,
                 fontFamily: AppTheme.brandFont,
                 fontWeight: FontWeight.w800,
-                color: Theme.of(context).colorScheme.primary,
+                color: primaryColor,
                 letterSpacing: -0.4,
               ),
             ),
@@ -145,7 +162,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 14),
             child: Text(
-              'Administra tus datos personales y preferencias de la aplicación',
+              'Información de servicio social y datos de tu cuenta',
               style: TextStyle(
                 fontSize: 13,
                 fontFamily: AppTheme.brandFont,
@@ -184,7 +201,71 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             onSaveName: _handleSaveName,
           ),
           const SizedBox(height: 16),
-          const ProfileThemeCard(),
+
+          // Enlace directo a la nueva ventana exclusiva de Configuraciones
+          GlassSurface(
+            borderRadius: BorderRadius.circular(20),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            enableRefraction: true,
+            child: InkWell(
+              onTap: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const SettingsView())),
+              borderRadius: BorderRadius.circular(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(9),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(
+                        alpha: isDark ? 0.25 : 0.12,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.tune_rounded,
+                      color: primaryColor,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Configuraciones del Sistema',
+                          style: TextStyle(
+                            fontFamily: AppTheme.brandFont,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.mineralInk,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Tema, huella dactilar, notificaciones y preferencias',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.slateMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 15,
+                    color: isDark ? Colors.white54 : AppColors.slateMuted,
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
           ProfileFooter(
             onSignOut: () => ProfileSignOutDialog.show(context, ref),

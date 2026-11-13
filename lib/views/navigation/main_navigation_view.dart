@@ -264,7 +264,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
     return GlassSurface(
       borderRadius: BorderRadius.circular(32),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      tintColor: isDark ? const Color(0xFF141418) : null,
+      enableRefraction: true,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(_tabs.length, (index) {
@@ -409,13 +409,17 @@ class _GlassNavItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4),
           decoration: BoxDecoration(
             color: isSelected
-                ? activeColor.withValues(alpha: isDark ? 0.22 : 0.12)
+                ? (isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : activeColor.withValues(alpha: 0.12))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(22),
             border: isSelected
                 ? Border.all(
-                    color: activeColor.withValues(alpha: isDark ? 0.40 : 0.25),
-                    width: 1,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.38)
+                        : activeColor.withValues(alpha: 0.30),
+                    width: 1.2,
                   )
                 : null,
           ),

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+
 import '../models/profile.dart';
 import '../services/supabase_service.dart';
 
@@ -20,7 +22,8 @@ class AppAuthState {
     this.isInitialCheckDone = false,
   });
 
-  bool get isAuthenticated => user != null && profile != null && profile!.isStudent;
+  bool get isAuthenticated =>
+      user != null && profile != null && profile!.isStudent;
 
   AppAuthState copyWith({
     bool? isLoading,
@@ -40,7 +43,9 @@ class AppAuthState {
   }
 }
 
-final authProvider = NotifierProvider<AuthNotifier, AppAuthState>(AuthNotifier.new);
+final authProvider = NotifierProvider<AuthNotifier, AppAuthState>(
+  AuthNotifier.new,
+);
 
 class AuthNotifier extends Notifier<AppAuthState> {
   StreamSubscription? _authSubscription;
@@ -54,10 +59,12 @@ class AuthNotifier extends Notifier<AppAuthState> {
     // Escuchar cambios de autenticación en el siguiente microtask para garantizar
     // que el Notifier ya esté completamente montado
     Future.microtask(() {
-      _authSubscription = SupabaseService.client.auth.onAuthStateChange.listen((data) async {
+      _authSubscription = SupabaseService.client.auth.onAuthStateChange.listen((
+        data,
+      ) async {
         final session = data.session;
         if (session != null) {
-          if (state.user?.id != session.user.id) {
+          if (state.user?.id != session.user.id || state.profile == null) {
             await _loadUserProfile(session.user);
           }
         } else {
@@ -77,22 +84,76 @@ class AuthNotifier extends Notifier<AppAuthState> {
     }
 
     // Si no hay sesión iniciada, pasar directo a la pantalla de login
-    return AppAuthState(
-      isLoading: false,
-      isInitialCheckDone: true,
-    );
+    return AppAuthState(isLoading: false, isInitialCheckDone: true);
   }
 
   Future<void> _loadUserProfile(User user) async {
     try {
-      final profile = await SupabaseService.getProfile(user.id);
+      // 1. Refrescar sesión proactivamente si está expirada
+      final session = SupabaseService.client.auth.currentSession;
+      if (session != null && session.isExpired) {
+        try {
+          await SupabaseService.client.auth.refreshSession();
+        } catch (_) {
+          await SupabaseService.signOut();
+          state = AppAuthState(
+            isInitialCheckDone: true,
+            errorMessage: 'Tu sesión ha expirado por inactividad. Por favor, ingresa nuevamente.',
+          );
+          return;
+        }
+      }
+
+      var profile = await SupabaseService.getProfile(user.id);
+
+      // Si fue nulo, dar un breve margen por reconexión de sockets del sistema tras reposo
       if (profile == null) {
+        await Future.delayed(const Duration(milliseconds: 650));
+        try {
+          await SupabaseService.client.auth.refreshSession();
+        } catch (_) {}
+        profile = await SupabaseService.getProfile(user.id);
+      }
+
+      if (profile == null) {
+        // Si el usuario ya tenía sesión activa anteriormente, fue una expiración de token
+        final hadActiveSession = state.profile != null;
+        if (hadActiveSession) {
+          await SupabaseService.signOut();
+          state = AppAuthState(
+            isInitialCheckDone: true,
+            errorMessage: 'Tu sesión ha expirado. Por favor, ingresa nuevamente.',
+          );
+          return;
+        }
+
+        await Future.delayed(const Duration(milliseconds: 650));
+        try {
+          await SupabaseService.client.auth.refreshSession();
+        } catch (_) {}
+        profile = await SupabaseService.getProfile(user.id);
+      }
+
+      if (profile == null) {
+        // Si el usuario ya tenía sesión activa anteriormente, fue una expiración de token
+        final hadActiveSession = state.profile != null;
+        if (hadActiveSession) {
+          await SupabaseService.signOut();
+          state = AppAuthState(
+            isInitialCheckDone: true,
+            errorMessage:
+                'Tu sesión ha expirado. Por favor, ingresa nuevamente.',
+          );
+          return;
+        }
+
         state = state.copyWith(
           isLoading: false,
           user: user,
           profile: null,
           isInitialCheckDone: true,
-          errorMessage: 'No se encontró perfil de estudiante asociado a esta cuenta.',
+          errorMessage:
+              'No se encontró perfil de estudiante asociado a esta cuenta.',
         );
         return;
       }
@@ -101,8 +162,7 @@ class AuthNotifier extends Notifier<AppAuthState> {
         await SupabaseService.signOut();
         state = AppAuthState(
           isInitialCheckDone: true,
-          errorMessage:
-              'El rol de Supervisor solo está disponible en la versión Web. Accede desde tu navegador.',
+          errorMessage: 'El rol de Supervisor solo está disponible en la versión Web. Accede desde tu navegador.',
         );
         return;
       }
@@ -118,7 +178,7 @@ class AuthNotifier extends Notifier<AppAuthState> {
       state = state.copyWith(
         isLoading: false,
         isInitialCheckDone: true,
-        errorMessage: 'Error al cargar perfil: $e',
+        errorMessage: 'Error de conexión con el servidor. Revisa tu conexión a internet.',
       );
     }
   }
@@ -144,7 +204,8 @@ class AuthNotifier extends Notifier<AppAuthState> {
       if (profile == null) {
         state = state.copyWith(
           isLoading: false,
-          errorMessage: 'Tu cuenta no tiene un perfil configurado en el sistema.',
+          errorMessage:
+              'Tu cuenta no tiene un perfil configurado en el sistema.',
         );
         return false;
       }
@@ -155,8 +216,7 @@ class AuthNotifier extends Notifier<AppAuthState> {
           isLoading: false,
           user: null,
           profile: null,
-          errorMessage:
-              'El rol de Supervisor se gestiona exclusivamente en la plataforma Web.',
+          errorMessage: 'El rol de Supervisor se gestiona exclusivamente en la plataforma Web.',
         );
         return false;
       }
@@ -173,24 +233,21 @@ class AuthNotifier extends Notifier<AppAuthState> {
       if (msg.contains('Invalid login credentials')) {
         msg = 'Correo o contraseña incorrectos.';
       } else if (msg.contains('Email not confirmed')) {
-        msg =
-            'Tu correo aún no ha sido confirmado. Revisa tu bandeja de entrada.';
+        msg = 'Tu correo aún no ha sido confirmado. Revisa tu bandeja de entrada.';
       } else if (msg.contains('SocketException') ||
           msg.contains('Failed host lookup') ||
           msg.contains('ClientException') ||
           msg.contains('Network') ||
           msg.contains('connection') ||
           msg.contains('errno = 7')) {
-        msg =
-            'Sin conexión a internet: No fue posible conectar con el servidor. Verifica que tu teléfono tenga Wi-Fi o datos móviles activos.';
+        msg = 'Sin conexión a internet: No fue posible conectar con el servidor. Verifica que tu teléfono tenga Wi-Fi o datos móviles activos.';
       }
       state = state.copyWith(isLoading: false, errorMessage: msg);
       return false;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage:
-            'Sin conexión a internet: Verifica que tu teléfono tenga acceso a internet.',
+        errorMessage: 'Sin conexión a internet: Verifica que tu teléfono tenga acceso a internet.',
       );
       return false;
     }

@@ -15,9 +15,9 @@ class GlassSettings {
   final bool? _enableBlur;
 
   const GlassSettings({
-    this.transparency = 0.50,
+    this.transparency = 0.60,
     this.showBorders = true,
-    this.blurSigma = 10.0,
+    this.blurSigma = 16.0,
     bool this._enableBlur = true,
   });
 
@@ -37,8 +37,8 @@ class GlassSettings {
     );
   }
 
-  /// Nivel de opacidad derivado para el fondo matérico
-  double get effectiveOpacity => (1.0 - transparency).clamp(0.15, 0.92);
+  /// Nivel de opacidad derivado para el fondo matérico (permite máxima transparencia vítrea)
+  double get effectiveOpacity => (1.0 - transparency).clamp(0.04, 0.92);
 }
 
 final glassSettingsProvider =
@@ -66,15 +66,15 @@ class GlassSettingsNotifier extends Notifier<GlassSettings> {
     final savedBlurSigma = prefs.getDouble(_blurSigmaKey);
 
     state = state.copyWith(
-      transparency: savedTransparency ?? 0.50,
+      transparency: savedTransparency ?? 0.60,
       showBorders: savedShowBorders ?? true,
       enableBlur: savedEnableBlur ?? true,
-      blurSigma: savedBlurSigma ?? 10.0,
+      blurSigma: savedBlurSigma ?? 16.0,
     );
   }
 
   Future<void> setTransparency(double value) async {
-    final clamped = value.clamp(0.10, 0.85);
+    final clamped = value.clamp(0.10, 0.95);
     state = state.copyWith(transparency: clamped);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_transparencyKey, clamped);

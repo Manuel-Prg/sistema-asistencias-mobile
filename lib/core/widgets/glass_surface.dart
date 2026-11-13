@@ -1,8 +1,9 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../constants/app_colors.dart';
-import '../../providers/color_theme_provider.dart';
 import '../../providers/glass_settings_provider.dart';
 
 /// Superficie con efecto de vidrio esmerilado translúcido estilo iOS (Liquid Glass)
@@ -39,7 +40,9 @@ class GlassSurface extends ConsumerWidget {
     final opacity = settings.effectiveOpacity;
 
     // Colores base con ajuste de opacidad según preferencia del usuario
-    final defaultBaseColor = isDark ? AppColors.pondCardDark : AppColors.sillarCard;
+    final defaultBaseColor = isDark
+        ? AppColors.pondCardDark
+        : AppColors.sillarCard;
     final activeBase = tintColor ?? defaultBaseColor;
 
     // Si el color base es oscuro (como la tarjeta principal de check-in en azul estanque)
@@ -62,30 +65,28 @@ class GlassSurface extends ConsumerWidget {
       colors: isDark
           ? [
               darkTop.withValues(
-                alpha: (effectiveAlpha * 1.15).clamp(0.18, 0.94),
+                alpha: (effectiveAlpha * 1.15).clamp(0.04, 0.94),
               ),
               darkBottom.withValues(
-                alpha: (effectiveAlpha * 0.82).clamp(0.12, 0.90),
+                alpha: (effectiveAlpha * 0.82).clamp(0.03, 0.90),
               ),
             ]
           : [
               activeBase.withValues(
-                alpha: (effectiveAlpha * 1.06).clamp(0.12, 0.96),
+                alpha: (effectiveAlpha * 1.06).clamp(0.04, 0.96),
               ),
               activeBase.withValues(
-                alpha: (effectiveAlpha * 0.88).clamp(0.10, 0.92),
+                alpha: (effectiveAlpha * 0.88).clamp(0.03, 0.92),
               ),
             ],
     );
 
-    final colorPalette = ref.watch(colorThemeProvider);
-
-    // Contorno decorativo de cristal
+    // Contorno decorativo de cristal óptico puro
     final border = settings.showBorders
         ? Border.all(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.22)
-                : colorPalette.primary.withValues(alpha: 0.14),
+                ? Colors.white.withValues(alpha: 0.28)
+                : Colors.white.withValues(alpha: 0.65),
             width: 1.2,
           )
         : null;
@@ -93,15 +94,15 @@ class GlassSurface extends ConsumerWidget {
     final shadow = [
       BoxShadow(
         color: isDark
-            ? Colors.black.withValues(alpha: 0.50)
-            : AppColors.primary.withValues(alpha: 0.08),
+            ? Colors.black.withValues(alpha: 0.45)
+            : AppColors.primary.withValues(alpha: 0.06),
         blurRadius: isDark ? 22 : 18,
         spreadRadius: isDark ? -1 : 0,
         offset: const Offset(0, 7),
       ),
       if (isDark)
         BoxShadow(
-          color: AppColors.signalAqua.withValues(alpha: 0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           blurRadius: 14,
           spreadRadius: -2,
           offset: const Offset(0, 2),
@@ -121,7 +122,8 @@ class GlassSurface extends ConsumerWidget {
       child: child,
     );
 
-    final shouldBlur = (settings.enableBlur == true) && (settings.blurSigma > 0);
+    final shouldBlur =
+        (settings.enableBlur == true) && (settings.blurSigma > 0);
 
     Widget visual;
     if (shouldBlur) {
@@ -196,7 +198,9 @@ class GlassDialog extends StatelessWidget {
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: GlassSurface(
-        tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
+        tintColor: isDark
+            ? const Color(0xFF141418)
+            : Colors.white.withValues(alpha: 0.96),
         borderRadius: borderRadius ?? BorderRadius.circular(24),
         padding: padding ?? const EdgeInsets.all(24),
         child: Column(
@@ -205,9 +209,9 @@ class GlassDialog extends StatelessWidget {
           children: [
             if (title != null) ...[
               DefaultTextStyle(
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ) ??
+                style:
+                    Theme.of(context).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w700) ??
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 child: title!,
               ),
@@ -215,19 +219,16 @@ class GlassDialog extends StatelessWidget {
             ],
             if (content != null) ...[
               DefaultTextStyle(
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      height: 1.45,
-                    ) ??
+                style:
+                    Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(height: 1.45) ??
                     const TextStyle(fontSize: 14),
                 child: content!,
               ),
               const SizedBox(height: 20),
             ],
             if (actions != null && actions!.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: actions!,
-              ),
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: actions!),
           ],
         ),
       ),

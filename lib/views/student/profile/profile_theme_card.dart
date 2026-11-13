@@ -246,7 +246,7 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
             child: Slider(
               value: glassSettings.transparency,
               min: 0.10,
-              max: 0.85,
+              max: 0.95,
               onChanged: (val) => ref
                   .read(glassSettingsProvider.notifier)
                   .setTransparency(val),
