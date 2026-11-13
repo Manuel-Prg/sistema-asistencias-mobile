@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../constants/app_colors.dart';
 
 /// Riel base para las barras de progreso con diseño de cápsula de cristal,
@@ -93,4 +94,3 @@ class ProgressBarTrack extends StatelessWidget {
     );
   }
 }
-

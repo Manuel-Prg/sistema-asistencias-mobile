@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../core/constants/app_colors.dart';
 
 class AppColorPalette {
@@ -132,4 +133,3 @@ class ColorThemeNotifier extends Notifier<AppColorPalette> {
     await prefs.setString(_prefKey, palette.id);
   }
 }
-

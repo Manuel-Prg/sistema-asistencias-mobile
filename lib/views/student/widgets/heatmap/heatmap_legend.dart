@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 
 class HeatmapLegend extends StatelessWidget {
@@ -58,4 +59,3 @@ class _LegendItem extends StatelessWidget {
     );
   }
 }
-

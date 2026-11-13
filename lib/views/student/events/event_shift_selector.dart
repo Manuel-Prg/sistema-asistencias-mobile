@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 
 class EventShiftSelector extends StatelessWidget {
@@ -76,8 +77,8 @@ class _EventShiftOption extends StatelessWidget {
           color: isSelected
               ? activeColor.withValues(alpha: isDark ? 0.35 : 0.18)
               : (isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : const Color(0xFFF2EFE9)),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : const Color(0xFFF2EFE9)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
@@ -103,7 +104,9 @@ class _EventShiftOption extends StatelessWidget {
               hours,
               style: TextStyle(
                 fontSize: 9,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.slateMuted,
               ),
             ),
           ],
@@ -112,4 +115,3 @@ class _EventShiftOption extends StatelessWidget {
     );
   }
 }
-

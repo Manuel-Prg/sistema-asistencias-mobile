@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/student_schedule.dart';
 import '../services/supabase_service.dart';
 import 'auth_provider.dart';
@@ -31,13 +32,16 @@ class ScheduleState {
       isSaving: isSaving ?? this.isSaving,
       schedules: schedules ?? this.schedules,
       errorMessage: clearMessages ? null : (errorMessage ?? this.errorMessage),
-      successMessage: clearMessages ? null : (successMessage ?? this.successMessage),
+      successMessage: clearMessages
+          ? null
+          : (successMessage ?? this.successMessage),
     );
   }
 }
 
-final scheduleProvider =
-    NotifierProvider<ScheduleNotifier, ScheduleState>(ScheduleNotifier.new);
+final scheduleProvider = NotifierProvider<ScheduleNotifier, ScheduleState>(
+  ScheduleNotifier.new,
+);
 
 class ScheduleNotifier extends Notifier<ScheduleState> {
   String? get _userId => ref.watch(authProvider).user?.id;

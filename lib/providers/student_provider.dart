@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/active_student.dart';
 import '../models/attendance_record.dart';
 import '../models/infraction_models.dart';
@@ -56,21 +57,26 @@ class StudentDashboardState {
       isLoading: isLoading ?? this.isLoading,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       student: student ?? this.student,
-      activeRecord: clearActiveRecord ? null : (activeRecord ?? this.activeRecord),
+      activeRecord: clearActiveRecord
+          ? null
+          : (activeRecord ?? this.activeRecord),
       history: history ?? this.history,
       allRecords: allRecords ?? this.allRecords,
       infractions: infractions ?? this.infractions,
       heatmapWeeks: heatmapWeeks ?? this.heatmapWeeks,
       activeStudents: activeStudents ?? this.activeStudents,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      lastWarningMessage:
-          clearWarning ? null : (lastWarningMessage ?? this.lastWarningMessage),
+      lastWarningMessage: clearWarning
+          ? null
+          : (lastWarningMessage ?? this.lastWarningMessage),
     );
   }
 }
 
 final studentProvider =
-    NotifierProvider<StudentNotifier, StudentDashboardState>(StudentNotifier.new);
+    NotifierProvider<StudentNotifier, StudentDashboardState>(
+      StudentNotifier.new,
+    );
 
 class StudentNotifier extends Notifier<StudentDashboardState> {
   String? get _userId => ref.watch(authProvider).user?.id;
@@ -99,7 +105,10 @@ class StudentNotifier extends Notifier<StudentDashboardState> {
     try {
       final studentFuture = SupabaseService.getStudentData(uid);
       final activeRecordFuture = SupabaseService.getActiveRecord(uid);
-      final historyFuture = SupabaseService.getAttendanceHistory(uid, limit: 15);
+      final historyFuture = SupabaseService.getAttendanceHistory(
+        uid,
+        limit: 15,
+      );
       final allRecordsFuture = SupabaseService.getAllStudentAttendance(uid);
       final activeStudentsFuture = SupabaseService.getActiveStudents();
 
@@ -154,7 +163,11 @@ class StudentNotifier extends Notifier<StudentDashboardState> {
     required String shift,
     bool isEvent = false,
   }) async {
-    state = state.copyWith(isLoading: true, clearError: true, clearWarning: true);
+    state = state.copyWith(
+      isLoading: true,
+      clearError: true,
+      clearWarning: true,
+    );
 
     final result = await SupabaseService.checkIn(
       room: room,

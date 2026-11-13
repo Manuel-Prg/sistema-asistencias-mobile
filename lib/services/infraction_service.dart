@@ -17,11 +17,14 @@ class InfractionService {
     }
 
     final localDate = checkIn.toLocal();
-    final scheduleDay = AppDateUtils.dartWeekdayToScheduleDay(localDate.weekday);
+    final scheduleDay = AppDateUtils.dartWeekdayToScheduleDay(
+      localDate.weekday,
+    );
 
     // Buscar horarios activos para el día de la semana
-    final matchingSchedules =
-        schedules.where((s) => s.dayOfWeek == scheduleDay && s.isActive).toList();
+    final matchingSchedules = schedules
+        .where((s) => s.dayOfWeek == scheduleDay && s.isActive)
+        .toList();
 
     if (matchingSchedules.isEmpty) {
       return LateCheckResult(isLate: false, lateMinutes: 0);
@@ -35,7 +38,8 @@ class InfractionService {
       int minDiff = 999999;
       for (final sch in matchingSchedules) {
         final parts = sch.startTime.split(':');
-        final schMins = (int.tryParse(parts[0]) ?? 0) * 60 +
+        final schMins =
+            (int.tryParse(parts[0]) ?? 0) * 60 +
             (parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0);
         final diff = (currentMinutes - schMins).abs();
         if (diff < minDiff) {
@@ -46,7 +50,8 @@ class InfractionService {
     }
 
     final parts = targetSchedule.startTime.split(':');
-    final scheduledMinutes = (int.tryParse(parts[0]) ?? 0) * 60 +
+    final scheduledMinutes =
+        (int.tryParse(parts[0]) ?? 0) * 60 +
         (parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0);
     final diffMinutes = currentMinutes - scheduledMinutes;
 
@@ -161,8 +166,7 @@ class InfractionService {
     final lateRecordsChronological = records.where((r) {
       if (r.room == 'Ajuste Manual') return false;
       return classifyRecord(r) == RecordStatus.retardo;
-    }).toList()
-      ..sort((a, b) => a.checkIn.compareTo(b.checkIn));
+    }).toList()..sort((a, b) => a.checkIn.compareTo(b.checkIn));
 
     final faltaTriggerRecordIds = <String>{};
     for (int i = 0; i < lateRecordsChronological.length; i++) {
@@ -181,12 +185,16 @@ class InfractionService {
     // Encontrar el domingo de la semana actual
     final currentWeekday = now.weekday; // 1=Lunes, 7=Domingo
     final daysUntilSunday = 7 - currentWeekday;
-    final endSunday = DateTime(now.year, now.month, now.day)
-        .add(Duration(days: daysUntilSunday));
+    final endSunday = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).add(Duration(days: daysUntilSunday));
 
     // Inicio: N semanas antes empezando el lunes
-    final startMonday =
-        endSunday.subtract(Duration(days: (weeksCount * 7) - 1));
+    final startMonday = endSunday.subtract(
+      Duration(days: (weeksCount * 7) - 1),
+    );
 
     final weeks = <HeatmapWeek>[];
     DateTime cursor = startMonday;
@@ -209,7 +217,8 @@ class InfractionService {
 
           for (final rec in dayRecords) {
             final st = classifyRecord(rec);
-            if (st == RecordStatus.falta || faltaTriggerRecordIds.contains(rec.id)) {
+            if (st == RecordStatus.falta ||
+                faltaTriggerRecordIds.contains(rec.id)) {
               hasFalta = true;
             } else if (st == RecordStatus.retardo) {
               hasRetardo = true;
@@ -232,14 +241,16 @@ class InfractionService {
           }
         }
 
-        days.add(HeatmapDay(
-          date: dateKey,
-          dateTime: cursor,
-          dayOfWeek: cursor.weekday,
-          status: status,
-          isJustified: isJustified,
-          records: dayRecords,
-        ));
+        days.add(
+          HeatmapDay(
+            date: dateKey,
+            dateTime: cursor,
+            dayOfWeek: cursor.weekday,
+            status: status,
+            isJustified: isJustified,
+            records: dayRecords,
+          ),
+        );
 
         cursor = cursor.add(const Duration(days: 1));
       }
@@ -249,4 +260,3 @@ class InfractionService {
     return weeks;
   }
 }
-

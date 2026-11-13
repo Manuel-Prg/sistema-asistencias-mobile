@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_surface.dart';
@@ -176,10 +177,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
 
           return false;
         },
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _views,
-        ),
+        child: IndexedStack(index: _currentIndex, children: _views),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -256,11 +254,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
     );
   }
 
-  Widget _buildFullDock(
-    BuildContext context,
-    Color activeColor,
-    bool isDark,
-  ) {
+  Widget _buildFullDock(BuildContext context, Color activeColor, bool isDark) {
     return GlassSurface(
       borderRadius: BorderRadius.circular(32),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
@@ -326,11 +320,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
     );
   }
 
-  Widget _buildSearchPod(
-    BuildContext context,
-    Color activeColor,
-    bool isDark,
-  ) {
+  Widget _buildSearchPod(BuildContext context, Color activeColor, bool isDark) {
     final isRecursos = _currentIndex == 3;
 
     return GestureDetector(
@@ -396,8 +386,9 @@ class _GlassNavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeColor = Theme.of(context).colorScheme.primary;
-    final inactiveColor =
-        isDark ? AppColors.darkTextSecondary : AppColors.slateMuted;
+    final inactiveColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.slateMuted;
 
     return Expanded(
       child: GestureDetector(
@@ -410,8 +401,8 @@ class _GlassNavItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? (isDark
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : activeColor.withValues(alpha: 0.12))
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : activeColor.withValues(alpha: 0.12))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(22),
             border: isSelected

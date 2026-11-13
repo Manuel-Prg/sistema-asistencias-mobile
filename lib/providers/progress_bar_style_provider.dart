@@ -21,7 +21,9 @@ class ProgressBarStyleNotifier extends Notifier<ProgressBarStyle> {
     final prefs = await SharedPreferences.getInstance();
     final savedIndex = prefs.getInt(_styleKey);
 
-    if (savedIndex != null && savedIndex >= 0 && savedIndex < ProgressBarStyle.values.length) {
+    if (savedIndex != null &&
+        savedIndex >= 0 &&
+        savedIndex < ProgressBarStyle.values.length) {
       state = ProgressBarStyle.values[savedIndex];
     }
   }

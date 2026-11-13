@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -34,8 +35,8 @@ class ScheduleDayCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       tintColor: isActive
           ? (isDark
-              ? themePrimary.withValues(alpha: 0.35)
-              : themePrimary.withValues(alpha: 0.10))
+                ? themePrimary.withValues(alpha: 0.35)
+                : themePrimary.withValues(alpha: 0.10))
           : null,
       child: Column(
         children: [
@@ -61,7 +62,9 @@ class ScheduleDayCard extends StatelessWidget {
                           fontWeight: FontWeight.w800,
                           color: isActive
                               ? Colors.white
-                              : (isDark ? Colors.white54 : AppColors.slateMuted),
+                              : (isDark
+                                    ? Colors.white54
+                                    : AppColors.slateMuted),
                         ),
                       ),
                     ),
@@ -78,16 +81,22 @@ class ScheduleDayCard extends StatelessWidget {
                           fontFamily: AppTheme.brandFont,
                           color: isActive
                               ? themePrimary
-                              : (isDark ? Colors.white54 : AppColors.slateMuted),
+                              : (isDark
+                                    ? Colors.white54
+                                    : AppColors.slateMuted),
                         ),
                       ),
                       Text(
-                        isActive ? 'Asistencia programada' : 'Descanso / Sin turno',
+                        isActive
+                            ? 'Asistencia programada'
+                            : 'Descanso / Sin turno',
                         style: TextStyle(
                           fontSize: 11,
                           color: isActive
                               ? themePrimary
-                              : (isDark ? Colors.white38 : AppColors.slateMuted),
+                              : (isDark
+                                    ? Colors.white38
+                                    : AppColors.slateMuted),
                         ),
                       ),
                     ],
@@ -116,8 +125,11 @@ class ScheduleDayCard extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.arrow_forward_rounded,
-                      size: 16, color: AppColors.slateMuted),
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: AppColors.slateMuted,
+                  ),
                 ),
                 Expanded(
                   child: _TimePickerButton(
@@ -165,8 +177,13 @@ class _TimePickerButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.access_time_rounded,
-                size: 14, color: isDark ? Colors.white70 : Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.access_time_rounded,
+              size: 14,
+              color: isDark
+                  ? Colors.white70
+                  : Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(width: 6),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +200,9 @@ class _TimePickerButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
+                    color: isDark
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -194,4 +213,3 @@ class _TimePickerButton extends StatelessWidget {
     );
   }
 }
-

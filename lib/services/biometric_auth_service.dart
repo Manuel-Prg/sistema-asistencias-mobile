@@ -57,7 +57,10 @@ class BiometricAuthService {
     final email = await _secureStorage.read(key: _keyEmail);
     final password = await _secureStorage.read(key: _keyPassword);
 
-    if (email != null && password != null && email.isNotEmpty && password.isNotEmpty) {
+    if (email != null &&
+        password != null &&
+        email.isNotEmpty &&
+        password.isNotEmpty) {
       return {'email': email, 'password': password};
     }
     return null;
@@ -78,7 +81,10 @@ class BiometricAuthService {
 
   /// Guarda el estado de la preferencia "Recordar credenciales"
   static Future<void> setRememberEnabled(bool enabled) async {
-    await _secureStorage.write(key: _keyRemember, value: enabled ? 'true' : 'false');
+    await _secureStorage.write(
+      key: _keyRemember,
+      value: enabled ? 'true' : 'false',
+    );
     if (!enabled) {
       await clearCredentials();
     }
@@ -92,7 +98,9 @@ class BiometricAuthService {
 
   /// Activa o desactiva la opción de inicio con huella
   static Future<void> setBiometricEnabled(bool enabled) async {
-    await _secureStorage.write(key: _keyBiometric, value: enabled ? 'true' : 'false');
+    await _secureStorage.write(
+      key: _keyBiometric,
+      value: enabled ? 'true' : 'false',
+    );
   }
 }
-

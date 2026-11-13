@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -63,7 +64,11 @@ class EventCheckInCard extends StatelessWidget {
             decoration: InputDecoration(
               labelText: 'Nombre del Evento',
               hintText: 'Ej. Noche de Museos, Taller del Agua...',
-              prefixIcon: Icon(Icons.event_note_rounded, size: 20, color: themePrimary),
+              prefixIcon: Icon(
+                Icons.event_note_rounded,
+                size: 20,
+                color: themePrimary,
+              ),
               filled: true,
               fillColor: isDark
                   ? Colors.white.withValues(alpha: 0.06)
@@ -82,7 +87,9 @@ class EventCheckInCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
           const SizedBox(height: 6),
@@ -102,11 +109,11 @@ class EventCheckInCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? (isDark
-                            ? themePrimary.withValues(alpha: 0.35)
-                            : themePrimary.withValues(alpha: 0.12))
+                              ? themePrimary.withValues(alpha: 0.35)
+                              : themePrimary.withValues(alpha: 0.12))
                         : (isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : const Color(0xFFF0ECE6)),
+                              ? Colors.white.withValues(alpha: 0.05)
+                              : const Color(0xFFF0ECE6)),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
@@ -118,7 +125,9 @@ class EventCheckInCard extends StatelessWidget {
                     ev,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                       color: isSelected
                           ? (isDark ? Colors.white : themePrimary)
                           : (isDark ? Colors.white70 : AppColors.slateMuted),
@@ -134,7 +143,9 @@ class EventCheckInCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
           const SizedBox(height: 8),
@@ -146,7 +157,11 @@ class EventCheckInCard extends StatelessWidget {
           const SizedBox(height: 18),
           ElevatedButton.icon(
             onPressed: hasActiveSession || isLoading ? null : onSubmit,
-            icon: const Icon(Icons.how_to_reg_rounded, size: 20, color: Colors.white),
+            icon: const Icon(
+              Icons.how_to_reg_rounded,
+              size: 20,
+              color: Colors.white,
+            ),
             label: const Text(
               'REGISTRAR ENTRADA A EVENTO',
               style: TextStyle(

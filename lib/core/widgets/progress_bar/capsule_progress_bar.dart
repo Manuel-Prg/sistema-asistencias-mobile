@@ -36,11 +36,7 @@ class CapsuleProgressBar extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [
-              baseDark,
-              barColor,
-              leadBright,
-            ],
+            colors: [baseDark, barColor, leadBright],
             stops: const [0.0, 0.70, 1.0],
           ),
           boxShadow: [
@@ -101,4 +97,3 @@ class CapsuleProgressBar extends StatelessWidget {
     );
   }
 }
-

@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ota_update/ota_update.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_surface.dart';
@@ -265,8 +267,12 @@ class _UpdateDialogState extends State<UpdateDialog> {
                   Column(
                     children: [
                       LinearProgressIndicator(
-                        value: _downloadProgress > 0 ? _downloadProgress / 100.0 : null,
-                        backgroundColor: isDark ? Colors.white12 : Colors.black12,
+                        value: _downloadProgress > 0
+                            ? _downloadProgress / 100.0
+                            : null,
+                        backgroundColor: isDark
+                            ? Colors.white12
+                            : Colors.black12,
                         valueColor: AlwaysStoppedAnimation<Color>(themePrimary),
                         borderRadius: BorderRadius.circular(6),
                         minHeight: 8,
@@ -349,4 +355,3 @@ class _UpdateDialogState extends State<UpdateDialog> {
     );
   }
 }
-

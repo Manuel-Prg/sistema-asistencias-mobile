@@ -112,7 +112,8 @@ class _ResourcesViewState extends State<ResourcesView> {
     final filtered = kStudentResources.where((res) {
       final matchesCategory =
           _selectedCategory == 'Todos' || res.category == _selectedCategory;
-      final matchesSearch = term.isEmpty ||
+      final matchesSearch =
+          term.isEmpty ||
           res.title.toLowerCase().contains(term) ||
           res.description.toLowerCase().contains(term) ||
           res.category.toLowerCase().contains(term);
@@ -146,7 +147,9 @@ class _ResourcesViewState extends State<ResourcesView> {
                 style: TextStyle(
                   fontSize: 13,
                   fontFamily: AppTheme.brandFont,
-                  color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                  color: isDark
+                      ? const Color(0xFFC5D7DF)
+                      : AppColors.slateMuted,
                 ),
               ),
             ),
@@ -156,7 +159,10 @@ class _ResourcesViewState extends State<ResourcesView> {
               onTap: () => AcademicCalendarView.open(context),
               child: GlassSurface(
                 borderRadius: BorderRadius.circular(18),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 tintColor: isDark ? const Color(0xFF141418) : null,
                 child: Row(
                   children: [
@@ -165,13 +171,11 @@ class _ResourcesViewState extends State<ResourcesView> {
                       height: 42,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Theme.of(context).colorScheme.primary.withValues(
-                              alpha: isDark ? 0.22 : 0.12,
-                            ),
+                        color: Theme.of(context).colorScheme.primary
+                            .withValues(alpha: isDark ? 0.22 : 0.12),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withValues(
-                                alpha: isDark ? 0.45 : 0.25,
-                              ),
+                          color: Theme.of(context).colorScheme.primary
+                              .withValues(alpha: isDark ? 0.45 : 0.25),
                           width: 1.2,
                         ),
                       ),
@@ -208,9 +212,7 @@ class _ResourcesViewState extends State<ResourcesView> {
                                   vertical: 1.5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary
+                                  color: Theme.of(context).colorScheme.primary
                                       .withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -219,7 +221,9 @@ class _ResourcesViewState extends State<ResourcesView> {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w800,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary,
                                   ),
                                 ),
                               ),
@@ -285,7 +289,8 @@ class _ResourcesViewState extends State<ResourcesView> {
             const SizedBox(height: 12),
             ResourceCategoryChips(
               selectedCategory: _selectedCategory,
-              onSelectCategory: (cat) => setState(() => _selectedCategory = cat),
+              onSelectCategory: (cat) =>
+                  setState(() => _selectedCategory = cat),
             ),
             const SizedBox(height: 16),
             if (filtered.isEmpty)

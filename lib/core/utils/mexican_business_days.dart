@@ -117,7 +117,11 @@ class MexicanBusinessDays {
   }
 
   /// Obtiene los primeros [count] días hábiles del mes especificado.
-  static List<DateTime> getFirstNBusinessDays(int year, int month, {int count = 5}) {
+  static List<DateTime> getFirstNBusinessDays(
+    int year,
+    int month, {
+    int count = 5,
+  }) {
     final businessDays = <DateTime>[];
     var currentDay = 1;
 
@@ -135,7 +139,11 @@ class MexicanBusinessDays {
   }
 
   /// Obtiene los últimos [count] días hábiles del mes especificado.
-  static List<DateTime> getLastNBusinessDays(int year, int month, {int count = 3}) {
+  static List<DateTime> getLastNBusinessDays(
+    int year,
+    int month, {
+    int count = 3,
+  }) {
     final businessDays = <DateTime>[];
     // Obtener el último día del mes
     final lastDay = DateTime(year, month + 1, 0).day;
@@ -169,8 +177,8 @@ class MexicanBusinessDays {
   /// (en los últimos [count] días hábiles del mes).
   static bool isEndOfMonthWindow(DateTime date, {int count = 3}) {
     final lastDays = getLastNBusinessDays(date.year, date.month, count: count);
-    return lastDays.any((d) =>
-        d.year == date.year && d.month == date.month && d.day == date.day);
+    return lastDays.any(
+      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
+    );
   }
 }
-

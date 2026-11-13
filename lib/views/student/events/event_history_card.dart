@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/date_utils.dart';
@@ -49,10 +50,7 @@ class EventHistoryCard extends StatelessWidget {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: themePrimary.withValues(alpha: isDark ? 0.22 : 0.12),
                   borderRadius: BorderRadius.circular(8),
@@ -138,9 +136,7 @@ class _EventHistoryItem extends StatelessWidget {
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     fontFamily: AppTheme.brandFont,
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : themePrimary,
+                    color: isDark ? AppColors.darkTextPrimary : themePrimary,
                   ),
                 ),
                 Text(
@@ -158,7 +154,9 @@ class _EventHistoryItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: isDark ? AppColors.signalAqua : AppColors.accentLimnological,
+              color: isDark
+                  ? AppColors.signalAqua
+                  : AppColors.accentLimnological,
             ),
           ),
         ],
@@ -166,4 +164,3 @@ class _EventHistoryItem extends StatelessWidget {
     );
   }
 }
-

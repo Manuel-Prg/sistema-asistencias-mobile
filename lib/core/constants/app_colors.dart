@@ -21,14 +21,24 @@ class AppColors {
   static const Color sillarCard = Color(0xFFFAF8F3); // Tarjetas sillar
   static const Color stoneBorder = Color(0xFFD5CFC2); // Cortes secos 1px
   static const Color mineralInk = Color(0xFF12232B); // Texto primario
-  static const Color slateMuted = Color(0xFF325766); // Texto secundario y subtítulos nítidos de alto contraste
+  static const Color slateMuted = Color(
+    0xFF325766,
+  ); // Texto secundario y subtítulos nítidos de alto contraste
 
   // Superficies Modo Oscuro (Puro Negro AMOLED)
-  static const Color abyssalGroundDark = Color(0xFF000000); // 100% Puro negro AMOLED
-  static const Color pondCardDark = Color(0xFF121214); // Tarjetas carbón neutro / vidrio ahumado
-  static const Color darkBorder = Color(0xFF26262B); // Borde sutil y limpio estilo cristal oscuro
+  static const Color abyssalGroundDark = Color(
+    0xFF000000,
+  ); // 100% Puro negro AMOLED
+  static const Color pondCardDark = Color(
+    0xFF121214,
+  ); // Tarjetas carbón neutro / vidrio ahumado
+  static const Color darkBorder = Color(
+    0xFF26262B,
+  ); // Borde sutil y limpio estilo cristal oscuro
   static const Color darkTextPrimary = Color(0xFFF4F1EA);
-  static const Color darkTextSecondary = Color(0xFF9E9EA8); // Gris plata neutro de alto contraste
+  static const Color darkTextSecondary = Color(
+    0xFF9E9EA8,
+  ); // Gris plata neutro de alto contraste
 
   // Estados de Asistencia (Heatmap & Badges)
   static const Color statusOnTime = Color(0xFF10B981); // Verde puntual
@@ -38,4 +48,3 @@ class AppColors {
   static const Color statusInactive = Color(0xFFD1D5DB); // Gris sin registro
   static const Color statusInactiveDark = Color(0xFF222226);
 }
-

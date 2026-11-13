@@ -31,7 +31,9 @@ class Profile {
       realName: json['real_name'] as String?,
       guardianName: json['guardian_name'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
     );
   }
 
@@ -47,4 +49,3 @@ class Profile {
     };
   }
 }
-

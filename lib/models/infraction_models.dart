@@ -1,11 +1,6 @@
 import 'attendance_record.dart';
 
-enum RecordStatus {
-  onTime,
-  retardo,
-  falta,
-  justified,
-}
+enum RecordStatus { onTime, retardo, falta, justified }
 
 class LateCheckResult {
   final bool isLate;
@@ -72,4 +67,3 @@ class HeatmapWeek {
 
   HeatmapWeek({required this.days});
 }
-

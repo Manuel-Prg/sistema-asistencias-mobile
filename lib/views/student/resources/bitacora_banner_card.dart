@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 
@@ -70,8 +71,9 @@ class BitacoraBannerCard extends StatelessWidget {
             icon: const Icon(Icons.open_in_new_rounded, size: 16),
             label: const Text('Ir a Bitácora'),
             style: OutlinedButton.styleFrom(
-              foregroundColor:
-                  isDark ? AppColors.signalAqua : AppColors.primary,
+              foregroundColor: isDark
+                  ? AppColors.signalAqua
+                  : AppColors.primary,
               side: BorderSide(
                 color: isDark ? AppColors.signalAqua : AppColors.primary,
                 width: 1.2,
@@ -86,4 +88,3 @@ class BitacoraBannerCard extends StatelessWidget {
     );
   }
 }
-

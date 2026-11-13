@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
 
@@ -9,7 +10,6 @@ class SchedulePresetsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GlassSurface(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       borderRadius: BorderRadius.circular(14),
@@ -74,8 +74,9 @@ class _PresetButton extends StatelessWidget {
           color: themePrimary.withValues(alpha: isDark ? 0.25 : 0.12),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: (isDark ? Colors.white38 : themePrimary)
-                .withValues(alpha: 0.35),
+            color: (isDark ? Colors.white38 : themePrimary).withValues(
+              alpha: 0.35,
+            ),
           ),
         ),
         child: Text(
@@ -90,4 +91,3 @@ class _PresetButton extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../services/notification_service.dart';
 import '../services/report_notification_service.dart';
 
@@ -78,7 +79,10 @@ class NotificationNotifier extends Notifier<NotificationState> {
         await prefs.setBool(_prefKey, true);
         await ReportNotificationService.scheduleMonthlyReportReminders();
       }
-      state = state.copyWith(isEnabled: stillGranted, isDeviceGranted: stillGranted);
+      state = state.copyWith(
+        isEnabled: stillGranted,
+        isDeviceGranted: stillGranted,
+      );
       return stillGranted;
     }
   }
@@ -136,6 +140,5 @@ class NotificationNotifier extends Notifier<NotificationState> {
 
 final notificationProvider =
     NotifierProvider<NotificationNotifier, NotificationState>(() {
-  return NotificationNotifier();
-});
-
+      return NotificationNotifier();
+    });

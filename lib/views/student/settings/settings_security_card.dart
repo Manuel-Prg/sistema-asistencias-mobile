@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -17,7 +18,9 @@ class SettingsSecurityCard extends ConsumerWidget {
     final securityState = ref.watch(securitySettingsProvider);
 
     final activeAccent = isDark
-        ? (selectedPalette.isDefault ? AppColors.signalAqua : selectedPalette.accent)
+        ? (selectedPalette.isDefault
+              ? AppColors.signalAqua
+              : selectedPalette.accent)
         : selectedPalette.primary;
 
     return GlassSurface(
@@ -74,7 +77,9 @@ class SettingsSecurityCard extends ConsumerWidget {
               'Guarda tu correo y contraseña cifrados en este dispositivo para no tener que escribirlos en cada inicio.',
               style: TextStyle(
                 fontSize: 11.5,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.slateMuted,
                 height: 1.35,
               ),
             ),
@@ -126,7 +131,9 @@ class SettingsSecurityCard extends ConsumerWidget {
                 'Inicia sesión al instante tocando el sensor biométrico de tu teléfono.',
                 style: TextStyle(
                   fontSize: 11.5,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                  color: isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.slateMuted,
                   height: 1.35,
                 ),
               ),
@@ -147,8 +154,12 @@ class SettingsSecurityCard extends ConsumerWidget {
                     context,
                     message: ok && val
                         ? 'Acceso con huella dactilar activado.'
-                        : (val ? 'No se pudo verificar la huella.' : 'Huella dactilar desactivada.'),
-                    type: ok && val ? GlassToastType.success : GlassToastType.warning,
+                        : (val
+                              ? 'No se pudo verificar la huella.'
+                              : 'Huella dactilar desactivada.'),
+                    type: ok && val
+                        ? GlassToastType.success
+                        : GlassToastType.warning,
                   );
                 }
               },
@@ -159,4 +170,3 @@ class SettingsSecurityCard extends ConsumerWidget {
     );
   }
 }
-

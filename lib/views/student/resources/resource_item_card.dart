@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 import 'student_resource_model.dart';
@@ -76,9 +77,7 @@ class ResourceItemCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: resource.accentColor.withValues(
-                            alpha: 0.40,
-                          ),
+                          color: resource.accentColor.withValues(alpha: 0.40),
                         ),
                       ),
                       child: Text(
@@ -150,11 +149,8 @@ class ResourceItemCard extends StatelessWidget {
                     Tooltip(
                       message: 'Copiar enlace',
                       child: OutlinedButton(
-                        onPressed: () => onCopy(
-                          resource.id,
-                          resource.url,
-                          resource.title,
-                        ),
+                        onPressed: () =>
+                            onCopy(resource.id, resource.url, resource.title),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(44, 42),
                           padding: EdgeInsets.zero,
@@ -162,8 +158,8 @@ class ResourceItemCard extends StatelessWidget {
                             color: isCopied
                                 ? themePrimary
                                 : (isDark
-                                    ? Colors.white24
-                                    : AppColors.stoneBorder),
+                                      ? Colors.white24
+                                      : AppColors.stoneBorder),
                             width: 1.2,
                           ),
                           shape: RoundedRectangleBorder(
@@ -171,15 +167,13 @@ class ResourceItemCard extends StatelessWidget {
                           ),
                         ),
                         child: Icon(
-                          isCopied
-                              ? Icons.check_rounded
-                              : Icons.copy_rounded,
+                          isCopied ? Icons.check_rounded : Icons.copy_rounded,
                           size: 18,
                           color: isCopied
                               ? (isDark ? Colors.white : themePrimary)
                               : (isDark
-                                  ? Colors.white70
-                                  : AppColors.mineralInk),
+                                    ? Colors.white70
+                                    : AppColors.mineralInk),
                         ),
                       ),
                     ),
@@ -193,4 +187,3 @@ class ResourceItemCard extends StatelessWidget {
     );
   }
 }
-

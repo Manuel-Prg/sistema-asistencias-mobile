@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -28,7 +29,9 @@ class ProfileSignOutDialog {
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: GlassSurface(
-          tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
+          tintColor: isDark
+              ? const Color(0xFF141418)
+              : Colors.white.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Column(
@@ -87,7 +90,9 @@ class ProfileSignOutDialog {
                 style: TextStyle(
                   fontFamily: AppTheme.brandFont,
                   fontSize: 13,
-                  color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                  color: isDark
+                      ? const Color(0xFFC5D7DF)
+                      : AppColors.slateMuted,
                   height: 1.4,
                 ),
               ),
@@ -96,8 +101,7 @@ class ProfileSignOutDialog {
                 onPressed: () async {
                   final uri = Uri.parse('https://xurl.es/bitacora');
                   try {
-                    await launchUrl(uri,
-                        mode: LaunchMode.externalApplication);
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
                   } catch (_) {
                     await launchUrl(uri, mode: LaunchMode.platformDefault);
                   }
@@ -105,22 +109,31 @@ class ProfileSignOutDialog {
                 icon: Icon(
                   Icons.edit_note_rounded,
                   size: 18,
-                  color: isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
+                  color: isDark
+                      ? Colors.white
+                      : Theme.of(ctx).colorScheme.primary,
                 ),
                 label: Text(
                   'Llenar Bitácora',
                   style: TextStyle(
-                    color: isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
+                    color: isDark
+                        ? Colors.white
+                        : Theme.of(ctx).colorScheme.primary,
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor:
-                      isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
-                  iconColor:
-                      isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
+                  foregroundColor: isDark
+                      ? Colors.white
+                      : Theme.of(ctx).colorScheme.primary,
+                  iconColor: isDark
+                      ? Colors.white
+                      : Theme.of(ctx).colorScheme.primary,
                   side: BorderSide(
-                    color: (isDark ? Colors.white38 : Theme.of(ctx).colorScheme.primary)
-                        .withValues(alpha: 0.5),
+                    color:
+                        (isDark
+                                ? Colors.white38
+                                : Theme.of(ctx).colorScheme.primary)
+                            .withValues(alpha: 0.5),
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 
@@ -26,7 +27,9 @@ class ResourcesEmptyState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.mineralInk,
               ),
             ),
             const SizedBox(height: 4),
@@ -44,4 +47,3 @@ class ResourcesEmptyState extends StatelessWidget {
     );
   }
 }
-

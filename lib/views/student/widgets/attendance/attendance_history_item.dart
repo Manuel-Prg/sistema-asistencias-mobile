@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/glass_surface.dart';
@@ -47,10 +48,7 @@ class AttendanceHistoryItem extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: badgeColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
@@ -76,7 +74,9 @@ class AttendanceHistoryItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 13,
-                    color: isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                    color: isDark
+                        ? const Color(0xFFC5D7DF)
+                        : AppColors.slateMuted,
                   ),
                 ),
               ),
@@ -102,14 +102,12 @@ class AttendanceHistoryItem extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                AppDateUtils.formatTimeRange(
-                  record.checkIn,
-                  record.checkOut,
-                ),
+                AppDateUtils.formatTimeRange(record.checkIn, record.checkOut),
                 style: TextStyle(
                   fontSize: 12,
-                  color:
-                      isDark ? const Color(0xFFC5D7DF) : AppColors.slateMuted,
+                  color: isDark
+                      ? const Color(0xFFC5D7DF)
+                      : AppColors.slateMuted,
                 ),
               ),
             ],
@@ -167,4 +165,3 @@ class AttendanceHistoryItem extends StatelessWidget {
     );
   }
 }
-

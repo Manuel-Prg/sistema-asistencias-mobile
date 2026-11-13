@@ -21,7 +21,10 @@ class SegmentedProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filledSegments = (ratio * totalSegments).round().clamp(0, totalSegments);
+    final filledSegments = (ratio * totalSegments).round().clamp(
+      0,
+      totalSegments,
+    );
     const gap = 2.5;
     final segmentRadius = BorderRadius.circular(height * 0.28);
 
@@ -60,18 +63,18 @@ class SegmentedProgressBar extends StatelessWidget {
                   color: isFilled
                       ? null
                       : (isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : Colors.black.withValues(alpha: 0.06)),
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : Colors.black.withValues(alpha: 0.06)),
                   border: Border.all(
                     color: isFilled
                         ? (isFrontier
-                            ? Colors.white.withValues(alpha: 0.70)
-                            : Colors.white.withValues(alpha: 0.25))
+                              ? Colors.white.withValues(alpha: 0.70)
+                              : Colors.white.withValues(alpha: 0.25))
                         : (isMilestone
-                            ? (isDark
-                                ? Colors.white.withValues(alpha: 0.14)
-                                : Colors.black.withValues(alpha: 0.12))
-                            : Colors.transparent),
+                              ? (isDark
+                                    ? Colors.white.withValues(alpha: 0.14)
+                                    : Colors.black.withValues(alpha: 0.12))
+                              : Colors.transparent),
                     width: 0.8,
                   ),
                   boxShadow: [
@@ -91,4 +94,3 @@ class SegmentedProgressBar extends StatelessWidget {
     );
   }
 }
-

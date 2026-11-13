@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -27,8 +28,8 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
 
     final activeAccent = isDark
         ? (selectedPalette.isDefault
-            ? AppColors.signalAqua
-            : selectedPalette.accent)
+              ? AppColors.signalAqua
+              : selectedPalette.accent)
         : selectedPalette.primary;
 
     return GlassSurface(
@@ -159,7 +160,9 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
             'Ajusta la transparencia en los menús y la navegación de la app. Se conserva el contraste del texto.',
             style: TextStyle(
               fontSize: 12,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
               height: 1.35,
             ),
           ),
@@ -184,9 +187,10 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
                             ? AppColors.accentLimnological
                             : selectedPalette.accent)
                         .withValues(
-                      alpha: (0.25 + (1.0 - glassSettings.transparency) * 0.40)
-                          .clamp(0.20, 0.85),
-                    ),
+                          alpha:
+                              (0.25 + (1.0 - glassSettings.transparency) * 0.40)
+                                  .clamp(0.20, 0.85),
+                        ),
                   ],
                 ),
                 border: glassSettings.showBorders
@@ -247,9 +251,8 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               value: glassSettings.transparency,
               min: 0.10,
               max: 0.95,
-              onChanged: (val) => ref
-                  .read(glassSettingsProvider.notifier)
-                  .setTransparency(val),
+              onChanged: (val) =>
+                  ref.read(glassSettingsProvider.notifier).setTransparency(val),
             ),
           ),
           Padding(
@@ -303,15 +306,16 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
               'Mostrar bordes decorativos alrededor del cristal. Si desactivas esta opción, se mantendrán el desenfoque y la refracción.',
               style: TextStyle(
                 fontSize: 11.5,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.slateMuted,
                 height: 1.35,
               ),
             ),
             value: glassSettings.showBorders,
             activeTrackColor: activeAccent,
-            onChanged: (show) => ref
-                .read(glassSettingsProvider.notifier)
-                .setShowBorders(show),
+            onChanged: (show) =>
+                ref.read(glassSettingsProvider.notifier).setShowBorders(show),
           ),
 
           const SizedBox(height: 10),
@@ -388,7 +392,9 @@ class _ProfileThemeCardState extends ConsumerState<ProfileThemeCard> {
             'Elige cómo se ven las barras de progreso de horas acumuladas.',
             style: TextStyle(
               fontSize: 12,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
               height: 1.35,
             ),
           ),
@@ -503,8 +509,8 @@ class _BarStyleChip extends StatelessWidget {
           color: isSelected
               ? activeColor.withValues(alpha: 0.18)
               : (isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : const Color(0xFFEFECE6)),
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : const Color(0xFFEFECE6)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? activeColor : Colors.transparent,
@@ -567,8 +573,8 @@ class _ThemeChip extends StatelessWidget {
           color: isSelected
               ? activeColor.withValues(alpha: 0.18)
               : (isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : const Color(0xFFEFECE6)),
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : const Color(0xFFEFECE6)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? activeColor : Colors.transparent,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../models/infraction_models.dart';
 
@@ -30,20 +31,18 @@ class InfractionsTracker extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isReached
                       ? (isLast
-                          ? AppColors.statusFalta
-                          : AppColors.terracottaRule)
+                            ? AppColors.statusFalta
+                            : AppColors.terracottaRule)
                       : (isDark
-                          ? const Color(0xFF162E3B)
-                          : AppColors.stoneBorder.withValues(alpha: 0.3)),
+                            ? const Color(0xFF162E3B)
+                            : AppColors.stoneBorder.withValues(alpha: 0.3)),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isReached
-                        ? (isLast
-                            ? Colors.redAccent
-                            : AppColors.terracottaRule)
+                        ? (isLast ? Colors.redAccent : AppColors.terracottaRule)
                         : (isDark
-                            ? AppColors.darkBorder
-                            : AppColors.stoneBorder),
+                              ? AppColors.darkBorder
+                              : AppColors.stoneBorder),
                   ),
                 ),
                 child: Column(
@@ -56,8 +55,8 @@ class InfractionsTracker extends StatelessWidget {
                         color: isReached
                             ? Colors.white
                             : (isDark
-                                ? const Color(0xFFC5D7DF)
-                                : AppColors.slateMuted),
+                                  ? const Color(0xFFC5D7DF)
+                                  : AppColors.slateMuted),
                       ),
                     ),
                     if (isLast)
@@ -69,8 +68,8 @@ class InfractionsTracker extends StatelessWidget {
                           color: isReached
                               ? Colors.white70
                               : (isDark
-                                  ? const Color(0xFFC5D7DF)
-                                  : AppColors.slateMuted),
+                                    ? const Color(0xFFC5D7DF)
+                                    : AppColors.slateMuted),
                         ),
                       ),
                   ],
@@ -92,22 +91,20 @@ class InfractionsTracker extends StatelessWidget {
             return Expanded(
               child: Container(
                 height: 24,
-                margin: EdgeInsets.only(
-                  right: isGroupEnd && index < 8 ? 8 : 4,
-                ),
+                margin: EdgeInsets.only(right: isGroupEnd && index < 8 ? 8 : 4),
                 decoration: BoxDecoration(
                   color: isMarked
                       ? AppColors.statusLate
                       : (isDark
-                          ? const Color(0xFF162E3B)
-                          : AppColors.stoneBorder.withValues(alpha: 0.3)),
+                            ? const Color(0xFF162E3B)
+                            : AppColors.stoneBorder.withValues(alpha: 0.3)),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
                     color: isMarked
                         ? AppColors.terracottaRule
                         : (isDark
-                            ? AppColors.darkBorder
-                            : AppColors.stoneBorder),
+                              ? AppColors.darkBorder
+                              : AppColors.stoneBorder),
                   ),
                 ),
                 child: Center(
@@ -128,4 +125,3 @@ class InfractionsTracker extends StatelessWidget {
     );
   }
 }
-

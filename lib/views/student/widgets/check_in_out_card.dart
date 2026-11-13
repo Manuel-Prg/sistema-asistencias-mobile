@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -117,8 +118,8 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
                   color: hasActive
                       ? (isDark ? Colors.white : themePrimary)
                       : (isDark
-                          ? Colors.white54
-                          : themePrimary.withValues(alpha: 0.5)),
+                            ? Colors.white54
+                            : themePrimary.withValues(alpha: 0.5)),
                   shape: BoxShape.circle,
                   boxShadow: hasActive
                       ? [

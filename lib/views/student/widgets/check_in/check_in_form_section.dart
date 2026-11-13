@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -93,7 +94,8 @@ class CheckInFormSection extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const BouncingScrollPhysics(),
                     itemCount: AppConstants.rooms.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 6),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 6),
                     itemBuilder: (context, index) {
                       final room = AppConstants.rooms[index];
                       final isSelected = room == currentRoom;
@@ -115,15 +117,15 @@ class CheckInFormSection extends StatelessWidget {
                                     alpha: isDark ? 0.35 : 0.18,
                                   )
                                 : (isDark
-                                    ? Colors.white.withValues(alpha: 0.05)
-                                    : Colors.white.withValues(alpha: 0.65)),
+                                      ? Colors.white.withValues(alpha: 0.05)
+                                      : Colors.white.withValues(alpha: 0.65)),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: isSelected
                                   ? (isDark ? Colors.white70 : themePrimary)
                                   : (isDark
-                                      ? Colors.white12
-                                      : AppColors.stoneBorder),
+                                        ? Colors.white12
+                                        : AppColors.stoneBorder),
                               width: isSelected ? 1.5 : 1,
                             ),
                           ),
@@ -135,8 +137,8 @@ class CheckInFormSection extends StatelessWidget {
                                 color: isSelected
                                     ? (isDark ? Colors.white : themePrimary)
                                     : (isDark
-                                        ? Colors.white60
-                                        : AppColors.slateMuted),
+                                          ? Colors.white60
+                                          : AppColors.slateMuted),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -150,8 +152,8 @@ class CheckInFormSection extends StatelessWidget {
                                     color: isSelected
                                         ? (isDark ? Colors.white : themePrimary)
                                         : (isDark
-                                            ? Colors.white
-                                            : AppColors.mineralInk),
+                                              ? Colors.white
+                                              : AppColors.mineralInk),
                                   ),
                                 ),
                               ),
@@ -197,11 +199,8 @@ class CheckInFormSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         InkWell(
-          onTap: () => _showGlassRoomPicker(
-            context,
-            selectedRoom,
-            onRoomChanged,
-          ),
+          onTap: () =>
+              _showGlassRoomPicker(context, selectedRoom, onRoomChanged),
           borderRadius: BorderRadius.circular(14),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -355,18 +354,18 @@ class _ShiftButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark
-                  ? themePrimary.withValues(alpha: 0.35)
-                  : themePrimary.withValues(alpha: 0.20))
+                    ? themePrimary.withValues(alpha: 0.35)
+                    : themePrimary.withValues(alpha: 0.20))
               : (isDark
-                  ? Colors.white.withValues(alpha: 0.06)
-                  : Colors.white.withValues(alpha: 0.65)),
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.white.withValues(alpha: 0.65)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
                 ? (isDark ? Colors.white : themePrimary)
                 : (isDark
-                    ? Colors.white.withValues(alpha: 0.15)
-                    : AppColors.stoneBorder),
+                      ? Colors.white.withValues(alpha: 0.15)
+                      : AppColors.stoneBorder),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -399,4 +398,3 @@ class _ShiftButton extends StatelessWidget {
     );
   }
 }
-

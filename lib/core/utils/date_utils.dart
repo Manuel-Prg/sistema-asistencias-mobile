@@ -3,8 +3,14 @@ import 'package:intl/intl.dart';
 class AppDateUtils {
   AppDateUtils._();
 
-  static final DateFormat _dateFormatEs = DateFormat("EEEE, d 'de' MMMM 'de' y", 'es_MX');
-  static final DateFormat _dateShortFormatEs = DateFormat("d 'de' MMM", 'es_MX');
+  static final DateFormat _dateFormatEs = DateFormat(
+    "EEEE, d 'de' MMMM 'de' y",
+    'es_MX',
+  );
+  static final DateFormat _dateShortFormatEs = DateFormat(
+    "d 'de' MMM",
+    'es_MX',
+  );
   static final DateFormat _timeFormat = DateFormat('hh:mm a');
   static final DateFormat _isoDateFormat = DateFormat('yyyy-MM-dd');
 
@@ -58,4 +64,3 @@ class AppDateUtils {
     return dartWeekday - 1;
   }
 }
-

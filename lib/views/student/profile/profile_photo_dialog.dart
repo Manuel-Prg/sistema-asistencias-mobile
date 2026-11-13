@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -160,8 +161,9 @@ class _ProfilePhotoDialogContentState
                 ),
               ],
             ),
-            backgroundColor:
-                success ? AppColors.primary : AppColors.terracottaRule,
+            backgroundColor: success
+                ? AppColors.primary
+                : AppColors.terracottaRule,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -174,7 +176,9 @@ class _ProfilePhotoDialogContentState
     if (url.isEmpty) {
       ScaffoldMessenger.of(widget.parentContext).showSnackBar(
         const SnackBar(
-          content: Text('Por favor elige una foto de la galería o ingresa un enlace.'),
+          content: Text(
+            'Por favor elige una foto de la galería o ingresa un enlace.',
+          ),
           backgroundColor: AppColors.terracottaRule,
           behavior: SnackBarBehavior.floating,
         ),
@@ -197,8 +201,9 @@ class _ProfilePhotoDialogContentState
     Navigator.of(context).pop();
 
     widget.onStartUpdate();
-    final success =
-        await widget.ref.read(authProvider.notifier).updateProfileAvatar(url);
+    final success = await widget.ref
+        .read(authProvider.notifier)
+        .updateProfileAvatar(url);
     widget.onFinishUpdate();
 
     if (widget.parentContext.mounted) {
@@ -207,7 +212,9 @@ class _ProfilePhotoDialogContentState
           content: Row(
             children: [
               Icon(
-                success ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+                success
+                    ? Icons.check_circle_rounded
+                    : Icons.error_outline_rounded,
                 color: Colors.white,
                 size: 20,
               ),
@@ -221,8 +228,9 @@ class _ProfilePhotoDialogContentState
               ),
             ],
           ),
-          backgroundColor:
-              success ? AppColors.primary : AppColors.terracottaRule,
+          backgroundColor: success
+              ? AppColors.primary
+              : AppColors.terracottaRule,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -240,8 +248,8 @@ class _ProfilePhotoDialogContentState
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themePrimary = Theme.of(context).colorScheme.primary;
     final currentText = _urlController.text.trim();
-    final hasValidUrl = currentText.startsWith('http://') ||
-        currentText.startsWith('https://');
+    final hasValidUrl =
+        currentText.startsWith('http://') || currentText.startsWith('https://');
     final hasSelection = _selectedBytes != null || hasValidUrl;
 
     return GlassDialog(
@@ -369,11 +377,21 @@ class _ProfilePhotoDialogContentState
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _isSaving ? null : () => _pickImage(ImageSource.gallery),
-                    icon: const Icon(Icons.photo_library_rounded, size: 18, color: Colors.white),
+                    onPressed: _isSaving
+                        ? null
+                        : () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(
+                      Icons.photo_library_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
                     label: const Text(
                       'Galería',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: themePrimary,
@@ -390,8 +408,14 @@ class _ProfilePhotoDialogContentState
                 const SizedBox(width: 10),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: _isSaving ? null : () => _pickImage(ImageSource.camera),
-                    icon: Icon(Icons.photo_camera_rounded, size: 18, color: isDark ? Colors.white : themePrimary),
+                    onPressed: _isSaving
+                        ? null
+                        : () => _pickImage(ImageSource.camera),
+                    icon: Icon(
+                      Icons.photo_camera_rounded,
+                      size: 18,
+                      color: isDark ? Colors.white : themePrimary,
+                    ),
                     label: Text(
                       'Cámara',
                       style: TextStyle(
@@ -423,7 +447,9 @@ class _ProfilePhotoDialogContentState
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.slateMuted,
               ),
             ),
             const SizedBox(height: 12),
@@ -442,9 +468,7 @@ class _ProfilePhotoDialogContentState
                           ? Icons.keyboard_arrow_up_rounded
                           : Icons.keyboard_arrow_down_rounded,
                       size: 18,
-                      color: isDark
-                          ? AppColors.signalAqua
-                          : AppColors.primary,
+                      color: isDark ? AppColors.signalAqua : AppColors.primary,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -473,7 +497,9 @@ class _ProfilePhotoDialogContentState
                 enableSuggestions: false,
                 style: TextStyle(
                   fontSize: 13,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.mineralInk,
                 ),
                 decoration: InputDecoration(
                   hintText: 'https://ejemplo.com/mifoto.jpg',
@@ -510,7 +536,9 @@ class _ProfilePhotoDialogContentState
           child: Text(
             'Cancelar',
             style: TextStyle(
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
         ),
@@ -538,7 +566,10 @@ class _ProfilePhotoDialogContentState
                 )
               : const Text(
                   'Guardar',
-                  style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
         ),
       ],

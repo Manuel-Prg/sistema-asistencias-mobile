@@ -44,10 +44,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
       return;
     }
 
-    final success =
-        await ref.read(authProvider.notifier).signIn(email, password);
+    final success = await ref
+        .read(authProvider.notifier)
+        .signIn(email, password);
     if (success) {
-      await ref.read(securitySettingsProvider.notifier).onSuccessfulLogin(
+      await ref
+          .read(securitySettingsProvider.notifier)
+          .onSuccessfulLogin(
             email: email,
             password: password,
             rememberMe: _rememberMe,
@@ -60,8 +63,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     if (!security.hasSavedCredentials) {
       AppGlassToast.show(
         context,
-        message:
-            'No hay credenciales recordadas. Ingresa primero con tu contraseña.',
+        message: 'No hay credenciales recordadas. Ingresa primero con tu contraseña.',
         type: GlassToastType.info,
       );
       return;
@@ -72,12 +74,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
         .authenticateWithBiometrics();
     if (!ok) return;
 
-    final success = await ref.read(authProvider.notifier).signIn(
-          security.savedEmail!,
-          security.savedPassword!,
-        );
+    final success = await ref
+        .read(authProvider.notifier)
+        .signIn(security.savedEmail!, security.savedPassword!);
     if (success) {
-      await ref.read(securitySettingsProvider.notifier).onSuccessfulLogin(
+      await ref
+          .read(securitySettingsProvider.notifier)
+          .onSuccessfulLogin(
             email: security.savedEmail!,
             password: security.savedPassword!,
             rememberMe: true,
@@ -124,10 +127,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     child: Image.asset(
                       'assets/logo/logo_remove_background.png',
                       cacheWidth: 180,
-                      errorBuilder: (_, __, ___) => Image.asset(
+                      errorBuilder: (_, _, _) => Image.asset(
                         'assets/logo/iconoFavicon.png',
                         cacheWidth: 180,
-                        errorBuilder: (_, __, ___) => const Icon(
+                        errorBuilder: (_, _, _) => const Icon(
                           Icons.water_drop_rounded,
                           size: 48,
                           color: AppColors.primary,
@@ -227,7 +230,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                   : Icons.visibility_off_outlined,
                             ),
                             onPressed: () => setState(
-                                () => _obscurePassword = !_obscurePassword),
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                           ),
                         ),
                       ),
@@ -243,7 +247,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             borderRadius: BorderRadius.circular(6),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 2, vertical: 4),
+                                horizontal: 2,
+                                vertical: 4,
+                              ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -253,7 +259,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                     child: Checkbox(
                                       value: _rememberMe,
                                       onChanged: (val) => setState(
-                                          () => _rememberMe = val ?? false),
+                                        () => _rememberMe = val ?? false,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(4),
                                       ),
@@ -283,7 +290,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               );
                             },
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -305,8 +314,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              onPressed:
-                                  authState.isLoading ? null : _handleLogin,
+                              onPressed: authState.isLoading
+                                  ? null
+                                  : _handleLogin,
                               child: authState.isLoading
                                   ? const SizedBox(
                                       width: 22,
@@ -333,11 +343,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               width: 50,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(14),
-                                color: AppColors.signalAqua
-                                    .withValues(alpha: isDark ? 0.20 : 0.12),
+                                color: AppColors.signalAqua.withValues(
+                                  alpha: isDark ? 0.20 : 0.12,
+                                ),
                                 border: Border.all(
-                                  color: AppColors.signalAqua
-                                      .withValues(alpha: isDark ? 0.45 : 0.35),
+                                  color: AppColors.signalAqua.withValues(
+                                    alpha: isDark ? 0.45 : 0.35,
+                                  ),
                                   width: 1.2,
                                 ),
                               ),

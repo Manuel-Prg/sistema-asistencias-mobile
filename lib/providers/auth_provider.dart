@@ -122,7 +122,8 @@ class AuthNotifier extends Notifier<AppAuthState> {
           await SupabaseService.signOut();
           state = AppAuthState(
             isInitialCheckDone: true,
-            errorMessage: 'Tu sesión ha expirado. Por favor, ingresa nuevamente.',
+            errorMessage:
+                'Tu sesión ha expirado. Por favor, ingresa nuevamente.',
           );
           return;
         }
@@ -178,7 +179,8 @@ class AuthNotifier extends Notifier<AppAuthState> {
       state = state.copyWith(
         isLoading: false,
         isInitialCheckDone: true,
-        errorMessage: 'Error de conexión con el servidor. Revisa tu conexión a internet.',
+        errorMessage:
+            'Error de conexión con el servidor. Revisa tu conexión a internet.',
       );
     }
   }

@@ -1,5 +1,7 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
 
@@ -74,8 +76,12 @@ class _GlassToastWidget extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final textColor = isDark ? Colors.white : AppColors.mineralInk;
-    final subtitleColor = isDark ? Colors.white.withValues(alpha: 0.75) : AppColors.slateMuted;
-    final iconColor = isDark ? Colors.white.withValues(alpha: 0.90) : AppColors.mineralInk;
+    final subtitleColor = isDark
+        ? Colors.white.withValues(alpha: 0.75)
+        : AppColors.slateMuted;
+    final iconColor = isDark
+        ? Colors.white.withValues(alpha: 0.90)
+        : AppColors.mineralInk;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),

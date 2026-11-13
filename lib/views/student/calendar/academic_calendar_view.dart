@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_scaffold.dart';
@@ -27,10 +28,7 @@ class AcademicCalendarDoc {
 class AcademicCalendarView extends StatefulWidget {
   final int initialIndex;
 
-  const AcademicCalendarView({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const AcademicCalendarView({super.key, this.initialIndex = 0});
 
   static const List<AcademicCalendarDoc> calendars = [
     AcademicCalendarDoc(
@@ -110,7 +108,8 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'No se pudo cargar el archivo desde el dispositivo:\n$e';
+          _errorMessage =
+              'No se pudo cargar el archivo desde el dispositivo:\n$e';
         });
       }
     }
@@ -199,107 +198,106 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
               padding: const EdgeInsets.all(4),
               tintColor: isDark ? const Color(0xFF141418) : null,
               child: Row(
-                children: List.generate(
-                  AcademicCalendarView.calendars.length,
-                  (index) {
-                    final item = AcademicCalendarView.calendars[index];
-                    final isSelected = _selectedCalendarIndex == index;
+                children: List.generate(AcademicCalendarView.calendars.length, (
+                  index,
+                ) {
+                  final item = AcademicCalendarView.calendars[index];
+                  final isSelected = _selectedCalendarIndex == index;
 
-                    return Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => _onCalendarChanged(index),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOutCubic,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? activeColor.withValues(
-                                    alpha: isDark ? 0.25 : 0.15,
-                                  )
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                            border: isSelected
-                                ? Border.all(
-                                    color: activeColor.withValues(
-                                      alpha: isDark ? 0.45 : 0.30,
-                                    ),
-                                    width: 1.2,
-                                  )
-                                : null,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_rounded,
-                                    size: 14,
+                  return Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _onCalendarChanged(index),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOutCubic,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? activeColor.withValues(
+                                  alpha: isDark ? 0.25 : 0.15,
+                                )
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                          border: isSelected
+                              ? Border.all(
+                                  color: activeColor.withValues(
+                                    alpha: isDark ? 0.45 : 0.30,
+                                  ),
+                                  width: 1.2,
+                                )
+                              : null,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.calendar_today_rounded,
+                                  size: 14,
+                                  color: isSelected
+                                      ? activeColor
+                                      : (isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.slateMuted),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  item.cycle,
+                                  style: TextStyle(
+                                    fontFamily: AppTheme.brandFont,
+                                    fontSize: 13,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
                                     color: isSelected
                                         ? activeColor
                                         : (isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.slateMuted),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    item.cycle,
-                                    style: TextStyle(
-                                      fontFamily: AppTheme.brandFont,
-                                      fontSize: 13,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w800
-                                          : FontWeight.w600,
-                                      color: isSelected
-                                          ? activeColor
-                                          : (isDark
                                               ? AppColors.darkTextSecondary
                                               : AppColors.slateMuted),
-                                    ),
                                   ),
-                                  if (item.isCurrent) ...[
-                                    const SizedBox(width: 5),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 5,
-                                        vertical: 1.5,
+                                ),
+                                if (item.isCurrent) ...[
+                                  const SizedBox(width: 5),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 1.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: activeColor.withValues(
+                                        alpha: isDark ? 0.35 : 0.20,
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: activeColor.withValues(
-                                          alpha: isDark ? 0.35 : 0.20,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        'Vigente',
-                                        style: TextStyle(
-                                          fontFamily: AppTheme.brandFont,
-                                          fontSize: 9.5,
-                                          fontWeight: FontWeight.w800,
-                                          color: isSelected
-                                              ? activeColor
-                                              : (isDark
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'Vigente',
+                                      style: TextStyle(
+                                        fontFamily: AppTheme.brandFont,
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: isSelected
+                                            ? activeColor
+                                            : (isDark
                                                   ? Colors.white70
                                                   : activeColor),
-                                        ),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ],
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                }),
               ),
             ),
           ),
@@ -349,13 +347,13 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
                           },
                           onDocumentLoadFailed:
                               (PdfDocumentLoadFailedDetails details) {
-                            if (mounted) {
-                              setState(() {
-                                _isLoading = false;
-                                _errorMessage = details.description;
-                              });
-                            }
-                          },
+                                if (mounted) {
+                                  setState(() {
+                                    _isLoading = false;
+                                    _errorMessage = details.description;
+                                  });
+                                }
+                              },
                           onPageChanged: (PdfPageChangedDetails details) {
                             if (mounted) {
                               setState(() {
@@ -430,7 +428,10 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
                                 const SizedBox(height: 16),
                                 ElevatedButton.icon(
                                   onPressed: _loadPdf,
-                                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    size: 18,
+                                  ),
                                   label: const Text('Reintentar lectura'),
                                   style: ElevatedButton.styleFrom(
                                     minimumSize: const Size(180, 44),

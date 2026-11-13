@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import 'early_departure_reason_model.dart';
@@ -32,8 +33,8 @@ class EarlyDepartureReasonTile extends StatelessWidget {
             color: isSelected
                 ? themePrimary.withValues(alpha: isDark ? 0.30 : 0.12)
                 : (isDark
-                    ? const Color(0xFF0F2631).withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.7)),
+                      ? const Color(0xFF0F2631).withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.7)),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
@@ -53,8 +54,8 @@ class EarlyDepartureReasonTile extends StatelessWidget {
                     color: isSelected
                         ? (isDark ? Colors.white : themePrimary)
                         : (isDark
-                            ? const Color(0xFF536E7B)
-                            : AppColors.slateMuted),
+                              ? const Color(0xFF536E7B)
+                              : AppColors.slateMuted),
                     width: 2,
                   ),
                 ),
@@ -72,10 +73,7 @@ class EarlyDepartureReasonTile extends StatelessWidget {
                     : null,
               ),
               const SizedBox(width: 12),
-              Text(
-                reason.emoji,
-                style: const TextStyle(fontSize: 20),
-              ),
+              Text(reason.emoji, style: const TextStyle(fontSize: 20)),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -87,8 +85,8 @@ class EarlyDepartureReasonTile extends StatelessWidget {
                     color: isSelected
                         ? (isDark ? Colors.white : themePrimary)
                         : (isDark
-                            ? const Color(0xFFC5D7DF)
-                            : AppColors.slateMuted),
+                              ? const Color(0xFFC5D7DF)
+                              : AppColors.slateMuted),
                   ),
                 ),
               ),
@@ -99,4 +97,3 @@ class EarlyDepartureReasonTile extends StatelessWidget {
     );
   }
 }
-

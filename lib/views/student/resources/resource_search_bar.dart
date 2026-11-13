@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/glass_surface.dart';
 
@@ -54,4 +55,3 @@ class ResourceSearchBar extends StatelessWidget {
     );
   }
 }
-

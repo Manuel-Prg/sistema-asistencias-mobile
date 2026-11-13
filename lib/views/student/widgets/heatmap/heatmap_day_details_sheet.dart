@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/glass_surface.dart';
@@ -43,10 +44,7 @@ class HeatmapDayDetailsSheet extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               AppDateUtils.formatFullDate(day.dateTime),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             if (day.records.isEmpty) ...[
@@ -105,10 +103,7 @@ class HeatmapDayDetailsSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        AppDateUtils.formatTimeRange(
-                          rec.checkIn,
-                          rec.checkOut,
-                        ),
+                        AppDateUtils.formatTimeRange(rec.checkIn, rec.checkOut),
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
@@ -126,8 +121,8 @@ class HeatmapDayDetailsSheet extends StatelessWidget {
                             color: rec.isLate
                                 ? AppColors.terracottaRule
                                 : (isDark
-                                    ? const Color(0xFFC5D7DF)
-                                    : AppColors.slateMuted),
+                                      ? const Color(0xFFC5D7DF)
+                                      : AppColors.slateMuted),
                           ),
                         ),
                       ],
@@ -142,4 +137,3 @@ class HeatmapDayDetailsSheet extends StatelessWidget {
     );
   }
 }
-

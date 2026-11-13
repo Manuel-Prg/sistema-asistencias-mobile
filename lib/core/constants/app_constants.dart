@@ -59,4 +59,3 @@ class AppConstants {
     6: 'Domingo',
   };
 }
-

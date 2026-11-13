@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
 import '../../../../core/constants/app_colors.dart';
 
 class LiveSessionTimer extends StatelessWidget {
@@ -16,13 +17,11 @@ class LiveSessionTimer extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(
-          Icons.timer_outlined,
-          color: isDark ? Colors.white : themePrimary,
-          size: 20,
-        )
-            .animate(
-              onPlay: (controller) => controller.repeat(reverse: true),
+              Icons.timer_outlined,
+              color: isDark ? Colors.white : themePrimary,
+              size: 20,
             )
+            .animate(onPlay: (controller) => controller.repeat(reverse: true))
             .scale(
               begin: const Offset(0.92, 0.92),
               end: const Offset(1.18, 1.18),
@@ -53,4 +52,3 @@ class LiveSessionTimer extends StatelessWidget {
     );
   }
 }
-

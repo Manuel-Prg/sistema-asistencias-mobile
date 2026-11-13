@@ -13,9 +13,14 @@ class EarlyDepartureReason {
 const List<EarlyDepartureReason> kEarlyDepartureReasons = [
   EarlyDepartureReason(value: 'enfermedad', label: 'Enfermedad', emoji: '🤒'),
   EarlyDepartureReason(
-      value: 'imprevisto', label: 'Imprevisto personal', emoji: '⚡'),
+    value: 'imprevisto',
+    label: 'Imprevisto personal',
+    emoji: '⚡',
+  ),
   EarlyDepartureReason(
-      value: 'familiar', label: 'Emergencia familiar', emoji: '👨‍👩‍👧'),
+    value: 'familiar',
+    label: 'Emergencia familiar',
+    emoji: '👨‍👩‍👧',
+  ),
   EarlyDepartureReason(value: 'otra', label: 'Otra razón', emoji: '📝'),
 ];
-

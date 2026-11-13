@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// Barra de progreso con simulación fluida de olas acuáticas en bucle infinito
@@ -42,7 +43,10 @@ class _WaveProgressBarState extends State<WaveProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    final barWidth = (widget.maxWidth * widget.ratio).clamp(0.0, widget.maxWidth);
+    final barWidth = (widget.maxWidth * widget.ratio).clamp(
+      0.0,
+      widget.maxWidth,
+    );
     if (barWidth <= 0) return const SizedBox.shrink();
 
     final radius = widget.height / 2;
@@ -90,7 +94,8 @@ class _DualWavePainter extends CustomPainter {
     final t = animation.value; // 0.0 -> 1.0 continuo
 
     // Fondo base del líquido (cuerpo de agua profundo)
-    final baseDark = Color.lerp(barColor, const Color(0xFF0C3C4C), 0.35) ?? barColor;
+    final baseDark =
+        Color.lerp(barColor, const Color(0xFF0C3C4C), 0.35) ?? barColor;
     final baseBright = Color.lerp(barColor, Colors.white, 0.30) ?? barColor;
     final fullRect = Rect.fromLTWH(0, 0, width, h);
 
@@ -100,10 +105,7 @@ class _DualWavePainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color.lerp(baseDark, barColor, 0.4)!,
-            baseDark,
-          ],
+          colors: [Color.lerp(baseDark, barColor, 0.4)!, baseDark],
         ).createShader(fullRect),
     );
 
@@ -166,10 +168,7 @@ class _DualWavePainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          baseBright,
-          barColor,
-        ],
+        colors: [baseBright, barColor],
         stops: const [0.0, 0.85],
       ).createShader(fullRect);
     canvas.drawPath(frontPath, frontPaint);
@@ -199,16 +198,13 @@ class _DualWavePainter extends CustomPainter {
     // Destello de agua en movimiento (recorre la superficie en bucle infinito)
     final sweepX = (t * (width + 60.0)) - 30.0;
     final shimmerPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Colors.white.withValues(alpha: 0.40),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 1.0],
-      ).createShader(Rect.fromCircle(
-        center: Offset(sweepX, h * 0.38),
-        radius: 20.0,
-      ));
+      ..shader =
+          RadialGradient(
+            colors: [Colors.white.withValues(alpha: 0.40), Colors.transparent],
+            stops: const [0.0, 1.0],
+          ).createShader(
+            Rect.fromCircle(center: Offset(sweepX, h * 0.38), radius: 20.0),
+          );
     canvas.drawCircle(Offset(sweepX, h * 0.38), 20.0, shimmerPaint);
   }
 

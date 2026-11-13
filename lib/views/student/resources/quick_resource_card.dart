@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -42,7 +43,9 @@ class QuickResourceCard extends StatelessWidget {
                 Icon(
                   Icons.arrow_outward_rounded,
                   size: 15,
-                  color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
+                  color: isDark
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -65,8 +68,9 @@ class QuickResourceCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 10.5,
-                color:
-                    isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.slateMuted,
               ),
             ),
           ],
@@ -75,4 +79,3 @@ class QuickResourceCard extends StatelessWidget {
     );
   }
 }
-

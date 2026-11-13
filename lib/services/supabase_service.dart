@@ -1,5 +1,7 @@
 import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../core/constants/app_constants.dart';
 import '../core/utils/skippy_quotes.dart';
 import '../models/active_student.dart';
@@ -31,11 +33,7 @@ class CheckOutResult {
   final double hoursWorked;
   final String? error;
 
-  CheckOutResult({
-    required this.success,
-    this.hoursWorked = 0.0,
-    this.error,
-  });
+  CheckOutResult({required this.success, this.hoursWorked = 0.0, this.error});
 }
 
 class SupabaseService {
@@ -129,7 +127,9 @@ class SupabaseService {
     final filePath = '$userId/avatar_$timestamp.jpg';
 
     try {
-      await client.storage.from(bucket).uploadBinary(
+      await client.storage
+          .from(bucket)
+          .uploadBinary(
             filePath,
             bytes,
             fileOptions: const FileOptions(
@@ -140,7 +140,9 @@ class SupabaseService {
       return client.storage.from(bucket).getPublicUrl(filePath);
     } catch (e) {
       if (bucket != 'avatars') {
-        await client.storage.from('avatars').uploadBinary(
+        await client.storage
+            .from('avatars')
+            .uploadBinary(
               filePath,
               bytes,
               fileOptions: const FileOptions(
@@ -156,7 +158,9 @@ class SupabaseService {
 
   // ─── Horarios del Estudiante ("Tu Horario") ──────────────────────────────────
 
-  static Future<List<StudentSchedule>> getStudentSchedules(String userId) async {
+  static Future<List<StudentSchedule>> getStudentSchedules(
+    String userId,
+  ) async {
     final response = await client
         .from('student_schedules')
         .select()
@@ -216,7 +220,9 @@ class SupabaseService {
         .toList();
   }
 
-  static Future<List<AttendanceRecord>> getAllStudentAttendance(String userId) async {
+  static Future<List<AttendanceRecord>> getAllStudentAttendance(
+    String userId,
+  ) async {
     final response = await client
         .from('attendance_records')
         .select()
@@ -255,15 +261,22 @@ class SupabaseService {
       // Si la entrada activa tiene más de 24 horas, la cerramos automáticamente
       final now = DateTime.now().toUtc();
       if (now.difference(activeRecord.checkIn.toUtc()).inHours >= 24) {
-        await client.from('attendance_records').update({
-          'check_out': activeRecord.checkIn.toUtc().add(const Duration(hours: 4)).toIso8601String(),
-          'hours_worked': 4.0,
-          'early_departure_reason': 'Auto-cerrado por sistema (>24h)',
-        }).eq('id', activeRecord.id);
+        await client
+            .from('attendance_records')
+            .update({
+              'check_out': activeRecord.checkIn
+                  .toUtc()
+                  .add(const Duration(hours: 4))
+                  .toIso8601String(),
+              'hours_worked': 4.0,
+              'early_departure_reason': 'Auto-cerrado por sistema (>24h)',
+            })
+            .eq('id', activeRecord.id);
       } else {
         return CheckInResult(
           success: false,
-          error: 'Ya tienes una entrada activa. Debes registrar salida primero.',
+          error:
+              'Ya tienes una entrada activa. Debes registrar salida primero.',
         );
       }
     }
@@ -309,13 +322,15 @@ class SupabaseService {
           warning =
               'Estás entrando con un retardo mayor a 15 min del horario establecido en "Tu horario".\n\n🚨 ¡ALERTA MÁXIMA DE BAJA! Has acumulado 3 faltas injustificadas:\n\n${SkippyQuotes.getBajaQuote(user.id)}';
         } else {
-          final quote = SkippyQuotes.getFaltaWarningQuote(totalFaltasFromLate, user.id);
+          final quote = SkippyQuotes.getFaltaWarningQuote(
+            totalFaltasFromLate,
+            user.id,
+          );
           warning =
               'Estás entrando con un retardo mayor a 15 min del horario establecido en "Tu horario".\n\n⚠️ ¡Atención! Con este retardo acumulas 3 retardos sin justificar, equivalente a tu Falta #$totalFaltasFromLate.\n\n"$quote"';
         }
       } else {
-        warning =
-            'Estás entrando con un retardo mayor a 15 min del horario que estableciste en "Tu horario". Si tienes justificantes, repórtate con tu supervisor.';
+        warning = 'Estás entrando con un retardo mayor a 15 min del horario que estableciste en "Tu horario". Si tienes justificantes, repórtate con tu supervisor.';
       }
     }
 
@@ -356,7 +371,9 @@ class SupabaseService {
     double hoursWorkedRaw = (diffMs < 0 ? 0 : diffMs) / (1000 * 60 * 60);
     if (isEvent) hoursWorkedRaw *= 2;
 
-    final limit = isEvent ? AppConstants.maxEventHours : AppConstants.maxStandardHours;
+    final limit = isEvent
+        ? AppConstants.maxEventHours
+        : AppConstants.maxStandardHours;
     final hoursWorked = hoursWorkedRaw > limit ? limit : hoursWorkedRaw;
 
     final updateData = <String, dynamic>{
@@ -375,15 +392,21 @@ class SupabaseService {
 
     final existingReason = activeRecord.earlyDepartureReason ?? '';
     final retardoRegex = RegExp(r'\[RETARDO\][^|\n]*');
-    final retardoMatch = retardoRegex.firstMatch(existingReason)?.group(0)?.trim();
+    final retardoMatch = retardoRegex
+        .firstMatch(existingReason)
+        ?.group(0)
+        ?.trim();
 
     if (hoursWorkedRaw > limit) {
-      final limitNote = earlyDepartureReason != null && earlyDepartureReason.isNotEmpty
+      final limitNote =
+          earlyDepartureReason != null && earlyDepartureReason.isNotEmpty
           ? 'Límite ${limit}h excedido (+${(hoursWorkedRaw - limit).toStringAsFixed(1)}h reales). $earlyDepartureReason'
           : 'Auto-limitado a ${limit}h (real: ${hoursWorkedRaw.toStringAsFixed(1)}h)';
-      updateData['early_departure_reason'] =
-          retardoMatch != null ? '$retardoMatch | $limitNote' : limitNote;
-    } else if (earlyDepartureReason != null && earlyDepartureReason.isNotEmpty) {
+      updateData['early_departure_reason'] = retardoMatch != null
+          ? '$retardoMatch | $limitNote'
+          : limitNote;
+    } else if (earlyDepartureReason != null &&
+        earlyDepartureReason.isNotEmpty) {
       updateData['early_departure_reason'] = retardoMatch != null
           ? '$retardoMatch | $earlyDepartureReason'
           : earlyDepartureReason;
@@ -410,7 +433,9 @@ class SupabaseService {
     try {
       final records = await client
           .from('attendance_records')
-          .select('student_id, room, shift, check_in, profiles!inner(full_name, avatar_url)')
+          .select(
+            'student_id, room, shift, check_in, profiles!inner(full_name, avatar_url)',
+          )
           .isFilter('check_out', null)
           .order('check_in', ascending: false);
 

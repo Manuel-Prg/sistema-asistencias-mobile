@@ -48,8 +48,12 @@ class StudentSchedule {
       startTime: json['start_time'] as String? ?? '11:00',
       endTime: json['end_time'] as String? ?? '14:00',
       isActive: json['is_active'] as bool? ?? true,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
     );
   }
 
@@ -64,4 +68,3 @@ class StudentSchedule {
     };
   }
 }
-

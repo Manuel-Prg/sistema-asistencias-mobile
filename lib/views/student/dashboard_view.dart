@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
@@ -28,15 +29,15 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.listenManual(
-        studentProvider.select((s) => s.lastWarningMessage),
-        (previous, next) {
-          if (next != null && next.isNotEmpty) {
-            PunctualityWarningDialog.show(context, next);
-            ref.read(studentProvider.notifier).clearWarning();
-          }
-        },
-      );
+      ref.listenManual(studentProvider.select((s) => s.lastWarningMessage), (
+        previous,
+        next,
+      ) {
+        if (next != null && next.isNotEmpty) {
+          PunctualityWarningDialog.show(context, next);
+          ref.read(studentProvider.notifier).clearWarning();
+        }
+      });
     });
   }
 
@@ -147,7 +148,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                   onActivate: () => ref
                       .read(notificationProvider.notifier)
                       .setNotificationsEnabled(true),
-                  onClose: () => setState(() => _showNotificationBanner = false),
+                  onClose: () =>
+                      setState(() => _showNotificationBanner = false),
                 ),
               RepaintBoundary(
                 child: CheckInOutCard(
@@ -159,9 +161,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         .checkIn(room: room, shift: shift);
                   },
                   onCheckOut: (earlyDepartureReason) {
-                    ref.read(studentProvider.notifier).checkOut(
-                          earlyDepartureReason: earlyDepartureReason,
-                        );
+                    ref
+                        .read(studentProvider.notifier)
+                        .checkOut(earlyDepartureReason: earlyDepartureReason);
                   },
                 ),
               ),

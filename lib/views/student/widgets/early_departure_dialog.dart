@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -27,7 +28,8 @@ class EarlyDepartureDialog extends StatefulWidget {
     ValueChanged<String>? onConfirm,
     Future<void> Function(String reason)? onConfirmAsync,
   }) {
-    final computedHours = hoursWorked ??
+    final computedHours =
+        hoursWorked ??
         (elapsedTime != null ? elapsedTime.inSeconds / 3600.0 : 0.0);
 
     return showDialog(
@@ -99,8 +101,10 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     const double minHoursRequired = 3.0;
-    final remainingHours =
-        (minHoursRequired - widget.hoursWorked).clamp(0.0, minHoursRequired);
+    final remainingHours = (minHoursRequired - widget.hoursWorked).clamp(
+      0.0,
+      minHoursRequired,
+    );
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -108,7 +112,9 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: GlassSurface(
-          tintColor: isDark ? const Color(0xFF141418) : Colors.white.withValues(alpha: 0.96),
+          tintColor: isDark
+              ? const Color(0xFF141418)
+              : Colors.white.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           padding: const EdgeInsets.all(22),
           child: SingleChildScrollView(
@@ -183,8 +189,9 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
                     fontFamily: AppTheme.brandFont,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color:
-                        isDark ? AppColors.darkTextPrimary : AppColors.primary,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -192,8 +199,7 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
                   return EarlyDepartureReasonTile(
                     reason: reason,
                     isSelected: _selectedReason == reason.value,
-                    onTap: () =>
-                        setState(() => _selectedReason = reason.value),
+                    onTap: () => setState(() => _selectedReason = reason.value),
                   );
                 }),
                 if (_selectedReason == 'otra') ...[
@@ -287,9 +293,7 @@ class _EarlyDepartureDialogState extends State<EarlyDepartureDialog> {
                               )
                             : const Text(
                                 'Confirmar Salida',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.w700),
                               ),
                       ),
                     ),

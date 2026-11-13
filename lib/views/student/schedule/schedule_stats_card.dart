@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -130,7 +131,9 @@ class _StatMiniCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 10,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
         ],
@@ -138,4 +141,3 @@ class _StatMiniCard extends StatelessWidget {
     );
   }
 }
-

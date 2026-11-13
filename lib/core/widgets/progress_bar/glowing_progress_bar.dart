@@ -44,11 +44,15 @@ class _GlowingProgressBarState extends State<GlowingProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    final barWidth = (widget.maxWidth * widget.ratio).clamp(0.0, widget.maxWidth);
+    final barWidth = (widget.maxWidth * widget.ratio).clamp(
+      0.0,
+      widget.maxWidth,
+    );
     if (barWidth <= 0) return const SizedBox.shrink();
 
     final radius = widget.height / 2;
-    final leadBright = Color.lerp(widget.barColor, Colors.white, 0.35) ?? widget.barColor;
+    final leadBright =
+        Color.lerp(widget.barColor, Colors.white, 0.35) ?? widget.barColor;
 
     return AnimatedBuilder(
       animation: _pulseController,
@@ -101,7 +105,11 @@ class _GlowingProgressBarState extends State<GlowingProgressBar>
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Color.lerp(widget.barColor, const Color(0xFF0C3C4C), 0.20)!,
+                      Color.lerp(
+                        widget.barColor,
+                        const Color(0xFF0C3C4C),
+                        0.20,
+                      )!,
                       widget.barColor,
                       leadBright,
                     ],
@@ -166,4 +174,3 @@ class _GlowingProgressBarState extends State<GlowingProgressBar>
     );
   }
 }
-

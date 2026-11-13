@@ -11,4 +11,3 @@ class DayScheduleForm {
     required this.isActive,
   });
 }
-

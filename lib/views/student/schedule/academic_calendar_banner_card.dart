@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -122,11 +123,7 @@ class AcademicCalendarBannerCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.visibility_rounded,
-                    size: 18,
-                    color: activeColor,
-                  ),
+                  Icon(Icons.visibility_rounded, size: 18, color: activeColor),
                   const SizedBox(width: 8),
                   Text(
                     'Ver Calendario Completo (PDF)',
@@ -153,4 +150,3 @@ class AcademicCalendarBannerCard extends StatelessWidget {
     );
   }
 }
-

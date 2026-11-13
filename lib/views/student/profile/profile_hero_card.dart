@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -74,7 +75,9 @@ class ProfileHeroCard extends StatelessWidget {
                     backgroundColor: isDark
                         ? AppColors.primaryDeep
                         : AppColors.signalAqua.withValues(alpha: 0.18),
-                    backgroundImage: hasAvatar ? NetworkImage(avatarUrl!) : null,
+                    backgroundImage: hasAvatar
+                        ? NetworkImage(avatarUrl!)
+                        : null,
                     child: isUpdatingPhoto
                         ? const Center(
                             child: CircularProgressIndicator(
@@ -83,14 +86,12 @@ class ProfileHeroCard extends StatelessWidget {
                             ),
                           )
                         : (!hasAvatar)
-                            ? Icon(
-                                Icons.person_rounded,
-                                size: 48,
-                                color: isDark
-                                    ? Colors.white70
-                                    : activeThemeColor,
-                              )
-                            : null,
+                        ? Icon(
+                            Icons.person_rounded,
+                            size: 48,
+                            color: isDark ? Colors.white70 : activeThemeColor,
+                          )
+                        : null,
                   ),
                 ),
               ),
@@ -136,7 +137,9 @@ class ProfileHeroCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontFamily: AppTheme.brandFont,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
           const SizedBox(height: 10),
@@ -146,7 +149,10 @@ class ProfileHeroCard extends StatelessWidget {
             alignment: WrapAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: activeThemeColor.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(12),
@@ -175,7 +181,10 @@ class ProfileHeroCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.6),
                   borderRadius: BorderRadius.circular(12),
@@ -197,7 +206,9 @@ class ProfileHeroCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.darkTextPrimary : activeThemeColor,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : activeThemeColor,
                       ),
                     ),
                   ],

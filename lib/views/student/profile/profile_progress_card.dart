@@ -23,8 +23,9 @@ class ProfileProgressCard extends ConsumerWidget {
   double get remainingHours =>
       (requiredHours - accumulatedHours).clamp(0.0, double.infinity);
 
-  double get progressRatio =>
-      requiredHours > 0 ? (accumulatedHours / requiredHours).clamp(0.0, 1.0) : 0.0;
+  double get progressRatio => requiredHours > 0
+      ? (accumulatedHours / requiredHours).clamp(0.0, 1.0)
+      : 0.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +72,10 @@ class ProfileProgressCard extends ConsumerWidget {
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: activeThemeColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -191,7 +195,9 @@ class _MetricTile extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontFamily: AppTheme.brandFont,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
         ],

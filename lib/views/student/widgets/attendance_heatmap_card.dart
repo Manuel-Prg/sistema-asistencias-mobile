@@ -33,7 +33,9 @@ class AttendanceHeatmapCard extends StatelessWidget {
               Icon(
                 Icons.shield_outlined,
                 size: 20,
-                color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
+                color: isDark
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 8),
               const Expanded(

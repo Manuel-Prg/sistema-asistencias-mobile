@@ -88,21 +88,28 @@ class SkippyQuotes {
   /// Frase determinista al completar el 100% de horas
   static String getCompletedQuote(String studentType, [String? studentId]) {
     final pool = _nutyQuotesByType[studentType] ?? _defaultNutyQuotes;
-    final index = studentId != null ? (hashCodeString(studentId) % pool.length) : 0;
+    final index = studentId != null
+        ? (hashCodeString(studentId) % pool.length)
+        : 0;
     return pool[index];
   }
 
   /// Frase determinista al acumular 3 faltas (Alerta de Baja)
   static String getBajaQuote([String? studentId]) {
     final pool = nutyBajaWarningQuotes;
-    final index = studentId != null ? (hashCodeString(studentId) % pool.length) : 0;
+    final index = studentId != null
+        ? (hashCodeString(studentId) % pool.length)
+        : 0;
     return pool[index];
   }
 
   /// Frase determinista para advertencia de 1ra o 2da falta
   static String getFaltaWarningQuote(int faltaNumber, [String? studentId]) {
-    final pool = nutyFaltaWarningQuotes[faltaNumber] ?? nutyFaltaWarningQuotes[1]!;
-    final index = studentId != null ? (hashCodeString(studentId) % pool.length) : 0;
+    final pool =
+        nutyFaltaWarningQuotes[faltaNumber] ?? nutyFaltaWarningQuotes[1]!;
+    final index = studentId != null
+        ? (hashCodeString(studentId) % pool.length)
+        : 0;
     return pool[index];
   }
 

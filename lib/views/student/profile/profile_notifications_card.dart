@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skippy_quotes.dart';
@@ -93,7 +94,9 @@ class ProfileNotificationsCard extends ConsumerWidget {
                   Container(
                     height: 38,
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.black.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TabBar(
@@ -104,8 +107,13 @@ class ProfileNotificationsCard extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       labelColor: Colors.white,
-                      unselectedLabelColor: isDark ? Colors.white70 : AppColors.slateMuted,
-                      labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                      unselectedLabelColor: isDark
+                          ? Colors.white70
+                          : AppColors.slateMuted,
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
                       tabs: const [
                         Tab(text: '1-5 Días (Llenado)'),
                         Tab(text: 'Fin de Mes (Subida)'),
@@ -124,8 +132,12 @@ class ProfileNotificationsCard extends ConsumerWidget {
                           separatorBuilder: (_, _) => const SizedBox(height: 8),
                           itemBuilder: (context, i) {
                             final dayNumber = i + 1;
-                            final title = SkippyQuotes.getStartOfMonthTitle(dayNumber);
-                            final body = SkippyQuotes.getStartOfMonthBody(dayNumber);
+                            final title = SkippyQuotes.getStartOfMonthTitle(
+                              dayNumber,
+                            );
+                            final body = SkippyQuotes.getStartOfMonthBody(
+                              dayNumber,
+                            );
 
                             return Container(
                               padding: const EdgeInsets.all(12),
@@ -144,10 +156,17 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                   Row(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: themePrimary.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: themePrimary.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Text(
                                           'Día Hábil $dayNumber de 5',
@@ -163,26 +182,44 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                         onPressed: () async {
                                           HapticFeedback.selectionClick();
                                           await ref
-                                              .read(notificationProvider.notifier)
+                                              .read(
+                                                notificationProvider.notifier,
+                                              )
                                               .sendSpecificTestReminder(
                                                 isStartOfMonth: true,
                                                 index: dayNumber,
                                               );
                                           if (ctx.mounted) {
-                                            ScaffoldMessenger.of(ctx).showSnackBar(
+                                            ScaffoldMessenger.of(
+                                              ctx,
+                                            ).showSnackBar(
                                               SnackBar(
-                                                content: Text('🔔 Notificación del Día $dayNumber disparada. ¡Baja tu barra de notificaciones!'),
-                                                duration: const Duration(seconds: 2),
-                                                behavior: SnackBarBehavior.floating,
+                                                content: Text(
+                                                  '🔔 Notificación del Día $dayNumber disparada. ¡Baja tu barra de notificaciones!',
+                                                ),
+                                                duration: const Duration(
+                                                  seconds: 2,
+                                                ),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
                                               ),
                                             );
                                           }
                                         },
-                                        icon: const Icon(Icons.send_rounded, size: 14),
-                                        label: const Text('Disparar', style: TextStyle(fontSize: 11)),
+                                        icon: const Icon(
+                                          Icons.send_rounded,
+                                          size: 14,
+                                        ),
+                                        label: const Text(
+                                          'Disparar',
+                                          style: TextStyle(fontSize: 11),
+                                        ),
                                         style: FilledButton.styleFrom(
                                           visualDensity: VisualDensity.compact,
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 0,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -194,7 +231,9 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                       fontFamily: AppTheme.brandFont,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 13,
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.mineralInk,
                                     ),
                                   ),
                                   const SizedBox(height: 2),
@@ -203,7 +242,9 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 11.5,
                                       height: 1.3,
-                                      color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                                      color: isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.slateMuted,
                                     ),
                                   ),
                                 ],
@@ -218,8 +259,12 @@ class ProfileNotificationsCard extends ConsumerWidget {
                           separatorBuilder: (_, _) => const SizedBox(height: 8),
                           itemBuilder: (context, i) {
                             final daysLeft = 3 - i; // 3, 2, 1
-                            final title = SkippyQuotes.getEndOfMonthTitle(daysLeft);
-                            final body = SkippyQuotes.getEndOfMonthBody(daysLeft);
+                            final title = SkippyQuotes.getEndOfMonthTitle(
+                              daysLeft,
+                            );
+                            final body = SkippyQuotes.getEndOfMonthBody(
+                              daysLeft,
+                            );
 
                             final label = daysLeft == 1
                                 ? '¡Último día de entrega!'
@@ -233,7 +278,8 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                     : Colors.black.withValues(alpha: 0.03),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+                                  color: const Color(0xFFF59E0B)
+                                      .withValues(alpha: 0.35),
                                 ),
                               ),
                               child: Column(
@@ -242,10 +288,16 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                   Row(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFF59E0B).withValues(alpha: 0.18),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: const Color(0xFFF59E0B)
+                                              .withValues(alpha: 0.18),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Text(
                                           label,
@@ -261,26 +313,44 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                         onPressed: () async {
                                           HapticFeedback.selectionClick();
                                           await ref
-                                              .read(notificationProvider.notifier)
+                                              .read(
+                                                notificationProvider.notifier,
+                                              )
                                               .sendSpecificTestReminder(
                                                 isStartOfMonth: false,
                                                 index: daysLeft,
                                               );
                                           if (ctx.mounted) {
-                                            ScaffoldMessenger.of(ctx).showSnackBar(
+                                            ScaffoldMessenger.of(
+                                              ctx,
+                                            ).showSnackBar(
                                               SnackBar(
-                                                content: Text('🔔 Notificación de cierre ($label) disparada. ¡Baja tu barra de notificaciones!'),
-                                                duration: const Duration(seconds: 2),
-                                                behavior: SnackBarBehavior.floating,
+                                                content: Text(
+                                                  '🔔 Notificación de cierre ($label) disparada. ¡Baja tu barra de notificaciones!',
+                                                ),
+                                                duration: const Duration(
+                                                  seconds: 2,
+                                                ),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
                                               ),
                                             );
                                           }
                                         },
-                                        icon: const Icon(Icons.send_rounded, size: 14),
-                                        label: const Text('Disparar', style: TextStyle(fontSize: 11)),
+                                        icon: const Icon(
+                                          Icons.send_rounded,
+                                          size: 14,
+                                        ),
+                                        label: const Text(
+                                          'Disparar',
+                                          style: TextStyle(fontSize: 11),
+                                        ),
                                         style: FilledButton.styleFrom(
                                           visualDensity: VisualDensity.compact,
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 0,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -292,7 +362,9 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                       fontFamily: AppTheme.brandFont,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 13,
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.mineralInk,
                                     ),
                                   ),
                                   const SizedBox(height: 2),
@@ -301,7 +373,9 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 11.5,
                                       height: 1.3,
-                                      color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+                                      color: isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.slateMuted,
                                     ),
                                   ),
                                 ],
@@ -415,7 +489,8 @@ class ProfileNotificationsCard extends ConsumerWidget {
                           border: Border.all(
                             color: item.isStartOfMonth
                                 ? themePrimary.withValues(alpha: 0.30)
-                                : const Color(0xFFF59E0B).withValues(alpha: 0.35),
+                                : const Color(0xFFF59E0B)
+                                      .withValues(alpha: 0.35),
                             width: 1,
                           ),
                         ),
@@ -425,10 +500,11 @@ class ProfileNotificationsCard extends ConsumerWidget {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: (item.isStartOfMonth
-                                        ? themePrimary
-                                        : const Color(0xFFF59E0B))
-                                    .withValues(alpha: 0.15),
+                                color:
+                                    (item.isStartOfMonth
+                                            ? themePrimary
+                                            : const Color(0xFFF59E0B))
+                                        .withValues(alpha: 0.15),
                               ),
                               child: Icon(
                                 item.isStartOfMonth
@@ -660,7 +736,10 @@ class ProfileNotificationsCard extends ConsumerWidget {
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(0, 40),
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    textStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

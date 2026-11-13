@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -28,11 +29,7 @@ class ProfilePersonalDataCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.badge_rounded,
-                color: themePrimary,
-                size: 20,
-              ),
+              Icon(Icons.badge_rounded, color: themePrimary, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Datos Personales',
@@ -51,7 +48,9 @@ class ProfilePersonalDataCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.slateMuted,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.slateMuted,
             ),
           ),
           const SizedBox(height: 6),
@@ -93,7 +92,11 @@ class ProfilePersonalDataCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Icon(Icons.save_rounded, size: 18, color: Colors.white),
+                  : const Icon(
+                      Icons.save_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
               label: Text(
                 isSavingName ? 'Guardando...' : 'Guardar Cambios',
                 style: const TextStyle(color: Colors.white),
@@ -114,4 +117,3 @@ class ProfilePersonalDataCard extends StatelessWidget {
     );
   }
 }
-

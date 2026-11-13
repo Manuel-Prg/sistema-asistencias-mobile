@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
 import '../core/utils/mexican_business_days.dart';
 import '../core/utils/skippy_quotes.dart';
 
@@ -46,28 +47,32 @@ class ReportNotificationService {
         final mexicoLocation = tz.getLocation('America/Mexico_City');
         tz.setLocalLocation(mexicoLocation);
       } catch (e) {
-        debugPrint('Zona horaria America/Mexico_City no disponible, usando UTC: $e');
+        debugPrint(
+          'Zona horaria America/Mexico_City no disponible, usando UTC: $e',
+        );
       }
 
       // 2. Ajustes de plataforma
-      const androidSettings =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
-
-      const initSettings = InitializationSettings(
-        android: androidSettings,
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
       );
+
+      const initSettings = InitializationSettings(android: androidSettings);
 
       await _plugin.initialize(
         settings: initSettings,
         onDidReceiveNotificationResponse: (response) {
-          debugPrint('Notificación de reporte seleccionada: ${response.payload}');
+          debugPrint(
+            'Notificación de reporte seleccionada: ${response.payload}',
+          );
         },
       );
 
       // 3. Crear el canal de alta importancia en Android 8.0+
       final androidNotificationPlugin = _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+            AndroidFlutterLocalNotificationsPlugin
+          >();
 
       if (androidNotificationPlugin != null) {
         const channel = AndroidNotificationChannel(
@@ -107,10 +112,20 @@ class ReportNotificationService {
       final m = monthDate.month;
 
       // 1. PROGRAMAR: Primeros 5 días hábiles de inicio de mes (09:00 AM)
-      final first5Days = MexicanBusinessDays.getFirstNBusinessDays(y, m, count: 5);
+      final first5Days = MexicanBusinessDays.getFirstNBusinessDays(
+        y,
+        m,
+        count: 5,
+      );
       for (var i = 0; i < first5Days.length; i++) {
         final bDay = first5Days[i];
-        final scheduledDateTime = DateTime(bDay.year, bDay.month, bDay.day, 9, 0);
+        final scheduledDateTime = DateTime(
+          bDay.year,
+          bDay.month,
+          bDay.day,
+          9,
+          0,
+        );
 
         if (scheduledDateTime.isAfter(now)) {
           final id = 1000 + m * 10 + (i + 1);
@@ -128,10 +143,20 @@ class ReportNotificationService {
       }
 
       // 2. PROGRAMAR: Cierre de mes / últimos 3 días hábiles (10:00 AM)
-      final last3Days = MexicanBusinessDays.getLastNBusinessDays(y, m, count: 3);
+      final last3Days = MexicanBusinessDays.getLastNBusinessDays(
+        y,
+        m,
+        count: 3,
+      );
       for (var j = 0; j < last3Days.length; j++) {
         final bDay = last3Days[j];
-        final scheduledDateTime = DateTime(bDay.year, bDay.month, bDay.day, 10, 0);
+        final scheduledDateTime = DateTime(
+          bDay.year,
+          bDay.month,
+          bDay.day,
+          10,
+          0,
+        );
 
         if (scheduledDateTime.isAfter(now)) {
           final id = 2000 + m * 10 + (j + 1);
@@ -251,7 +276,9 @@ class ReportNotificationService {
   }
 
   /// Envía una notificación instantánea de prueba para verificar en el dispositivo
-  static Future<void> sendTestNotification({required bool isStartOfMonth}) async {
+  static Future<void> sendTestNotification({
+    required bool isStartOfMonth,
+  }) async {
     await triggerSpecificTestNotification(
       isStartOfMonth: isStartOfMonth,
       index: 1,

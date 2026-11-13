@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
@@ -45,7 +46,9 @@ class NotificationBanner extends StatelessWidget {
                 fontFamily: AppTheme.brandFont,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.mineralInk,
                 height: 1.3,
               ),
             ),
@@ -83,5 +86,3 @@ class NotificationBanner extends StatelessWidget {
     );
   }
 }
-
-

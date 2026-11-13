@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_theme.dart';
 
 class ProfilePhotoViewerDialog extends StatelessWidget {
@@ -22,10 +23,8 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
       barrierLabel: 'Cerrar foto',
       barrierColor: Colors.black.withValues(alpha: 0.88),
       transitionDuration: const Duration(milliseconds: 240),
-      pageBuilder: (ctx, anim1, anim2) => ProfilePhotoViewerDialog(
-        imageUrl: imageUrl,
-        fullName: fullName,
-      ),
+      pageBuilder: (ctx, anim1, anim2) =>
+          ProfilePhotoViewerDialog(imageUrl: imageUrl, fullName: fullName),
       transitionBuilder: (ctx, anim, secondaryAnim, child) {
         return FadeTransition(
           opacity: anim,
@@ -59,7 +58,10 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
             // Contenedor principal con zoom interactivo
             Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 30,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -190,4 +192,3 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import 'student_resource_model.dart';
 
@@ -36,15 +37,15 @@ class ResourceCategoryChips extends StatelessWidget {
                   color: isSelected
                       ? themePrimary
                       : (isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : Colors.white.withValues(alpha: 0.65)),
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : Colors.white.withValues(alpha: 0.65)),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
                         ? (isDark ? Colors.white70 : themePrimary)
                         : (isDark
-                            ? AppColors.darkBorder
-                            : themePrimary.withValues(alpha: 0.15)),
+                              ? AppColors.darkBorder
+                              : themePrimary.withValues(alpha: 0.15)),
                     width: 1,
                   ),
                 ),
@@ -56,8 +57,8 @@ class ResourceCategoryChips extends StatelessWidget {
                     color: isSelected
                         ? Colors.white
                         : (isDark
-                            ? AppColors.darkTextPrimary
-                            : AppColors.mineralInk),
+                              ? AppColors.darkTextPrimary
+                              : AppColors.mineralInk),
                   ),
                 ),
               ),
@@ -68,4 +69,3 @@ class ResourceCategoryChips extends StatelessWidget {
     );
   }
 }
-
