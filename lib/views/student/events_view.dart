@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_toast.dart';
 import '../../providers/student_provider.dart';
 import 'events/event_check_in_card.dart';
 import 'events/event_history_card.dart';
@@ -34,24 +35,60 @@ class _EventsViewState extends ConsumerState<EventsView> {
     super.dispose();
   }
 
-  void _handleEventCheckIn() {
+  Future<void> _handleEventCheckIn() async {
     final eventName = _eventNameController.text.trim();
     if (eventName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor ingresa o selecciona el nombre del evento.'),
-          backgroundColor: AppColors.terracottaRule,
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppGlassToast.show(
+        context,
+        message: 'Por favor ingresa o selecciona el nombre del evento.',
+        type: GlassToastType.warning,
       );
       return;
     }
 
-    ref
+    if (ref.read(studentProvider).hasActiveSession) {
+      AppGlassToast.show(
+        context,
+        message: 'Tienes un turno activo. Registra tu salida antes de iniciar un evento.',
+        type: GlassToastType.warning,
+      );
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    final result = await ref
         .read(studentProvider.notifier)
         .checkIn(room: eventName, shift: _selectedShift, isEvent: true);
 
-    _eventNameController.clear();
+    if (!mounted) return;
+
+    if (result.success) {
+      _eventNameController.clear();
+      AppGlassToast.show(
+        context,
+        message: '¡Entrada al evento "$eventName" registrada con éxito!',
+        type: GlassToastType.success,
+      );
+
+      if (result.warning != null && result.warning!.isNotEmpty) {
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          if (mounted) {
+            AppGlassToast.show(
+              context,
+              message: result.warning!,
+              type: GlassToastType.warning,
+            );
+          }
+        });
+      }
+    } else {
+      AppGlassToast.show(
+        context,
+        message: result.error ?? 'No fue posible registrar la entrada al evento.',
+        type: GlassToastType.error,
+      );
+    }
   }
 
   @override

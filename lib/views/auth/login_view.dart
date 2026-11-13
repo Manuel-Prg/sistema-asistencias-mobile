@@ -110,11 +110,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
     }
 
     // Disparar autenticación biométrica automática enseguida si está configurada
+    // No disparar automáticamente si el usuario cerró sesión voluntariamente o si hay un error visible
     if (securityState.isReady &&
         securityState.isBiometricEnabled &&
         securityState.hasSavedCredentials &&
+        !authState.isManualSignOut &&
         !_hasTriggeredAutoBiometrics &&
-        !authState.isLoading) {
+        !authState.isLoading &&
+        authState.errorMessage == null) {
       _hasTriggeredAutoBiometrics = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {

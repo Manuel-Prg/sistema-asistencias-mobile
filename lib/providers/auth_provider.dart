@@ -13,6 +13,7 @@ class AppAuthState {
   final Profile? profile;
   final String? errorMessage;
   final bool isInitialCheckDone;
+  final bool isManualSignOut;
 
   AppAuthState({
     this.isLoading = false,
@@ -20,6 +21,7 @@ class AppAuthState {
     this.profile,
     this.errorMessage,
     this.isInitialCheckDone = false,
+    this.isManualSignOut = false,
   });
 
   bool get isAuthenticated =>
@@ -31,6 +33,7 @@ class AppAuthState {
     Profile? profile,
     String? errorMessage,
     bool? isInitialCheckDone,
+    bool? isManualSignOut,
     bool clearError = false,
   }) {
     return AppAuthState(
@@ -39,6 +42,7 @@ class AppAuthState {
       profile: profile ?? this.profile,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isInitialCheckDone: isInitialCheckDone ?? this.isInitialCheckDone,
+      isManualSignOut: isManualSignOut ?? this.isManualSignOut,
     );
   }
 }
@@ -227,6 +231,7 @@ class AuthNotifier extends Notifier<AppAuthState> {
         isLoading: false,
         user: user,
         profile: profile,
+        isManualSignOut: false,
         clearError: true,
       );
       return true;
@@ -318,7 +323,10 @@ class AuthNotifier extends Notifier<AppAuthState> {
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
     await SupabaseService.signOut();
-    state = AppAuthState(isInitialCheckDone: true);
+    state = AppAuthState(
+      isInitialCheckDone: true,
+      isManualSignOut: true,
+    );
   }
 
   Future<bool> resetPassword(String email) async {

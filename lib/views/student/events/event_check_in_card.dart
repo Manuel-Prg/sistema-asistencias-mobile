@@ -154,23 +154,44 @@ class EventCheckInCard extends StatelessWidget {
             enabled: !hasActiveSession,
             onSelectShift: onSelectShift,
           ),
-          const SizedBox(height: 18),
-          ElevatedButton.icon(
-            onPressed: hasActiveSession || isLoading ? null : onSubmit,
-            icon: const Icon(
-              Icons.how_to_reg_rounded,
-              size: 20,
-              color: Colors.white,
-            ),
-            label: const Text(
-              'REGISTRAR ENTRADA A EVENTO',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.5,
-                color: Colors.white,
+          if (hasActiveSession) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.amberTolerance.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: AppColors.amberTolerance.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline_rounded,
+                    color: AppColors.amberTolerance,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Tienes un turno activo en curso. Registra tu salida en Inicio antes de entrar a un evento.',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: isDark
+                            ? const Color(0xFFFEF3C7)
+                            : const Color(0xFF92400E),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
+          ],
+          const SizedBox(height: 18),
+          ElevatedButton(
+            onPressed: hasActiveSession || isLoading ? null : onSubmit,
             style: ElevatedButton.styleFrom(
               backgroundColor: themePrimary,
               foregroundColor: Colors.white,
@@ -181,6 +202,39 @@ class EventCheckInCard extends StatelessWidget {
               ),
               elevation: 0,
             ),
+            child: isLoading
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.how_to_reg_rounded,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'REGISTRAR ENTRADA A EVENTO',
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.3,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
           ),
         ],
       ),
