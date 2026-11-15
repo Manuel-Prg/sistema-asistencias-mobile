@@ -303,7 +303,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => const ForgotPasswordView(),
+                                  builder: (_) => ForgotPasswordView(
+                                    initialEmail: _emailController.text.trim(),
+                                  ),
                                 ),
                               );
                             },

@@ -14,6 +14,7 @@ class AppAuthState {
   final String? errorMessage;
   final bool isInitialCheckDone;
   final bool isManualSignOut;
+  final bool isPasswordRecovery;
 
   AppAuthState({
     this.isLoading = false,
@@ -22,10 +23,11 @@ class AppAuthState {
     this.errorMessage,
     this.isInitialCheckDone = false,
     this.isManualSignOut = false,
+    this.isPasswordRecovery = false,
   });
 
   bool get isAuthenticated =>
-      user != null && profile != null && profile!.isStudent;
+      user != null && profile != null && profile!.isStudent && !isPasswordRecovery;
 
   AppAuthState copyWith({
     bool? isLoading,
@@ -34,6 +36,7 @@ class AppAuthState {
     String? errorMessage,
     bool? isInitialCheckDone,
     bool? isManualSignOut,
+    bool? isPasswordRecovery,
     bool clearError = false,
   }) {
     return AppAuthState(
@@ -43,6 +46,7 @@ class AppAuthState {
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isInitialCheckDone: isInitialCheckDone ?? this.isInitialCheckDone,
       isManualSignOut: isManualSignOut ?? this.isManualSignOut,
+      isPasswordRecovery: isPasswordRecovery ?? this.isPasswordRecovery,
     );
   }
 }
@@ -66,6 +70,15 @@ class AuthNotifier extends Notifier<AppAuthState> {
       _authSubscription = SupabaseService.client.auth.onAuthStateChange.listen((
         data,
       ) async {
+        if (data.event == AuthChangeEvent.passwordRecovery) {
+          state = AppAuthState(
+            isInitialCheckDone: true,
+            isPasswordRecovery: true,
+            user: data.session?.user,
+          );
+          return;
+        }
+
         final session = data.session;
         if (session != null) {
           if (state.user?.id != session.user.id || state.profile == null) {
@@ -339,6 +352,35 @@ class AuthNotifier extends Notifier<AppAuthState> {
       );
       return false;
     }
+  }
+
+  Future<({bool success, String? error})> confirmPasswordReset({
+    required String email,
+    required String token,
+    required String newPassword,
+    bool isDeepLinkRecovery = false,
+  }) async {
+    try {
+      await SupabaseService.verifyRecoveryAndSetPassword(
+        email: email,
+        token: token,
+        newPassword: newPassword,
+        isDeepLinkRecovery: isDeepLinkRecovery,
+      );
+      state = state.copyWith(isPasswordRecovery: false);
+      return (success: true, error: null);
+    } on AuthException catch (e) {
+      return (success: false, error: e.message);
+    } catch (e) {
+      return (
+        success: false,
+        error: 'Ocurrió un error al actualizar la contraseña: $e',
+      );
+    }
+  }
+
+  void cancelPasswordRecovery() {
+    state = state.copyWith(isPasswordRecovery: false);
   }
 
   void clearError() {

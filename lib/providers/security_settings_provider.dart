@@ -124,6 +124,19 @@ class SecuritySettingsNotifier extends Notifier<SecuritySettingsState> {
     }
   }
 
+  Future<void> onPasswordReset({
+    required String email,
+    required String newPassword,
+  }) async {
+    if (state.isRememberEnabled) {
+      await BiometricAuthService.saveCredentials(email, newPassword);
+      state = state.copyWith(
+        savedEmail: email,
+        savedPassword: newPassword,
+      );
+    }
+  }
+
   Future<bool> authenticateWithBiometrics() async {
     return await BiometricAuthService.authenticate();
   }

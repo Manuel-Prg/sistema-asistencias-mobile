@@ -58,7 +58,44 @@ class SupabaseService {
   }
 
   static Future<void> resetPassword(String email) async {
-    await client.auth.resetPasswordForEmail(email.trim());
+    await client.auth.resetPasswordForEmail(
+      email.trim(),
+      redirectTo: 'cua-asistencia://reset-password',
+    );
+  }
+
+  static Future<void> verifyRecoveryAndSetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+    bool isDeepLinkRecovery = false,
+  }) async {
+    final cleanEmail = email.trim();
+    final cleanToken = token.trim();
+
+    // Si no es recuperación directa por enlace y no hay sesión activa,
+    // verificar el código OTP proporcionado
+    if (!isDeepLinkRecovery && client.auth.currentSession == null) {
+      final response = await client.auth.verifyOTP(
+        email: cleanEmail,
+        token: cleanToken,
+        type: OtpType.recovery,
+      );
+
+      if (response.session == null && client.auth.currentSession == null) {
+        throw const AuthException(
+          'El código de recuperación es incorrecto o ha expirado. Verifica el código e intenta de nuevo.',
+        );
+      }
+    }
+
+    // Actualizar la contraseña del usuario en Supabase Auth
+    await client.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+
+    // Cerrar la sesión temporal de recuperación para permitir un login limpio
+    await client.auth.signOut();
   }
 
   static User? get currentUser => client.auth.currentUser;

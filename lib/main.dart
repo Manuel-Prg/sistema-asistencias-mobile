@@ -11,6 +11,7 @@ import 'providers/auth_provider.dart';
 import 'providers/color_theme_provider.dart';
 import 'providers/theme_provider.dart';
 import 'services/report_notification_service.dart';
+import 'views/auth/forgot_password_view.dart';
 import 'views/auth/login_view.dart';
 import 'views/navigation/main_navigation_view.dart';
 
@@ -109,6 +110,13 @@ class SistemaAsistenciaApp extends ConsumerWidget {
             ],
           ),
         ),
+      );
+    }
+
+    if (authState.isPasswordRecovery) {
+      return ForgotPasswordView(
+        isDeepLinkRecovery: true,
+        initialEmail: authState.user?.email,
       );
     }
 
