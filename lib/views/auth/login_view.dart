@@ -146,7 +146,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       'assets/logo/logo_remove_background.png',
                       cacheWidth: 180,
                       errorBuilder: (_, _, _) => Image.asset(
-                        'assets/logo/iconoFavicon.png',
+                        'assets/logo/iconoFavicon.webp',
                         cacheWidth: 180,
                         errorBuilder: (_, _, _) => const Icon(
                           Icons.water_drop_rounded,

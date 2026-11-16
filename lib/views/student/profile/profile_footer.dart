@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_toast.dart';
 import '../../../services/update_service.dart';
 import '../../common/update_dialog.dart';
 
@@ -35,18 +36,22 @@ class _ProfileFooterState extends State<ProfileFooter> {
           currentVersion: result.currentVersion,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '¡Estás en la versión más reciente (v${result.currentVersion})!',
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
+        AppGlassToast.show(
+          context,
+          title: 'Sin actualizaciones',
+          message: 'Estás en la versión más reciente (v${result.currentVersion}).',
+          type: GlassToastType.success,
         );
       }
     } catch (_) {
-      if (mounted) setState(() => _isCheckingUpdate = false);
+      if (mounted) {
+        setState(() => _isCheckingUpdate = false);
+        AppGlassToast.show(
+          context,
+          message: 'No se pudo verificar la conexión. Intenta de nuevo.',
+          type: GlassToastType.error,
+        );
+      }
     }
   }
 

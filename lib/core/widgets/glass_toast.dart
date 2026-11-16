@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
@@ -83,45 +82,28 @@ class _GlassToastWidget extends StatelessWidget {
         ? Colors.white.withValues(alpha: 0.90)
         : AppColors.mineralInk;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            // Fondo de cristal óptico ultra translúcido (máxima transparencia vítrea)
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDark
-                  ? [
-                      Colors.white.withValues(alpha: 0.08),
-                      Colors.black.withValues(alpha: 0.22),
-                    ]
-                  : [
-                      Colors.white.withValues(alpha: 0.38),
-                      Colors.white.withValues(alpha: 0.14),
-                    ],
-            ),
-            // Contorno de cristal biselado y reflectante
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.30)
-                  : Colors.white.withValues(alpha: 0.70),
-              width: 1.2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.38 : 0.08),
-                blurRadius: 20,
-                spreadRadius: 0,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Row(
+    return LiquidGlassLens(
+      style: LiquidGlassStyle(
+        shape: const LiquidGlassShape.continuousRoundedRectangle(
+          cornerRadius: 20,
+        ),
+        refractionIndex: 1.28,
+        refractionWidth: 28,
+        magnification: 1.04,
+        dispersion: 4.5,
+        blur: 3.5,
+        color: isDark
+            ? const Color(0x0A000000)
+            : const Color(0x0EFFFFFF),
+        specular: const LiquidGlassLight.specular(thickness: 0),
+        glow: const LiquidGlassLight.glow(thickness: 0),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(_icon, color: iconColor, size: 22),
@@ -158,7 +140,6 @@ class _GlassToastWidget extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

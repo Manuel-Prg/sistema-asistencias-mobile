@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_scaffold.dart';
 import '../../../core/widgets/glass_surface.dart';
+import '../../../services/pdf_compression_service.dart';
 
 class AcademicCalendarDoc {
   final String id;
@@ -96,8 +97,16 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
 
     try {
       final activeDoc = AcademicCalendarView.calendars[_selectedCalendarIndex];
-      final byteData = await rootBundle.load(activeDoc.assetPath);
-      final bytes = byteData.buffer.asUint8List();
+
+      // Intentar cargar el PDF comprimido; si falla, usar el original.
+      Uint8List bytes;
+      try {
+        bytes = await PdfCompressionService.getCompressedPdfBytes(activeDoc.assetPath);
+      } catch (_) {
+        // Fallback: cargar el PDF original sin comprimir.
+        final byteData = await rootBundle.load(activeDoc.assetPath);
+        bytes = byteData.buffer.asUint8List();
+      }
 
       if (mounted) {
         setState(() {
