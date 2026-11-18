@@ -61,6 +61,19 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+            pickFirsts.addAll(
+                listOf(
+                    "**/libc++_shared.so",
+                    "**/libdartjni.so",
+                    "**/libdatastore_shared_counter.so"
+                )
+            )
+        }
+    }
 }
 
 kotlin {
@@ -81,4 +94,17 @@ flutter {
 // causan AccessDeniedException en Windows al compilar APK directo).
 tasks.matching { it.name.contains("NativeSymbolTables") }.configureEach {
     enabled = false
+}
+
+// Asegurar permisos de escritura en intermediates de librerías nativas en Windows
+tasks.matching { it.name.contains("NativeLibs") }.configureEach {
+    doFirst {
+        val buildDir = project.layout.buildDirectory.asFile.get()
+        val nativeLibsDir = File(buildDir, "intermediates/merged_native_libs")
+        if (nativeLibsDir.exists()) {
+            nativeLibsDir.walkBottomUp().forEach { f ->
+                f.setWritable(true)
+            }
+        }
+    }
 }
