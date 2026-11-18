@@ -93,8 +93,10 @@ class ScheduleNotifier extends Notifier<ScheduleState> {
           'end_time': end.length == 5 ? '$end:00' : end,
           'is_active': f.isActive as bool,
         };
-        if (existingMap.containsKey(f.dayOfWeek)) {
+        if (existingMap.containsKey(f.dayOfWeek) && existingMap[f.dayOfWeek] != null) {
           data['id'] = existingMap[f.dayOfWeek];
+        } else {
+          data['id'] = SupabaseService.generateUuid();
         }
         return data;
       }).toList();
@@ -130,12 +132,14 @@ class ScheduleNotifier extends Notifier<ScheduleState> {
     state = state.copyWith(isSaving: true, clearMessages: true);
 
     try {
+      final existingId = state.schedules.where((s) => s.dayOfWeek == dayOfWeek).firstOrNull?.id;
       await SupabaseService.saveSchedule(
         userId: uid,
         dayOfWeek: dayOfWeek,
         startTime: startTime,
         endTime: endTime,
         isActive: isActive,
+        id: existingId,
       );
 
       await loadSchedules();
