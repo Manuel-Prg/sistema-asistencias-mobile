@@ -509,28 +509,9 @@ class SupabaseService {
   // ─── Estudiantes Activos en Recinto (En vivo) ───────────────────────────────
 
   static Future<List<ActiveStudent>> getActiveStudents() async {
-    try {
-      final records = await client
-          .from('attendance_records')
-          .select(
-            'student_id, room, shift, check_in, profiles!inner(full_name, avatar_url)',
-          )
-          .isFilter('check_out', null)
-          .order('check_in', ascending: false);
-
-      return (records as List<dynamic>).map((item) {
-        final profile = item['profiles'] as Map<String, dynamic>? ?? {};
-        return ActiveStudent(
-          id: item['student_id'] as String,
-          fullName: profile['full_name'] as String? ?? 'Estudiante',
-          room: item['room'] as String? ?? 'Sala',
-          shift: item['shift'] as String? ?? 'matutino',
-          checkIn: DateTime.parse(item['check_in'] as String),
-          avatarUrl: profile['avatar_url'] as String?,
-        );
-      }).toList();
-    } catch (e) {
-      return [];
-    }
+    // La consulta con profiles!inner causaba error 400 en PostgREST al no existir
+    // relación directa de clave foránea entre attendance_records y profiles.
+    // Como esta lista no se utiliza en la interfaz móvil del estudiante, se retorna vacía.
+    return [];
   }
 }
