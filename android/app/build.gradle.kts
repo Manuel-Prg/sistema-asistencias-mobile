@@ -28,7 +28,11 @@ android {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String?
             keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            val storeFilePath = keystoreProperties["storeFile"] as String?
+            storeFile = storeFilePath?.let { path ->
+                val f = file(path)
+                if (f.exists()) f else rootProject.file(path)
+            }
             storePassword = keystoreProperties["storePassword"] as String?
         }
     }
@@ -51,8 +55,16 @@ android {
     buildTypes {
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
+                val rel = signingConfigs.getByName("release")
+                if (rel.storeFile?.exists() == true) {
+                    println("--> [SIGNING] Usando Release Keystore: ${rel.storeFile?.name} (alias: ${rel.keyAlias})")
+                    rel
+                } else {
+                    println("--> [SIGNING] AVISO: Archivo keystore no encontrado en disco. Usando DEBUG.")
+                    signingConfigs.getByName("debug")
+                }
             } else {
+                println("--> [SIGNING] AVISO: key.properties no encontrado. Usando DEBUG.")
                 signingConfigs.getByName("debug")
             }
             // Habilitar R8 para eliminar código no usado y optimizar el bytecode.
