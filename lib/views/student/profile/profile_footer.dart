@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
@@ -19,6 +20,24 @@ class ProfileFooter extends StatefulWidget {
 
 class _ProfileFooterState extends State<ProfileFooter> {
   bool _isCheckingUpdate = false;
+  String _version = AppConstants.appVersion;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _version = 'v${info.version}';
+        });
+      }
+    } catch (_) {}
+  }
 
   Future<void> _handleCheckUpdate() async {
     HapticFeedback.lightImpact();
@@ -121,7 +140,7 @@ class _ProfileFooterState extends State<ProfileFooter> {
         const SizedBox(height: 6),
         Center(
           child: Text(
-            '${AppConstants.appName} · ${AppConstants.appVersion}',
+            '${AppConstants.appName} · $_version',
             style: TextStyle(
               fontSize: 11,
               fontFamily: AppTheme.brandFont,

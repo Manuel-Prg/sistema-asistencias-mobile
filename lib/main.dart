@@ -13,6 +13,7 @@ import 'providers/theme_provider.dart';
 import 'services/report_notification_service.dart';
 import 'views/auth/forgot_password_view.dart';
 import 'views/auth/login_view.dart';
+import 'views/common/app_splash_loading_view.dart';
 import 'views/navigation/main_navigation_view.dart';
 
 Future<void> main() async {
@@ -75,55 +76,40 @@ class SistemaAsistenciaApp extends ConsumerWidget {
   }
 
   Widget _buildHome(AppAuthState authState) {
-    if (authState.isLoading && !authState.isInitialCheckDone) {
-      return Scaffold(
-        backgroundColor: AppColors.limestoneGround,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Image.asset(
-                  'assets/logo/logo_remove_background.png',
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.water_drop, size: 40, color: AppColors.primary),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const CircularProgressIndicator(color: AppColors.primary),
-              const SizedBox(height: 16),
-              const Text(
-                'Iniciando Sistema de Asistencia...',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.slateMuted,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    final Widget targetWidget;
+    final String targetKey;
 
-    if (authState.isPasswordRecovery) {
-      return ForgotPasswordView(
+    if (authState.isLoading && !authState.isInitialCheckDone) {
+      targetWidget = const AppSplashLoadingView();
+      targetKey = 'splash';
+    } else if (authState.isPasswordRecovery) {
+      targetWidget = ForgotPasswordView(
         isDeepLinkRecovery: true,
         initialEmail: authState.user?.email,
       );
+      targetKey = 'password_recovery';
+    } else if (authState.isAuthenticated) {
+      targetWidget = const MainNavigationView();
+      targetKey = 'main_navigation';
+    } else {
+      targetWidget = const LoginView();
+      targetKey = 'login';
     }
 
-    if (authState.isAuthenticated) {
-      return const MainNavigationView();
-    }
-
-    return const LoginView();
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 550),
+      switchInCurve: Curves.easeInOutCubic,
+      switchOutCurve: Curves.easeInOutCubic,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+      child: KeyedSubtree(
+        key: ValueKey(targetKey),
+        child: targetWidget,
+      ),
+    );
   }
 }

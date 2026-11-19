@@ -3,7 +3,7 @@ class AppConstants {
 
   static const String appName = 'Sistema de Asistencia';
   static const String institutionName = 'Casa Universitaria del Agua';
-  static const String appVersion = '4.3.0 (Mobile)';
+  static const String appVersion = 'v1.0.7 (BETA)';
 
   // Salas oficiales
   static const List<String> rooms = [
@@ -13,6 +13,8 @@ class AppConstants {
     'Sala 3',
     'Sala 4',
     'Sala 4 y 5',
+    'Investigación',
+    'Marketing',
     'Todas',
     'Site',
   ];
