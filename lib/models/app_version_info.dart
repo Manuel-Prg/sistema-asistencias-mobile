@@ -27,4 +27,22 @@ class AppVersionInfo {
           : null,
     );
   }
+
+  AppVersionInfo copyWith({
+    String? version,
+    int? buildNumber,
+    String? apkUrl,
+    String? changelog,
+    bool? isMandatory,
+    DateTime? releaseDate,
+  }) {
+    return AppVersionInfo(
+      version: version ?? this.version,
+      buildNumber: buildNumber ?? this.buildNumber,
+      apkUrl: apkUrl ?? this.apkUrl,
+      changelog: changelog ?? this.changelog,
+      isMandatory: isMandatory ?? this.isMandatory,
+      releaseDate: releaseDate ?? this.releaseDate,
+    );
+  }
 }

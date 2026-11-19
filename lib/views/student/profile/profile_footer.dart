@@ -53,6 +53,7 @@ class _ProfileFooterState extends State<ProfileFooter> {
           context,
           updateInfo: result.updateInfo!,
           currentVersion: result.currentVersion,
+          versionsBehind: result.versionsBehind,
         );
       } else {
         AppGlassToast.show(

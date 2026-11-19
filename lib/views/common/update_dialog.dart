@@ -13,26 +13,34 @@ import '../../services/update_service.dart';
 class UpdateDialog extends StatefulWidget {
   final AppVersionInfo updateInfo;
   final String currentVersion;
+  final int versionsBehind;
 
   const UpdateDialog({
     super.key,
     required this.updateInfo,
     required this.currentVersion,
+    this.versionsBehind = 0,
   });
+
+  bool get isStrictMandatory =>
+      updateInfo.isMandatory || versionsBehind >= 2;
 
   static Future<void> show(
     BuildContext context, {
     required AppVersionInfo updateInfo,
     required String currentVersion,
+    int versionsBehind = 0,
   }) {
+    final isMandatory = updateInfo.isMandatory || versionsBehind >= 2;
     return showDialog(
       context: context,
-      barrierDismissible: !updateInfo.isMandatory,
+      barrierDismissible: !isMandatory,
       builder: (ctx) => PopScope(
-        canPop: !updateInfo.isMandatory,
+        canPop: !isMandatory,
         child: UpdateDialog(
           updateInfo: updateInfo,
           currentVersion: currentVersion,
+          versionsBehind: versionsBehind,
         ),
       ),
     );
@@ -102,6 +110,9 @@ class _UpdateDialogState extends State<UpdateDialog> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themePrimary = Theme.of(context).colorScheme.primary;
+    final isMandatory = widget.isStrictMandatory;
+    final isCritical = widget.versionsBehind >= 2;
+    final actionColor = isMandatory ? AppColors.terracottaRule : themePrimary;
 
     return Center(
       child: Container(
@@ -122,17 +133,19 @@ class _UpdateDialogState extends State<UpdateDialog> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: themePrimary.withValues(alpha: 0.16),
+                        color: actionColor.withValues(alpha: 0.16),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: themePrimary.withValues(alpha: 0.35),
+                          color: actionColor.withValues(alpha: 0.35),
                           width: 1.2,
                         ),
                       ),
                       child: Center(
                         child: Icon(
-                          Icons.system_update_alt_rounded,
-                          color: themePrimary,
+                          isMandatory
+                              ? Icons.security_update_warning_rounded
+                              : Icons.system_update_alt_rounded,
+                          color: actionColor,
                           size: 24,
                         ),
                       ),
@@ -143,16 +156,19 @@ class _UpdateDialogState extends State<UpdateDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Actualización Disponible',
+                            isMandatory
+                                ? 'Actualización Requerida'
+                                : 'Actualización Disponible',
                             style: TextStyle(
                               fontFamily: AppTheme.brandFont,
-                              fontSize: 17,
+                              fontSize: 16.5,
                               fontWeight: FontWeight.w800,
                               color: isDark
                                   ? AppColors.darkTextPrimary
                                   : AppColors.mineralInk,
                             ),
                           ),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
                               Text(
@@ -170,7 +186,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                   vertical: 1,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: themePrimary.withValues(alpha: 0.18),
+                                  color: actionColor.withValues(alpha: 0.18),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -178,10 +194,34 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                   style: TextStyle(
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.bold,
-                                    color: themePrimary,
+                                    color: actionColor,
                                   ),
                                 ),
                               ),
+                              if (isMandatory) ...[
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 1,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.terracottaRule.withValues(
+                                      alpha: 0.18,
+                                    ),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'OBLIGATORIA',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.terracottaRule,
+                                      letterSpacing: 0.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ],
@@ -189,7 +229,71 @@ class _UpdateDialogState extends State<UpdateDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
+
+                // Aviso de actualización crítica cuando tiene 2 o más versiones de retraso
+                if (isMandatory) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.terracottaRule.withValues(
+                        alpha: isDark ? 0.20 : 0.10,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.terracottaRule.withValues(
+                          alpha: isDark ? 0.55 : 0.35,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: AppColors.terracottaRule,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isCritical
+                                    ? 'Versión obsoleta (${widget.versionsBehind} versiones de retraso)'
+                                    : 'Actualización obligatoria',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12.5,
+                                  color: AppColors.terracottaRule,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                isCritical
+                                    ? 'Para prevenir errores de incompatibilidad, fallas al registrar asistencias y pérdida de datos en horarios, es obligatorio actualizar ahora para continuar usando la aplicación.'
+                                    : 'Esta versión contiene correcciones críticas requeridas para el funcionamiento del sistema.',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  height: 1.35,
+                                  color: isDark
+                                      ? const Color(0xFFFCA5A5)
+                                      : const Color(0xFF7F1D1D),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 if (widget.updateInfo.changelog != null &&
                     widget.updateInfo.changelog!.trim().isNotEmpty) ...[
                   Text(
@@ -273,7 +377,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                         backgroundColor: isDark
                             ? Colors.white12
                             : Colors.black12,
-                        valueColor: AlwaysStoppedAnimation<Color>(themePrimary),
+                        valueColor: AlwaysStoppedAnimation<Color>(actionColor),
                         borderRadius: BorderRadius.circular(6),
                         minHeight: 8,
                       ),
@@ -298,15 +402,17 @@ class _UpdateDialogState extends State<UpdateDialog> {
                     child: FilledButton.icon(
                       onPressed: _startUpdate,
                       icon: const Icon(Icons.download_rounded, size: 20),
-                      label: const Text(
-                        'Descargar e Instalar',
-                        style: TextStyle(
+                      label: Text(
+                        isMandatory
+                            ? 'Actualizar Ahora'
+                            : 'Descargar e Instalar',
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       style: FilledButton.styleFrom(
-                        backgroundColor: themePrimary,
+                        backgroundColor: actionColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -332,7 +438,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                     ),
                   ),
                 ],
-                if (!widget.updateInfo.isMandatory && !_isDownloading) ...[
+                if (!isMandatory && !_isDownloading) ...[
                   const SizedBox(height: 6),
                   Center(
                     child: TextButton(

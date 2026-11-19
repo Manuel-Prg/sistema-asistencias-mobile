@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
-import 'core/constants/app_colors.dart';
+
 import 'core/constants/app_constants.dart';
 import 'core/constants/supabase_config.dart';
 import 'core/theme/app_theme.dart';
@@ -32,11 +32,7 @@ Future<void> main() async {
     anonKey: SupabaseConfig.anonKey,
   );
 
-  runApp(
-    const ProviderScope(
-      child: SistemaAsistenciaApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: SistemaAsistenciaApp()));
 }
 
 class SistemaAsistenciaApp extends ConsumerWidget {
@@ -67,10 +63,7 @@ class SistemaAsistenciaApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('es', 'MX'),
-        Locale('es', ''),
-      ],
+      supportedLocales: const [Locale('es', 'MX'), Locale('es', '')],
       home: _buildHome(authState),
     );
   }
@@ -101,15 +94,9 @@ class SistemaAsistenciaApp extends ConsumerWidget {
       switchInCurve: Curves.easeInOutCubic,
       switchOutCurve: Curves.easeInOutCubic,
       transitionBuilder: (child, animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
+        return FadeTransition(opacity: animation, child: child);
       },
-      child: KeyedSubtree(
-        key: ValueKey(targetKey),
-        child: targetWidget,
-      ),
+      child: KeyedSubtree(key: ValueKey(targetKey), child: targetWidget),
     );
   }
 }

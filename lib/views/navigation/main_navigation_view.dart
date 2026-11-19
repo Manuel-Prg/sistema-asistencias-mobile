@@ -102,6 +102,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
           context,
           updateInfo: result.updateInfo!,
           currentVersion: result.currentVersion,
+          versionsBehind: result.versionsBehind,
         );
       }
     } catch (e) {

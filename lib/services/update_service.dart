@@ -13,12 +13,16 @@ class UpdateCheckResult {
   final String currentVersion;
   final int currentBuildNumber;
   final AppVersionInfo? updateInfo;
+  final int versionsBehind;
+  final bool isCriticalOutdated;
 
   const UpdateCheckResult({
     required this.hasUpdate,
     required this.currentVersion,
     required this.currentBuildNumber,
     this.updateInfo,
+    this.versionsBehind = 0,
+    this.isCriticalOutdated = false,
   });
 }
 
@@ -54,6 +58,51 @@ class UpdateService {
     }
   }
 
+  /// Calcula cuántas versiones o builds de diferencia hay entre la versión instalada y la remota
+  static int calculateVersionsBehind({
+    required String currentVersion,
+    required int currentBuild,
+    required String remoteVersion,
+    required int remoteBuild,
+  }) {
+    // 1. Diferencia directa por número de compilación (build_number)
+    final buildDiff = remoteBuild - currentBuild;
+    if (buildDiff > 0) {
+      return buildDiff;
+    }
+
+    // 2. Si no hay diferencia por build_number, comparar partes semver
+    try {
+      final cParts = currentVersion
+          .split('.')
+          .map((e) => int.tryParse(e) ?? 0)
+          .toList();
+      final rParts = remoteVersion
+          .split('.')
+          .map((e) => int.tryParse(e) ?? 0)
+          .toList();
+
+      while (cParts.length < 3) {
+        cParts.add(0);
+      }
+      while (rParts.length < 3) {
+        rParts.add(0);
+      }
+
+      if (rParts[0] > cParts[0]) {
+        return (rParts[0] - cParts[0]) * 10;
+      }
+      if (rParts[1] > cParts[1]) {
+        return (rParts[1] - cParts[1]) * 5;
+      }
+      if (rParts[2] > cParts[2]) {
+        return rParts[2] - cParts[2];
+      }
+    } catch (_) {}
+
+    return 0;
+  }
+
   /// Comprueba en Supabase si existe una versión más reciente que la instalada
   static Future<UpdateCheckResult> checkForUpdates() async {
     try {
@@ -85,11 +134,28 @@ class UpdateService {
       final hasUpdate =
           (isBuildHigher || isSemverHigher) && latest.apkUrl.isNotEmpty;
 
+      final versionsBehind = hasUpdate
+          ? calculateVersionsBehind(
+              currentVersion: currentVersion,
+              currentBuild: currentBuildNumber,
+              remoteVersion: latest.version,
+              remoteBuild: latest.buildNumber,
+            )
+          : 0;
+
+      // Si tiene 2 o más versiones de retraso, la actualización es crítica y obligatoria
+      final isCriticalOutdated = versionsBehind >= 2;
+      final effectiveUpdateInfo = (hasUpdate && isCriticalOutdated)
+          ? latest.copyWith(isMandatory: true)
+          : latest;
+
       return UpdateCheckResult(
         hasUpdate: hasUpdate,
         currentVersion: currentVersion,
         currentBuildNumber: currentBuildNumber,
-        updateInfo: hasUpdate ? latest : null,
+        updateInfo: hasUpdate ? effectiveUpdateInfo : null,
+        versionsBehind: versionsBehind,
+        isCriticalOutdated: isCriticalOutdated,
       );
     } catch (e) {
       debugPrint(
