@@ -9,6 +9,7 @@ import '../../../providers/glass_settings_provider.dart';
 import '../../../providers/progress_bar_style_provider.dart';
 import '../../../providers/theme_provider.dart';
 import 'theme/color_palette_section.dart';
+import 'theme/font_family_section.dart';
 import 'theme/glass_effects_section.dart';
 import 'theme/progress_bar_style_section.dart';
 import 'theme/theme_mode_section.dart';
@@ -130,7 +131,22 @@ class ProfileThemeCard extends ConsumerWidget {
           const Divider(height: 1),
           const SizedBox(height: 14),
 
-          // 5. Estilo de Barra de Progreso
+          // 5. Tipografía (Fuente de la app vs Sistema)
+          FontFamilySection(
+            useSystemFont: glassSettings.useSystemFont,
+            activeAccent: activeAccent,
+            isDark: isDark,
+            isMaterial3: glassSettings.isMaterial3,
+            onUseSystemFontChanged: (useSystem) => ref
+                .read(glassSettingsProvider.notifier)
+                .setUseSystemFont(useSystem),
+          ),
+
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
+
+          // 6. Estilo de Barra de Progreso
           ProgressBarStyleSection(
             selectedBarStyle: selectedBarStyle,
             activeAccent: activeAccent,

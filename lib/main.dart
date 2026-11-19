@@ -46,7 +46,12 @@ class SistemaAsistenciaApp extends ConsumerWidget {
     final isMaterial3 = ref.watch(
       glassSettingsProvider.select((s) => s.isMaterial3),
     );
+    final useSystemFont = ref.watch(
+      glassSettingsProvider.select((s) => s.useSystemFont),
+    );
     final authState = ref.watch(authProvider);
+
+    AppTheme.setUseSystemFont(useSystemFont);
 
     return MaterialApp(
       title: AppConstants.appName,

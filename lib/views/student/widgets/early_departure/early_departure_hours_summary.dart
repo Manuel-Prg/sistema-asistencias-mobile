@@ -105,20 +105,20 @@ class EarlyDepartureHoursSummary extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: remainingHours.toStringAsFixed(2),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: AppTheme.brandFont,
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFFEA580C),
+                            color: const Color(0xFFEA580C),
                           ),
                         ),
-                        const TextSpan(
+                        TextSpan(
                           text: ' hrs',
                           style: TextStyle(
                             fontFamily: AppTheme.brandFont,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFFF97316),
+                            color: const Color(0xFFF97316),
                           ),
                         ),
                       ],

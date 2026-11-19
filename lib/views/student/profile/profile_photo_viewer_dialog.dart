@@ -150,7 +150,7 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             fullName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,

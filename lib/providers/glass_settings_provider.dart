@@ -13,6 +13,9 @@ class GlassSettings {
   /// Estilo visual principal (Material 3 vs Liquid Glass)
   final AppVisualStyle visualStyle;
 
+  /// Usar la fuente nativa del sistema en lugar de la fuente personalizada de la app (Archer)
+  final bool useSystemFont;
+
   /// Transparencia del vidrio: 0.10 (muy sólido) a 0.85 (máxima transparencia)
   final double transparency;
 
@@ -27,6 +30,7 @@ class GlassSettings {
 
   const GlassSettings({
     this.visualStyle = AppVisualStyle.liquidGlass,
+    this.useSystemFont = false,
     this.transparency = 0.60,
     this.showBorders = true,
     this.blurSigma = 7.0,
@@ -39,6 +43,7 @@ class GlassSettings {
 
   GlassSettings copyWith({
     AppVisualStyle? visualStyle,
+    bool? useSystemFont,
     double? transparency,
     bool? showBorders,
     double? blurSigma,
@@ -46,6 +51,7 @@ class GlassSettings {
   }) {
     return GlassSettings(
       visualStyle: visualStyle ?? this.visualStyle,
+      useSystemFont: useSystemFont ?? this.useSystemFont,
       transparency: transparency ?? this.transparency,
       showBorders: showBorders ?? this.showBorders,
       blurSigma: blurSigma ?? this.blurSigma,
@@ -64,6 +70,7 @@ final glassSettingsProvider =
 
 class GlassSettingsNotifier extends Notifier<GlassSettings> {
   static const _visualStyleKey = 'app_visual_style';
+  static const _useSystemFontKey = 'app_use_system_font';
   static const _transparencyKey = 'glass_transparency';
   static const _showBordersKey = 'glass_show_borders';
   static const _enableBlurKey = 'glass_enable_blur';
@@ -78,6 +85,7 @@ class GlassSettingsNotifier extends Notifier<GlassSettings> {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final savedStyle = prefs.getString(_visualStyleKey);
+    final savedUseSystemFont = prefs.getBool(_useSystemFontKey);
     final savedTransparency = prefs.getDouble(_transparencyKey);
     final savedShowBorders = prefs.getBool(_showBordersKey);
     final savedEnableBlur = prefs.getBool(_enableBlurKey);
@@ -94,6 +102,7 @@ class GlassSettingsNotifier extends Notifier<GlassSettings> {
 
     state = state.copyWith(
       visualStyle: resolvedStyle,
+      useSystemFont: savedUseSystemFont ?? false,
       transparency: savedTransparency ?? 0.60,
       showBorders: savedShowBorders ?? true,
       enableBlur: savedEnableBlur ?? true,
@@ -108,6 +117,12 @@ class GlassSettingsNotifier extends Notifier<GlassSettings> {
       _visualStyleKey,
       style == AppVisualStyle.material3 ? 'material3' : 'liquidGlass',
     );
+  }
+
+  Future<void> setUseSystemFont(bool value) async {
+    state = state.copyWith(useSystemFont: value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_useSystemFontKey, value);
   }
 
   Future<void> setTransparency(double value) async {

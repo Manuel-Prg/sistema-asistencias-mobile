@@ -95,16 +95,16 @@ flutter:
   fonts:
     - family: Archer
       fonts:
-        - asset: assets/fonts/archer/Archer Book.woff2
+        - asset: assets/fonts/archer/Archer Book.otf
           weight: 400
-        - asset: assets/fonts/archer/Archer Book Italic.woff2
+        - asset: assets/fonts/archer/Archer Book Italic.otf
           weight: 400
           style: italic
-        - asset: assets/fonts/archer/Archer Medium.woff2
+        - asset: assets/fonts/archer/Archer Medium.otf
           weight: 500
-        - asset: assets/fonts/archer/Archer SemiBold.woff2
+        - asset: assets/fonts/archer/Archer SemiBold.otf
           weight: 600
-        - asset: assets/fonts/archer/Archer Bold.woff2
+        - asset: assets/fonts/archer/Archer Bold.otf
           weight: 700
-        - asset: assets/fonts/archer/Archer Black.woff2
+        - asset: assets/fonts/archer/Archer Black.otf
           weight: 900

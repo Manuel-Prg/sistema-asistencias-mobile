@@ -6,14 +6,22 @@ import '../constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
-  static const String brandFont = 'Archer';
+  static const String defaultBrandFont = 'Archer';
+  static bool _useSystemFont = false;
+
+  /// Retorna la fuente de marca ('Archer') o `null` para usar la fuente nativa del sistema.
+  static String? get brandFont => _useSystemFont ? null : defaultBrandFont;
+
+  static void setUseSystemFont(bool useSystem) {
+    _useSystemFont = useSystem;
+  }
 
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       fontFamily: brandFont,
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         bodyLarge: TextStyle(
           fontFamily: brandFont,
           color: AppColors.mineralInk,
@@ -75,7 +83,7 @@ class AppTheme {
         error: AppColors.terracottaRule,
         onError: Colors.white,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.primary,
         elevation: 0,
@@ -173,7 +181,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: brandFont,
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         bodyLarge: TextStyle(
           fontFamily: brandFont,
           color: AppColors.darkTextPrimary,
@@ -233,7 +241,7 @@ class AppTheme {
         onSurface: AppColors.darkTextPrimary,
         error: AppColors.terracottaRule,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
@@ -358,7 +366,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(14),
           ),
           elevation: 0,
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontFamily: brandFont,
             fontSize: 14.5,
             fontWeight: FontWeight.w700,
@@ -489,7 +497,7 @@ class AppTheme {
           minimumSize: const Size.fromHeight(50),
           shape: const StadiumBorder(),
           elevation: 0,
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontFamily: brandFont,
             fontSize: 14.5,
             fontWeight: FontWeight.w700,
