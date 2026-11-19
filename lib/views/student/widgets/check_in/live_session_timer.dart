@@ -16,18 +16,20 @@ class LiveSessionTimer extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-              Icons.timer_outlined,
-              color: isDark ? Colors.white : themePrimary,
-              size: 20,
-            )
-            .animate(onPlay: (controller) => controller.repeat(reverse: true))
-            .scale(
-              begin: const Offset(0.92, 0.92),
-              end: const Offset(1.18, 1.18),
-              duration: 1000.ms,
-              curve: Curves.easeInOut,
-            ),
+        RepaintBoundary(
+          child: Icon(
+            Icons.timer_outlined,
+            color: isDark ? Colors.white : themePrimary,
+            size: 20,
+          )
+              .animate(onPlay: (controller) => controller.repeat(reverse: true))
+              .scale(
+                begin: const Offset(0.92, 0.92),
+                end: const Offset(1.18, 1.18),
+                duration: 1000.ms,
+                curve: Curves.easeInOut,
+              ),
+        ),
         const SizedBox(width: 8),
         Flexible(
           child: FittedBox(

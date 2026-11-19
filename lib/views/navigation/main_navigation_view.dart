@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../providers/glass_settings_provider.dart';
 import '../../services/update_service.dart';
 import '../common/update_dialog.dart';
 import '../student/dashboard_view.dart';
@@ -25,14 +27,14 @@ class _NavTabItem {
   });
 }
 
-class MainNavigationView extends StatefulWidget {
+class MainNavigationView extends ConsumerStatefulWidget {
   const MainNavigationView({super.key});
 
   @override
-  State<MainNavigationView> createState() => _MainNavigationViewState();
+  ConsumerState<MainNavigationView> createState() => _MainNavigationViewState();
 }
 
-class _MainNavigationViewState extends State<MainNavigationView>
+class _MainNavigationViewState extends ConsumerState<MainNavigationView>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   bool _isSplit = false;
@@ -142,6 +144,44 @@ class _MainNavigationViewState extends State<MainNavigationView>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeColor = Theme.of(context).colorScheme.primary;
+    final isMaterial3 = ref.watch(
+      glassSettingsProvider.select((s) => s.isMaterial3),
+    );
+
+    final indexedBody = IndexedStack(
+      index: _currentIndex,
+      children: List.generate(
+        _views.length,
+        (i) => TickerMode(enabled: _currentIndex == i, child: _views[i]),
+      ),
+    );
+
+    if (isMaterial3) {
+      return Scaffold(
+        body: indexedBody,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: _onTabSelected,
+          animationDuration: const Duration(milliseconds: 320),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: List.generate(_tabs.length, (index) {
+            final tab = _tabs[index];
+            final isSelected = _currentIndex == index;
+            return NavigationDestination(
+              icon: _M3AnimatedNavIcon(
+                icon: tab.icon,
+                isSelected: false,
+              ),
+              selectedIcon: _M3AnimatedNavIcon(
+                icon: tab.selectedIcon,
+                isSelected: isSelected,
+              ),
+              label: tab.label,
+            );
+          }),
+        ),
+      );
+    }
 
     return Scaffold(
       extendBody: true,
@@ -178,7 +218,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
 
             return false;
           },
-          child: IndexedStack(index: _currentIndex, children: _views),
+          child: indexedBody,
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
@@ -260,9 +300,10 @@ class _MainNavigationViewState extends State<MainNavigationView>
   }
 
   Widget _buildFullDock(BuildContext context, Color activeColor, bool isDark) {
-    return SizedBox(
-      height: 58,
-      child: LiquidGlassLens(
+    return RepaintBoundary(
+      child: SizedBox(
+        height: 58,
+        child: LiquidGlassLens(
         style: LiquidGlassStyle(
           shape: const LiquidGlassShape.continuousRoundedRectangle(
             cornerRadius: 29,
@@ -298,6 +339,7 @@ class _MainNavigationViewState extends State<MainNavigationView>
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -308,45 +350,47 @@ class _MainNavigationViewState extends State<MainNavigationView>
   ) {
     final currentTab = _tabs[_currentIndex];
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        _unsplitDock();
-      },
-      child: Tooltip(
-        message: currentTab.label,
-        child: SizedBox(
-          width: 54,
-          height: 54,
-          child: LiquidGlassLens(
-            style: LiquidGlassStyle(
-              shape: const LiquidGlassShape.continuousRoundedRectangle(
-                cornerRadius: 27,
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          _unsplitDock();
+        },
+        child: Tooltip(
+          message: currentTab.label,
+          child: SizedBox(
+            width: 54,
+            height: 54,
+            child: LiquidGlassLens(
+              style: LiquidGlassStyle(
+                shape: const LiquidGlassShape.continuousRoundedRectangle(
+                  cornerRadius: 27,
+                ),
+                refractionIndex: 1.28,
+                refractionWidth: 20,
+                magnification: 1.05,
+                dispersion: 4.5,
+                blur: 3.5,
+                color: isDark
+                    ? const Color(0x0E000000)
+                    : const Color(0x12FFFFFF),
+                specular: const LiquidGlassLight.specular(thickness: 0),
+                glow: const LiquidGlassLight.glow(thickness: 0),
               ),
-              refractionIndex: 1.28,
-              refractionWidth: 20,
-              magnification: 1.05,
-              dispersion: 4.5,
-              blur: 3.5,
-              color: isDark
-                  ? const Color(0x0E000000)
-                  : const Color(0x12FFFFFF),
-              specular: const LiquidGlassLight.specular(thickness: 0),
-              glow: const LiquidGlassLight.glow(thickness: 0),
-            ),
-            child: Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: activeColor.withValues(alpha: isDark ? 0.22 : 0.12),
-              ),
-              child: Center(
-                child: Icon(
-                  currentTab.selectedIcon,
-                  size: 24,
-                  color: activeColor,
+              child: Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: activeColor.withValues(alpha: isDark ? 0.22 : 0.12),
+                ),
+                child: Center(
+                  child: Icon(
+                    currentTab.selectedIcon,
+                    size: 24,
+                    color: activeColor,
+                  ),
                 ),
               ),
             ),
@@ -359,48 +403,50 @@ class _MainNavigationViewState extends State<MainNavigationView>
   Widget _buildSearchPod(BuildContext context, Color activeColor, bool isDark) {
     final isRecursos = _currentIndex == 3;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        if (!isRecursos) {
-          _onTabSelected(3);
-        } else {
-          _unsplitDock();
-        }
-      },
-      child: Tooltip(
-        message: 'Buscar recursos',
-        child: SizedBox(
-          width: 54,
-          height: 54,
-          child: LiquidGlassLens(
-            style: LiquidGlassStyle(
-              shape: const LiquidGlassShape.continuousRoundedRectangle(
-                cornerRadius: 27,
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          if (!isRecursos) {
+            _onTabSelected(3);
+          } else {
+            _unsplitDock();
+          }
+        },
+        child: Tooltip(
+          message: 'Buscar recursos',
+          child: SizedBox(
+            width: 54,
+            height: 54,
+            child: LiquidGlassLens(
+              style: LiquidGlassStyle(
+                shape: const LiquidGlassShape.continuousRoundedRectangle(
+                  cornerRadius: 27,
+                ),
+                refractionIndex: 1.28,
+                refractionWidth: 20,
+                magnification: 1.05,
+                dispersion: 4.5,
+                blur: 3.5,
+                color: isDark
+                    ? const Color(0x0E000000)
+                    : const Color(0x12FFFFFF),
+                specular: const LiquidGlassLight.specular(thickness: 0),
+                glow: const LiquidGlassLight.glow(thickness: 0),
               ),
-              refractionIndex: 1.28,
-              refractionWidth: 20,
-              magnification: 1.05,
-              dispersion: 4.5,
-              blur: 3.5,
-              color: isDark
-                  ? const Color(0x0E000000)
-                  : const Color(0x12FFFFFF),
-              specular: const LiquidGlassLight.specular(thickness: 0),
-              glow: const LiquidGlassLight.glow(thickness: 0),
-            ),
-            child: Container(
-              width: 54,
-              height: 54,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.search_rounded,
-                  size: 23,
-                  color: isDark ? Colors.white : AppColors.mineralInk,
+              child: Container(
+                width: 54,
+                height: 54,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.search_rounded,
+                    size: 23,
+                    color: isDark ? Colors.white : AppColors.mineralInk,
+                  ),
                 ),
               ),
             ),
@@ -486,6 +532,34 @@ class _GlassNavItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _M3AnimatedNavIcon extends StatelessWidget {
+  final IconData icon;
+  final bool isSelected;
+
+  const _M3AnimatedNavIcon({
+    required this.icon,
+    required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isSelected) {
+      return Icon(icon);
+    }
+
+    return TweenAnimationBuilder<double>(
+      key: ValueKey<IconData>(icon),
+      tween: Tween<double>(begin: 0.78, end: 1.12),
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutBack,
+      builder: (context, scale, child) {
+        return Transform.scale(scale: scale, child: child);
+      },
+      child: Icon(icon),
     );
   }
 }

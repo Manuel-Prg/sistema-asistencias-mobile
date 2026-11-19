@@ -37,6 +37,33 @@ class GlassSurface extends ConsumerWidget {
     final settings = ref.watch(glassSettingsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final radius = borderRadius ?? BorderRadius.circular(16);
+
+    // Modo Material 3 Expressive: tarjetas tonales planas sin borde, radio amplio y 0 BackdropFilter
+    if (settings.isMaterial3) {
+      final scheme = Theme.of(context).colorScheme;
+      final baseCardColor = scheme.surfaceContainerLow;
+      final Color flatColor = tintColor != null
+          ? (tintColor!.a < 0.99
+              ? Color.alphaBlend(tintColor!, baseCardColor)
+              : tintColor!)
+          : baseCardColor;
+
+      final m3Radius = borderRadius ?? BorderRadius.circular(24);
+
+      return Container(
+        width: width,
+        height: height,
+        padding: padding,
+        margin: margin,
+        decoration: BoxDecoration(
+          color: flatColor,
+          shape: shape,
+          borderRadius: shape == BoxShape.circle ? null : m3Radius,
+        ),
+        child: child,
+      );
+    }
+
     final opacity = settings.effectiveOpacity;
 
     // Colores base con ajuste de opacidad según preferencia del usuario
@@ -122,8 +149,9 @@ class GlassSurface extends ConsumerWidget {
       child: child,
     );
 
-    final shouldBlur =
-        (settings.enableBlur == true) && (settings.blurSigma > 0);
+    final shouldBlur = (settings.enableBlur == true) &&
+        (settings.blurSigma > 0) &&
+        enableRefraction;
 
     Widget visual;
     if (shouldBlur) {

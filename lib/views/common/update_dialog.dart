@@ -22,8 +22,7 @@ class UpdateDialog extends StatefulWidget {
     this.versionsBehind = 0,
   });
 
-  bool get isStrictMandatory =>
-      updateInfo.isMandatory || versionsBehind >= 2;
+  bool get isStrictMandatory => updateInfo.isMandatory || versionsBehind >= 2;
 
   static Future<void> show(
     BuildContext context, {

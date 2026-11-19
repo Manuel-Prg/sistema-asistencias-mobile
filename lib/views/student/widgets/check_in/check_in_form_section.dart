@@ -9,6 +9,7 @@ class CheckInFormSection extends StatelessWidget {
   final String selectedRoom;
   final String selectedShift;
   final bool isLoading;
+  final bool isMaterial3;
   final ValueChanged<String> onRoomChanged;
   final ValueChanged<String> onShiftChanged;
   final VoidCallback onSubmit;
@@ -18,6 +19,7 @@ class CheckInFormSection extends StatelessWidget {
     required this.selectedRoom,
     required this.selectedShift,
     required this.isLoading,
+    this.isMaterial3 = false,
     required this.onRoomChanged,
     required this.onShiftChanged,
     required this.onSubmit,
@@ -42,8 +44,10 @@ class CheckInFormSection extends StatelessWidget {
           child: GlassSurface(
             borderRadius: BorderRadius.circular(24),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            tintColor: isDark ? const Color(0xFF141418) : themePrimary,
-            enableRefraction: true,
+            tintColor: isMaterial3
+                ? null
+                : (isDark ? const Color(0xFF141418) : themePrimary),
+            enableRefraction: !isMaterial3,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -182,7 +186,8 @@ class CheckInFormSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final themePrimary = Theme.of(context).colorScheme.primary;
+    final scheme = Theme.of(context).colorScheme;
+    final themePrimary = scheme.primary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -201,27 +206,33 @@ class CheckInFormSection extends StatelessWidget {
         InkWell(
           onTap: () =>
               _showGlassRoomPicker(context, selectedRoom, onRoomChanged),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(isMaterial3 ? 18 : 14),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.10)
-                  : Colors.white.withValues(alpha: 0.65),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.22)
-                    : themePrimary.withValues(alpha: 0.35),
-                width: 1.2,
-              ),
+              color: isMaterial3
+                  ? scheme.surfaceContainerHigh
+                  : (isDark
+                      ? Colors.white.withValues(alpha: 0.10)
+                      : Colors.white.withValues(alpha: 0.65)),
+              borderRadius: BorderRadius.circular(isMaterial3 ? 18 : 14),
+              border: isMaterial3
+                  ? null
+                  : Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.22)
+                          : themePrimary.withValues(alpha: 0.35),
+                      width: 1.2,
+                    ),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.meeting_room_rounded,
                   size: 18,
-                  color: isDark ? Colors.white70 : themePrimary,
+                  color: isMaterial3
+                      ? themePrimary
+                      : (isDark ? Colors.white70 : themePrimary),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -236,7 +247,9 @@ class CheckInFormSection extends StatelessWidget {
                 ),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: isDark ? Colors.white70 : themePrimary,
+                  color: isMaterial3
+                      ? scheme.onSurfaceVariant
+                      : (isDark ? Colors.white70 : themePrimary),
                   size: 22,
                 ),
               ],
@@ -262,6 +275,7 @@ class CheckInFormSection extends StatelessWidget {
                 label: 'Matutino',
                 timeRange: '11:00 - 14:00',
                 isSelected: selectedShift == AppConstants.shiftMatutino,
+                isMaterial3: isMaterial3,
                 onTap: () => onShiftChanged(AppConstants.shiftMatutino),
               ),
             ),
@@ -271,6 +285,7 @@ class CheckInFormSection extends StatelessWidget {
                 label: 'Vespertino',
                 timeRange: '14:00 - 18:00',
                 isSelected: selectedShift == AppConstants.shiftVespertino,
+                isMaterial3: isMaterial3,
                 onTap: () => onShiftChanged(AppConstants.shiftVespertino),
               ),
             ),
@@ -280,6 +295,7 @@ class CheckInFormSection extends StatelessWidget {
                 label: 'Completo',
                 timeRange: '11:00 - 18:00',
                 isSelected: selectedShift == AppConstants.shiftCompleto,
+                isMaterial3: isMaterial3,
                 onTap: () => onShiftChanged(AppConstants.shiftCompleto),
               ),
             ),
@@ -289,13 +305,16 @@ class CheckInFormSection extends StatelessWidget {
         ElevatedButton(
           onPressed: isLoading ? null : onSubmit,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: themePrimary,
             foregroundColor: Colors.white,
             iconColor: Colors.white,
             minimumSize: const Size.fromHeight(52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            elevation: 0,
+            shape: isMaterial3
+                ? const StadiumBorder()
+                : RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
           ),
           child: isLoading
               ? const SizedBox(
@@ -332,42 +351,71 @@ class _ShiftButton extends StatelessWidget {
   final String label;
   final String timeRange;
   final bool isSelected;
+  final bool isMaterial3;
   final VoidCallback onTap;
 
   const _ShiftButton({
     required this.label,
     required this.timeRange,
     required this.isSelected,
+    this.isMaterial3 = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final themePrimary = Theme.of(context).colorScheme.primary;
+    final scheme = Theme.of(context).colorScheme;
+    final themePrimary = scheme.primary;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: isSelected
+    final Color bgColor = isMaterial3
+        ? (isSelected ? scheme.primaryContainer : scheme.surfaceContainerHigh)
+        : (isSelected
               ? (isDark
                     ? themePrimary.withValues(alpha: 0.35)
                     : themePrimary.withValues(alpha: 0.20))
               : (isDark
                     ? Colors.white.withValues(alpha: 0.06)
-                    : Colors.white.withValues(alpha: 0.65)),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
+                    : Colors.white.withValues(alpha: 0.65)));
+
+    final Border? border = isMaterial3
+        ? (isSelected
+              ? Border.all(color: themePrimary, width: 1.5)
+              : null)
+        : Border.all(
             color: isSelected
                 ? (isDark ? Colors.white : themePrimary)
                 : (isDark
                       ? Colors.white.withValues(alpha: 0.15)
                       : AppColors.stoneBorder),
             width: isSelected ? 1.5 : 1,
-          ),
+          );
+
+    final Color titleColor = isMaterial3
+        ? (isSelected
+              ? scheme.onPrimaryContainer
+              : (isDark ? Colors.white : AppColors.mineralInk))
+        : (isSelected
+              ? (isDark ? Colors.white : themePrimary)
+              : (isDark ? Colors.white : AppColors.mineralInk));
+
+    final Color timeColor = isMaterial3
+        ? (isSelected
+              ? scheme.onPrimaryContainer.withValues(alpha: 0.85)
+              : (isDark ? Colors.white60 : AppColors.slateMuted))
+        : (isSelected
+              ? (isDark ? Colors.white : themePrimary)
+              : (isDark ? Colors.white60 : AppColors.slateMuted));
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(isMaterial3 ? 16 : 12),
+          border: border,
         ),
         child: Column(
           children: [
@@ -376,9 +424,7 @@ class _ShiftButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                color: isSelected
-                    ? (isDark ? Colors.white : themePrimary)
-                    : (isDark ? Colors.white : AppColors.mineralInk),
+                color: titleColor,
               ),
             ),
             const SizedBox(height: 2),
@@ -387,9 +433,7 @@ class _ShiftButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected
-                    ? (isDark ? Colors.white : themePrimary)
-                    : (isDark ? Colors.white60 : AppColors.slateMuted),
+                color: timeColor,
               ),
             ),
           ],

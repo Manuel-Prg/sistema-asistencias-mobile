@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
+import '../../providers/glass_settings_provider.dart';
 import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
 
@@ -43,7 +45,7 @@ class AppGlassToast {
   }
 }
 
-class _GlassToastWidget extends StatelessWidget {
+class _GlassToastWidget extends ConsumerWidget {
   final String? title;
   final String message;
   final GlassToastType type;
@@ -71,8 +73,12 @@ class _GlassToastWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final isMaterial3 = ref.watch(
+      glassSettingsProvider.select((s) => s.isMaterial3),
+    );
 
     final textColor = isDark ? Colors.white : AppColors.mineralInk;
     final subtitleColor = isDark
@@ -81,6 +87,63 @@ class _GlassToastWidget extends StatelessWidget {
     final iconColor = isDark
         ? Colors.white.withValues(alpha: 0.90)
         : AppColors.mineralInk;
+
+    final innerContent = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: isMaterial3 ? scheme.surfaceContainerHigh : null,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: isMaterial3
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(_icon, color: iconColor, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (title != null && title!.isNotEmpty) ...[
+                  Text(
+                    title!,
+                    style: TextStyle(
+                      fontFamily: AppTheme.brandFont,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                ],
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontFamily: AppTheme.brandFont,
+                    fontSize: 12,
+                    color: subtitleColor,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (isMaterial3) {
+      return innerContent;
+    }
 
     return LiquidGlassLens(
       style: LiquidGlassStyle(
@@ -98,48 +161,7 @@ class _GlassToastWidget extends StatelessWidget {
         specular: const LiquidGlassLight.specular(thickness: 0),
         glow: const LiquidGlassLight.glow(thickness: 0),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(_icon, color: iconColor, size: 22),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (title != null && title!.isNotEmpty) ...[
-                      Text(
-                        title!,
-                        style: TextStyle(
-                          fontFamily: AppTheme.brandFont,
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                    ],
-                    Text(
-                      message,
-                      style: TextStyle(
-                        fontFamily: AppTheme.brandFont,
-                        fontSize: 12,
-                        color: subtitleColor,
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+      child: innerContent,
     );
   }
 }

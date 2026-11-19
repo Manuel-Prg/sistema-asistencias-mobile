@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/glass_surface.dart';
 
 class NotificationBanner extends StatelessWidget {
   final VoidCallback onActivate;
@@ -19,30 +19,12 @@ class NotificationBanner extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themePrimary = Theme.of(context).colorScheme.primary;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: LiquidGlassLens(
-        style: LiquidGlassStyle(
-          shape: const LiquidGlassShape.continuousRoundedRectangle(
-            cornerRadius: 16,
-          ),
-          refractionIndex: 1.28,
-          refractionWidth: 28,
-          magnification: 1.04,
-          dispersion: 4.5,
-          blur: 3.5,
-          color: isDark
-              ? const Color(0x0A000000)
-              : const Color(0x0EFFFFFF),
-          specular: const LiquidGlassLight.specular(thickness: 0),
-          glow: const LiquidGlassLight.glow(thickness: 0),
-        ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
+    return GlassSurface(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      borderRadius: BorderRadius.circular(18),
+      enableRefraction: false,
+      child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(7),
@@ -101,8 +83,6 @@ class NotificationBanner extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
+        );
   }
 }

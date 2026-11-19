@@ -34,6 +34,7 @@ class AttendanceHistoryItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       borderRadius: BorderRadius.circular(14),
+      enableRefraction: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -26,6 +26,7 @@ class ResourceItemCard extends StatelessWidget {
     return GlassSurface(
       margin: const EdgeInsets.only(bottom: 14),
       borderRadius: BorderRadius.circular(18),
+      enableRefraction: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

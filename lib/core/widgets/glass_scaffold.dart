@@ -5,11 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../../providers/glass_settings_provider.dart';
 import '../../providers/theme_provider.dart';
 
-/// Scaffold con fondo ambiental orgánico estilo iOS Liquid Glass
-/// que permite que los componentes de vidrio refracten la luz y el color de fondo.
-class GlassScaffold extends StatelessWidget {
+/// Scaffold con fondo ambiental orgánico estilo iOS Liquid Glass, o fondo
+/// plano ligero cuando el usuario selecciona el estilo Material 3.
+class GlassScaffold extends ConsumerWidget {
   final PreferredSizeWidget? appBar;
   final Widget body;
   final Widget? bottomNavigationBar;
@@ -26,8 +27,24 @@ class GlassScaffold extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMaterial3 = ref.watch(
+      glassSettingsProvider.select((s) => s.isMaterial3),
+    );
+
+    if (isMaterial3) {
+      return Scaffold(
+        backgroundColor: isDark
+            ? AppColors.abyssalGroundDark
+            : AppColors.limestoneGround,
+        extendBody: extendBody,
+        extendBodyBehindAppBar: extendBodyBehindAppBar,
+        appBar: appBar,
+        bottomNavigationBar: bottomNavigationBar,
+        body: body,
+      );
+    }
 
     return Scaffold(
       extendBody: extendBody,
@@ -222,36 +239,50 @@ class GlassAppBar extends ConsumerWidget implements PreferredSizeWidget {
           const SizedBox(width: 4),
         ];
 
+    final glassSettings = ref.watch(glassSettingsProvider);
+    final useFlatBar = glassSettings.isMaterial3 || !glassSettings.enableBlur;
+
+    final barContainer = Container(
+      decoration: BoxDecoration(
+        color: useFlatBar
+            ? (isDark ? AppColors.abyssalGroundDark : AppColors.limestoneGround)
+            : (isDark
+                  ? const Color(0xFF000000).withValues(alpha: 0.85)
+                  : const Color(0xFFF9F6F0).withValues(alpha: 0.88)),
+        border: Border(
+          bottom: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFF0C3C4C).withValues(alpha: 0.07),
+            width: 1,
+          ),
+        ),
+      ),
+      child: AppBar(
+        title: effectiveTitle,
+        actions: effectiveActions,
+        leading: leading,
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        backgroundColor: Colors.transparent,
+        foregroundColor: fg,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        centerTitle: false,
+      ),
+    );
+
+    if (useFlatBar) {
+      return barContainer;
+    }
+
     return RepaintBoundary(
       child: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF000000).withValues(alpha: 0.85)
-                  : const Color(0xFFF9F6F0).withValues(alpha: 0.88),
-              border: Border(
-                bottom: BorderSide(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : const Color(0xFF0C3C4C).withValues(alpha: 0.07),
-                  width: 1,
-                ),
-              ),
-            ),
-            child: AppBar(
-              title: effectiveTitle,
-              actions: effectiveActions,
-              leading: leading,
-              automaticallyImplyLeading: automaticallyImplyLeading,
-              backgroundColor: Colors.transparent,
-              foregroundColor: fg,
-              elevation: 0,
-              surfaceTintColor: Colors.transparent,
-              centerTitle: false,
-            ),
+          filter: ImageFilter.blur(
+            sigmaX: glassSettings.blurSigma,
+            sigmaY: glassSettings.blurSigma,
           ),
+          child: barContainer,
         ),
       ),
     );

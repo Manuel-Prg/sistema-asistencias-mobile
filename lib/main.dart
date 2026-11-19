@@ -9,6 +9,7 @@ import 'core/constants/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/color_theme_provider.dart';
+import 'providers/glass_settings_provider.dart';
 import 'providers/theme_provider.dart';
 import 'services/report_notification_service.dart';
 import 'views/auth/forgot_password_view.dart';
@@ -42,6 +43,9 @@ class SistemaAsistenciaApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final colorPalette = ref.watch(colorThemeProvider);
+    final isMaterial3 = ref.watch(
+      glassSettingsProvider.select((s) => s.isMaterial3),
+    );
     final authState = ref.watch(authProvider);
 
     return MaterialApp(
@@ -51,11 +55,13 @@ class SistemaAsistenciaApp extends ConsumerWidget {
         AppTheme.lightTheme,
         colorPalette,
         isDark: false,
+        isMaterial3: isMaterial3,
       ),
       darkTheme: AppTheme.getThemeWithPalette(
         AppTheme.darkTheme,
         colorPalette,
         isDark: true,
+        isMaterial3: isMaterial3,
       ),
       themeMode: themeMode,
       localizationsDelegates: const [

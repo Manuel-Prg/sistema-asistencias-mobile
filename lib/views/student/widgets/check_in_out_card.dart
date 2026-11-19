@@ -1,16 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/glass_surface.dart';
 import '../../../models/attendance_record.dart';
+import '../../../providers/glass_settings_provider.dart';
 import 'check_in/active_session_section.dart';
 import 'check_in/check_in_form_section.dart';
 import 'early_departure_dialog.dart';
 
-class CheckInOutCard extends StatefulWidget {
+class CheckInOutCard extends ConsumerStatefulWidget {
   final AttendanceRecord? activeRecord;
   final bool isLoading;
   final Function(String room, String shift) onCheckIn;
@@ -25,10 +27,10 @@ class CheckInOutCard extends StatefulWidget {
   });
 
   @override
-  State<CheckInOutCard> createState() => _CheckInOutCardState();
+  ConsumerState<CheckInOutCard> createState() => _CheckInOutCardState();
 }
 
-class _CheckInOutCardState extends State<CheckInOutCard> {
+class _CheckInOutCardState extends ConsumerState<CheckInOutCard> {
   String _selectedRoom = AppConstants.rooms.first;
   String _selectedShift = AppConstants.shiftMatutino;
   Timer? _timer;
@@ -99,53 +101,103 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
   Widget build(BuildContext context) {
     final hasActive = widget.activeRecord != null;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final themePrimary = Theme.of(context).colorScheme.primary;
+    final scheme = Theme.of(context).colorScheme;
+    final themePrimary = scheme.primary;
+    final isMaterial3 = ref.watch(
+      glassSettingsProvider.select((s) => s.isMaterial3),
+    );
 
     return GlassSurface(
-      tintColor: isDark ? const Color(0xFF141418) : themePrimary,
-      borderRadius: BorderRadius.circular(20),
+      tintColor: isMaterial3
+          ? null
+          : (isDark ? const Color(0xFF141418) : themePrimary),
+      borderRadius: BorderRadius.circular(isMaterial3 ? 26 : 20),
       padding: const EdgeInsets.all(22),
-      enableRefraction: true,
+      enableRefraction: !isMaterial3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: hasActive
-                      ? (isDark ? Colors.white : themePrimary)
-                      : (isDark
-                            ? Colors.white54
-                            : themePrimary.withValues(alpha: 0.5)),
-                  shape: BoxShape.circle,
-                  boxShadow: hasActive
-                      ? [
-                          BoxShadow(
-                            color: (isDark ? Colors.white : themePrimary)
-                                .withValues(alpha: 0.6),
-                            blurRadius: 6,
-                            spreadRadius: 1,
-                          ),
-                        ]
-                      : null,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Flexible(
-                child: Text(
-                  hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : AppColors.mineralInk,
-                    letterSpacing: 0.8,
+              if (isMaterial3)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: hasActive
+                        ? AppColors.statusOnTime.withValues(
+                            alpha: isDark ? 0.22 : 0.14,
+                          )
+                        : scheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: hasActive
+                              ? AppColors.statusOnTime
+                              : themePrimary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      Text(
+                        hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          color: hasActive
+                              ? AppColors.statusOnTime
+                              : scheme.onPrimaryContainer,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else ...[
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: hasActive
+                        ? (isDark ? Colors.white : themePrimary)
+                        : (isDark
+                              ? Colors.white54
+                              : themePrimary.withValues(alpha: 0.5)),
+                    shape: BoxShape.circle,
+                    boxShadow: hasActive
+                        ? [
+                            BoxShadow(
+                              color: (isDark ? Colors.white : themePrimary)
+                                  .withValues(alpha: 0.6),
+                              blurRadius: 6,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
                   ),
                 ),
-              ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    hasActive ? 'SESIÓN EN CURSO' : 'REGISTRO DE ASISTENCIA',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : AppColors.mineralInk,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 18),
@@ -154,6 +206,7 @@ class _CheckInOutCardState extends State<CheckInOutCard> {
               selectedRoom: _selectedRoom,
               selectedShift: _selectedShift,
               isLoading: widget.isLoading,
+              isMaterial3: isMaterial3,
               onRoomChanged: (room) => setState(() => _selectedRoom = room),
               onShiftChanged: (shift) => setState(() => _selectedShift = shift),
               onSubmit: () => widget.onCheckIn(_selectedRoom, _selectedShift),
