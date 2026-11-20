@@ -318,7 +318,7 @@ class _PermissionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badgeColor = granted ? AppColors.leafGreen : accent;
+    final badgeColor = granted ? AppColors.statusOnTime : accent;
 
     return GlassSurface(
       borderRadius: BorderRadius.circular(18),
@@ -379,7 +379,7 @@ class _PermissionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.leafGreen.withValues(
+                color: AppColors.statusOnTime.withValues(
                   alpha: isDark ? 0.22 : 0.14,
                 ),
                 borderRadius: BorderRadius.circular(20),
@@ -390,7 +390,7 @@ class _PermissionCard extends StatelessWidget {
                   const Icon(
                     Icons.check_circle_rounded,
                     size: 14,
-                    color: AppColors.leafGreen,
+                    color: AppColors.statusOnTime,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -399,7 +399,7 @@ class _PermissionCard extends StatelessWidget {
                       fontFamily: AppTheme.brandFont,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.leafGreen,
+                      color: AppColors.statusOnTime,
                     ),
                   ),
                 ],
@@ -410,11 +410,11 @@ class _PermissionCard extends StatelessWidget {
               onPressed: onAction,
               style: FilledButton.styleFrom(
                 backgroundColor: granted
-                    ? AppColors.leafGreen.withValues(
+                    ? AppColors.statusOnTime.withValues(
                         alpha: isDark ? 0.22 : 0.14,
                       )
                     : accent,
-                foregroundColor: granted ? AppColors.leafGreen : Colors.white,
+                foregroundColor: granted ? AppColors.statusOnTime : Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
