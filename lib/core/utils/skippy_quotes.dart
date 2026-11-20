@@ -125,6 +125,52 @@ class SkippyQuotes {
         "Nuty te recuerda que debes rellenar tu reporte mensual en estos primeros días hábiles.";
   }
 
+  /// Mensaje motivacional según el porcentaje de avance del alumno (0 a <100%).
+  /// Rota suavemente según el alumno y el día para sentirse fresco sin parpadear.
+  static String getProgressMotivation(double percentage, [String? studentId]) {
+    final List<String> pool;
+    if (percentage <= 0) {
+      pool = const [
+        '¡Todo gran recorrido empieza con tu primera hora! Marca tu entrada y arranca con todo.',
+        'Tu meta te espera: registra tu primer turno hoy y comienza a sumar horas.',
+      ];
+    } else if (percentage < 25) {
+      pool = const [
+        '¡Buen comienzo! Cada turno suma y ya estás construyendo tu meta paso a paso.',
+        '¡Excelente arranque! Mantén el ritmo constante y verás cómo avanzan esas horas.',
+        'Paso firme desde el inicio: tu constancia de hoy es tu liberación de mañana.',
+      ];
+    } else if (percentage < 50) {
+      pool = const [
+        '¡Ya superaste el primer cuarto! Tu constancia se nota, sigue con ese ritmo.',
+        '¡Gran avance! Vas tomando muy buen paso rumbo a la mitad del camino.',
+        'Cada asistencia cuenta y ya llevas una gran base acumulada. ¡Sigue así!',
+      ];
+    } else if (percentage < 75) {
+      pool = const [
+        '¡Ya pasaste la mitad de tu meta! Lo más pesado ya quedó atrás, ¡tú puedes!',
+        '¡Mitad superada! Cada turno te acerca más a tu carta de liberación.',
+        'Más del 50% completado: tu disciplina está marcando la diferencia.',
+      ];
+    } else if (percentage < 90) {
+      pool = const [
+        '¡Recta final! Ya llevas más de tres cuartas partes, ¡no bajes el ritmo!',
+        '¡Casi lo logras! Tu esfuerzo está dando frutos y cada vez falta menos.',
+        '¡Imparable! Estás entrando al último tramo de tu meta de horas.',
+      ];
+    } else {
+      pool = const [
+        '¡A un paso de la meta! Estás a nada de completar el 100%, ¡último empujón!',
+        '¡Ya casi cruzas la meta! Unas horas más y desbloqueas tu liberación.',
+        '¡Últimos turnos! Nuty ya está preparando el confeti para tu 100%.',
+      ];
+    }
+
+    final daySeed = DateTime.now().day;
+    final seed = (studentId != null ? hashCodeString(studentId) : 0) + daySeed;
+    return pool[seed % pool.length];
+  }
+
   /// Título de notificación estilo Nuty para fin de mes
   /// [remainingDays]: 3 = antepenúltimo día hábil, 2 = penúltimo, 1 = último día hábil
   static String getEndOfMonthTitle(int remainingDays) {

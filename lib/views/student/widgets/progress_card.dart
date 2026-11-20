@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/skippy_quotes.dart';
 import '../../../core/widgets/glass_surface.dart';
 import '../../../core/widgets/progress_bar_style.dart';
 import '../../../models/student.dart';
@@ -172,6 +174,56 @@ class ProgressCard extends ConsumerWidget {
                   return bar;
                 },
               ),
+              if (!isCompleted) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    color: activeThemeColor.withValues(
+                      alpha: isDark ? 0.14 : 0.08,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        percentage < 25
+                            ? Icons.rocket_launch_rounded
+                            : percentage < 50
+                            ? Icons.trending_up_rounded
+                            : percentage < 75
+                            ? Icons.local_fire_department_rounded
+                            : Icons.emoji_events_rounded,
+                        size: 16,
+                        color: activeThemeColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          SkippyQuotes.getProgressMotivation(
+                            percentage,
+                            student.id,
+                          ),
+                          style: TextStyle(
+                            fontFamily: AppTheme.brandFont,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                            color: isDark
+                                ? AppColors.darkTextPrimary.withValues(
+                                    alpha: 0.90,
+                                  )
+                                : AppColors.mineralInk.withValues(alpha: 0.85),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               if (isCompleted) ...[
                 const SizedBox(height: 16),
                 Container(
@@ -214,8 +266,10 @@ class ProgressCard extends ConsumerWidget {
                     onPressed: () => FreedomDialog.show(
                       context,
                       studentType: student.studentType,
+                      studentTypeFormatted: student.studentTypeFormatted,
                       studentId: student.id,
                       accumulatedHours: student.accumulatedHours,
+                      requiredHours: student.requiredHours,
                     ),
                     icon: const Icon(
                       Icons.workspace_premium_rounded,

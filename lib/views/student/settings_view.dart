@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_scaffold.dart';
+import '../../core/widgets/glass_surface.dart';
+import '../onboarding/onboarding_view.dart';
 import 'profile/profile_footer.dart';
 import 'profile/profile_sign_out_dialog.dart';
 import 'profile/profile_theme_card.dart';
@@ -60,9 +62,61 @@ class SettingsView extends ConsumerWidget {
 
           // 2. Tema, Colores y Estilos de Barra
           const ProfileThemeCard(),
+          const SizedBox(height: 16),
+
+          // 3. Guía interactiva y Novedades
+          GlassSurface(
+            borderRadius: BorderRadius.circular(20),
+            padding: EdgeInsets.zero,
+            enableRefraction: false,
+            child: ListTile(
+              onTap: () => OnboardingView.show(context),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: 6,
+              ),
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: primaryColor.withValues(alpha: isDark ? 0.24 : 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.auto_awesome_rounded,
+                  color: primaryColor,
+                  size: 20,
+                ),
+              ),
+              title: Text(
+                'Guía y Novedades',
+                style: TextStyle(
+                  fontFamily: AppTheme.brandFont,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.mineralInk,
+                ),
+              ),
+              subtitle: Text(
+                'Repasa las funciones, temas y personalización de la app',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.slateMuted,
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 15,
+                color: isDark ? Colors.white54 : AppColors.slateMuted,
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
 
-          // 3. Cerrar sesión y versión
+          // 4. Cerrar sesión y versión
           ProfileFooter(
             onSignOut: () => ProfileSignOutDialog.show(context, ref),
           ),

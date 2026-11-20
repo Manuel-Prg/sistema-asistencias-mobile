@@ -290,6 +290,38 @@ class ReportNotificationService {
     await _plugin.cancelAll();
   }
 
+  /// Verifica si Android permite programar alarmas exactas (recordatorios puntuales).
+  static Future<bool> canScheduleExactAlarms() async {
+    try {
+      await initialize();
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      if (androidPlugin == null) return true;
+      return await androidPlugin.canScheduleExactNotifications() ?? true;
+    } catch (e) {
+      debugPrint('Error verificando permiso de alarmas exactas: $e');
+      return false;
+    }
+  }
+
+  /// Solicita el permiso de alarmas exactas en Android 12+ (abre el ajuste del sistema).
+  static Future<bool> requestExactAlarmPermission() async {
+    try {
+      await initialize();
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      if (androidPlugin == null) return true;
+      return await androidPlugin.requestExactAlarmsPermission() ?? false;
+    } catch (e) {
+      debugPrint('Error solicitando permiso de alarmas exactas: $e');
+      return false;
+    }
+  }
+
   /// Retorna la lista de los próximos recordatorios programados para consulta en la app
   static List<ScheduledReminderItem> getUpcomingReminders() {
     final now = DateTime.now();

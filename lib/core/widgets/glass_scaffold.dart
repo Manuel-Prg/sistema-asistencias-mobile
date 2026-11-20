@@ -33,30 +33,22 @@ class GlassScaffold extends ConsumerWidget {
       glassSettingsProvider.select((s) => s.isMaterial3),
     );
 
-    if (isMaterial3) {
-      return Scaffold(
-        backgroundColor: isDark
-            ? AppColors.abyssalGroundDark
-            : AppColors.limestoneGround,
-        extendBody: extendBody,
-        extendBodyBehindAppBar: extendBodyBehindAppBar,
-        appBar: appBar,
-        bottomNavigationBar: bottomNavigationBar,
-        body: body,
-      );
-    }
-
     return Scaffold(
+      backgroundColor: isMaterial3
+          ? (isDark ? AppColors.abyssalGroundDark : AppColors.limestoneGround)
+          : null,
       extendBody: extendBody,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       body: Stack(
         children: [
-          // Fondo ambiental y brillos estáticos aislados en capa de renderizado
-          Positioned.fill(
-            child: RepaintBoundary(
-              child: Stack(
+          // Fondo ambiental solo en Liquid Glass (en Material 3 es 0 capas extra,
+          // pero manteniendo siempre la misma estructura Stack para no desmontar body).
+          if (!isMaterial3)
+            Positioned.fill(
+              child: RepaintBoundary(
+                child: Stack(
                 children: [
                   Positioned.fill(
                     child: Container(

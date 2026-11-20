@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
@@ -13,6 +14,7 @@ import 'dashboard/punctuality_warning_dialog.dart';
 import 'widgets/attendance_heatmap_card.dart';
 import 'widgets/attendance_history_list.dart';
 import 'widgets/check_in_out_card.dart';
+import 'widgets/freedom_dialog.dart';
 import 'widgets/progress_card.dart';
 
 class DashboardView extends ConsumerStatefulWidget {
@@ -24,6 +26,31 @@ class DashboardView extends ConsumerStatefulWidget {
 
 class _DashboardViewState extends ConsumerState<DashboardView> {
   bool _showNotificationBanner = true;
+  bool _checkedCompletionDialog = false;
+
+  Future<void> _maybeShowFreedomDialog(StudentDashboardState state) async {
+    final student = state.student;
+    if (_checkedCompletionDialog || student == null || !student.isCompleted) {
+      return;
+    }
+    _checkedCompletionDialog = true;
+
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'freedom_dialog_shown_${student.id}';
+    if (prefs.getBool(key) == true) return;
+
+    await prefs.setBool(key, true);
+    if (!mounted) return;
+
+    await FreedomDialog.show(
+      context,
+      studentType: student.studentType,
+      studentTypeFormatted: student.studentTypeFormatted,
+      studentId: student.id,
+      accumulatedHours: student.accumulatedHours,
+      requiredHours: student.requiredHours,
+    );
+  }
 
   @override
   void initState() {
@@ -38,6 +65,12 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           ref.read(studentProvider.notifier).clearWarning();
         }
       });
+      ref.listenManual(studentProvider, (previous, next) {
+        if (next.student?.isCompleted == true) {
+          _maybeShowFreedomDialog(next);
+        }
+      });
+      _maybeShowFreedomDialog(ref.read(studentProvider));
     });
   }
 

@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/glass_settings_provider.dart';
+import '../../services/onboarding_service.dart';
 import '../../services/update_service.dart';
 import '../common/update_dialog.dart';
+import '../onboarding/onboarding_view.dart';
 import '../student/dashboard_view.dart';
 import '../student/events_view.dart';
 import '../student/profile_view.dart';
@@ -79,8 +81,24 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAppUpdates();
+      _runStartupFlows();
     });
+  }
+
+  Future<void> _runStartupFlows() async {
+    try {
+      final shouldShowOnboarding =
+          await OnboardingService.shouldShowOnboarding();
+      if (shouldShowOnboarding && mounted) {
+        await OnboardingView.show(context);
+      }
+    } catch (e) {
+      debugPrint('Error mostrando onboarding: $e');
+    }
+
+    if (mounted) {
+      await _checkAppUpdates();
+    }
   }
 
   Future<void> _checkAppUpdates() async {

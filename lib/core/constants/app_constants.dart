@@ -50,6 +50,9 @@ class AppConstants {
     'Otra razón',
   ];
 
+  // Enlace opcional a la encuesta de satisfacción al completar el 100% de horas
+  static const String satisfactionSurveyUrl = '';
+
   // Días de la semana del horario del estudiante (Martes a Domingo)
   // Schema en student_schedules: 0=Lun, 1=Mar, 2=Mié, 3=Jue, 4=Vie, 5=Sáb, 6=Dom
   static const Map<int, String> scheduleDaysMap = {
