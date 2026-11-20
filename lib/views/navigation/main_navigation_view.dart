@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../../core/theme/app_theme.dart';
 import '../../providers/glass_settings_provider.dart';
 import '../../services/update_service.dart';
 import '../common/update_dialog.dart';
@@ -14,18 +11,8 @@ import '../student/events_view.dart';
 import '../student/profile_view.dart';
 import '../student/resources_view.dart';
 import '../student/schedule_view.dart';
-
-class _NavTabItem {
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
-
-  const _NavTabItem({
-    required this.icon,
-    required this.selectedIcon,
-    required this.label,
-  });
-}
+import 'widgets/liquid_glass_dock.dart';
+import 'widgets/nav_tab_item.dart';
 
 class MainNavigationView extends ConsumerStatefulWidget {
   const MainNavigationView({super.key});
@@ -42,28 +29,28 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
   late final AnimationController _splitController;
   late final Animation<double> _splitAnimation;
 
-  static const List<_NavTabItem> _tabs = [
-    _NavTabItem(
+  static const List<NavTabItem> _tabs = [
+    NavTabItem(
       icon: Icons.home_outlined,
       selectedIcon: Icons.home_rounded,
       label: 'Inicio',
     ),
-    _NavTabItem(
+    NavTabItem(
       icon: Icons.calendar_month_outlined,
       selectedIcon: Icons.calendar_month_rounded,
       label: 'Horario',
     ),
-    _NavTabItem(
+    NavTabItem(
       icon: Icons.stars_outlined,
       selectedIcon: Icons.stars_rounded,
       label: 'Eventos',
     ),
-    _NavTabItem(
+    NavTabItem(
       icon: Icons.menu_book_outlined,
       selectedIcon: Icons.menu_book_rounded,
       label: 'Recursos',
     ),
-    _NavTabItem(
+    NavTabItem(
       icon: Icons.person_outline_rounded,
       selectedIcon: Icons.person_rounded,
       label: 'Perfil',
@@ -140,10 +127,36 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
     _unsplitDock();
   }
 
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.axis != Axis.vertical) return false;
+
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 3 && !_isSplit && notification.metrics.pixels > 20) {
+        _splitDock();
+      } else if (delta < -3 && _isSplit) {
+        _unsplitDock();
+      }
+    } else if (notification is UserScrollNotification) {
+      if (notification.direction == ScrollDirection.reverse &&
+          !_isSplit &&
+          notification.metrics.pixels > 20) {
+        _splitDock();
+      } else if (notification.direction == ScrollDirection.forward &&
+          _isSplit) {
+        _unsplitDock();
+      }
+    }
+
+    if (notification.metrics.pixels <= 10 && _isSplit) {
+      _unsplitDock();
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = Theme.of(context).colorScheme.primary;
     final isMaterial3 = ref.watch(
       glassSettingsProvider.select((s) => s.isMaterial3),
     );
@@ -166,15 +179,11 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           destinations: List.generate(_tabs.length, (index) {
             final tab = _tabs[index];
-            final isSelected = _currentIndex == index;
             return NavigationDestination(
-              icon: _M3AnimatedNavIcon(
-                icon: tab.icon,
-                isSelected: false,
-              ),
-              selectedIcon: _M3AnimatedNavIcon(
+              icon: M3AnimatedNavIcon(icon: tab.icon, isSelected: false),
+              selectedIcon: M3AnimatedNavIcon(
                 icon: tab.selectedIcon,
-                isSelected: isSelected,
+                isSelected: _currentIndex == index,
               ),
               label: tab.label,
             );
@@ -186,380 +195,16 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
     return Scaffold(
       extendBody: true,
       body: NotificationListener<ScrollNotification>(
-          onNotification: (notification) {
-            // Solo responder a desplazamientos en el eje vertical
-            if (notification.metrics.axis != Axis.vertical) return false;
-
-            if (notification is ScrollUpdateNotification) {
-              final delta = notification.scrollDelta ?? 0;
-              // Deslizar hacia abajo con umbral mínimo: se divide el dock en dos
-              if (delta > 3 && !_isSplit && notification.metrics.pixels > 20) {
-                _splitDock();
-              }
-              // Deslizar hacia arriba: vuelve a unirse el dock
-              else if (delta < -3 && _isSplit) {
-                _unsplitDock();
-              }
-            } else if (notification is UserScrollNotification) {
-              if (notification.direction == ScrollDirection.reverse &&
-                  !_isSplit &&
-                  notification.metrics.pixels > 20) {
-                _splitDock();
-              } else if (notification.direction == ScrollDirection.forward &&
-                  _isSplit) {
-                _unsplitDock();
-              }
-            }
-
-            // Al llegar hasta arriba del todo, siempre reunir el dock
-            if (notification.metrics.pixels <= 10 && _isSplit) {
-              _unsplitDock();
-            }
-
-            return false;
-          },
-          child: indexedBody,
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: SizedBox(
-              height: 58,
-              child: AnimatedBuilder(
-                animation: _splitAnimation,
-                builder: (context, child) {
-                  final t = _splitAnimation.value;
-
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      // Dock Completo (Unificado)
-                      if (t < 0.99)
-                        Opacity(
-                          opacity: (1.0 - t * 1.8).clamp(0.0, 1.0),
-                          child: Transform.scale(
-                            scale: 1.0 - t * 0.10,
-                            child: IgnorePointer(
-                              ignoring: t > 0.4,
-                              child: _buildFullDock(
-                                context,
-                                activeColor,
-                                isDark,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      // Dock Dividido en dos islas flotantes (Izquierda: Pestaña actual, Derecha: Buscar)
-                      if (t > 0.01)
-                        Opacity(
-                          opacity: ((t - 0.20) * 1.25).clamp(0.0, 1.0),
-                          child: IgnorePointer(
-                            ignoring: t < 0.6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Isla Izquierda: Icono de pestaña activa (tocar para expandir)
-                                Transform.translate(
-                                  offset: Offset((1.0 - t) * 44, 0),
-                                  child: Transform.scale(
-                                    scale: 0.65 + t * 0.35,
-                                    child: _buildActiveTabPod(
-                                      context,
-                                      activeColor,
-                                      isDark,
-                                    ),
-                                  ),
-                                ),
-
-                                // Isla Derecha: Icono de búsqueda rápida
-                                Transform.translate(
-                                  offset: Offset(-(1.0 - t) * 44, 0),
-                                  child: Transform.scale(
-                                    scale: 0.65 + t * 0.35,
-                                    child: _buildSearchPod(
-                                      context,
-                                      activeColor,
-                                      isDark,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-      );
-  }
-
-  Widget _buildFullDock(BuildContext context, Color activeColor, bool isDark) {
-    return RepaintBoundary(
-      child: SizedBox(
-        height: 58,
-        child: LiquidGlassLens(
-        style: LiquidGlassStyle(
-          shape: const LiquidGlassShape.continuousRoundedRectangle(
-            cornerRadius: 29,
-          ),
-          refractionIndex: 1.28,
-          refractionWidth: 28,
-          magnification: 1.04,
-          dispersion: 4.5,
-          blur: 3.5,
-          color: isDark
-              ? const Color(0x0A000000)
-              : const Color(0x0EFFFFFF),
-          specular: const LiquidGlassLight.specular(thickness: 0),
-          glow: const LiquidGlassLight.glow(thickness: 0),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(29),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(_tabs.length, (index) {
-              final tab = _tabs[index];
-              return _GlassNavItem(
-                icon: tab.icon,
-                selectedIcon: tab.selectedIcon,
-                label: tab.label,
-                isSelected: _currentIndex == index,
-                onTap: () => _onTabSelected(index),
-              );
-            }),
-          ),
-        ),
+        onNotification: _handleScrollNotification,
+        child: indexedBody,
       ),
+      bottomNavigationBar: LiquidGlassDock(
+        tabs: _tabs,
+        currentIndex: _currentIndex,
+        splitAnimation: _splitAnimation,
+        onTabSelected: _onTabSelected,
+        onUnsplit: _unsplitDock,
       ),
-    );
-  }
-
-  Widget _buildActiveTabPod(
-    BuildContext context,
-    Color activeColor,
-    bool isDark,
-  ) {
-    final currentTab = _tabs[_currentIndex];
-
-    return RepaintBoundary(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          HapticFeedback.lightImpact();
-          _unsplitDock();
-        },
-        child: Tooltip(
-          message: currentTab.label,
-          child: SizedBox(
-            width: 54,
-            height: 54,
-            child: LiquidGlassLens(
-              style: LiquidGlassStyle(
-                shape: const LiquidGlassShape.continuousRoundedRectangle(
-                  cornerRadius: 27,
-                ),
-                refractionIndex: 1.28,
-                refractionWidth: 20,
-                magnification: 1.05,
-                dispersion: 4.5,
-                blur: 3.5,
-                color: isDark
-                    ? const Color(0x0E000000)
-                    : const Color(0x12FFFFFF),
-                specular: const LiquidGlassLight.specular(thickness: 0),
-                glow: const LiquidGlassLight.glow(thickness: 0),
-              ),
-              child: Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: activeColor.withValues(alpha: isDark ? 0.22 : 0.12),
-                ),
-                child: Center(
-                  child: Icon(
-                    currentTab.selectedIcon,
-                    size: 24,
-                    color: activeColor,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchPod(BuildContext context, Color activeColor, bool isDark) {
-    final isRecursos = _currentIndex == 3;
-
-    return RepaintBoundary(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          HapticFeedback.lightImpact();
-          if (!isRecursos) {
-            _onTabSelected(3);
-          } else {
-            _unsplitDock();
-          }
-        },
-        child: Tooltip(
-          message: 'Buscar recursos',
-          child: SizedBox(
-            width: 54,
-            height: 54,
-            child: LiquidGlassLens(
-              style: LiquidGlassStyle(
-                shape: const LiquidGlassShape.continuousRoundedRectangle(
-                  cornerRadius: 27,
-                ),
-                refractionIndex: 1.28,
-                refractionWidth: 20,
-                magnification: 1.05,
-                dispersion: 4.5,
-                blur: 3.5,
-                color: isDark
-                    ? const Color(0x0E000000)
-                    : const Color(0x12FFFFFF),
-                specular: const LiquidGlassLight.specular(thickness: 0),
-                glow: const LiquidGlassLight.glow(thickness: 0),
-              ),
-              child: Container(
-                width: 54,
-                height: 54,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.search_rounded,
-                    size: 23,
-                    color: isDark ? Colors.white : AppColors.mineralInk,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GlassNavItem extends StatelessWidget {
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _GlassNavItem({
-    required this.icon,
-    required this.selectedIcon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = Theme.of(context).colorScheme.primary;
-    final inactiveColor = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.slateMuted;
-
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? (isDark
-                      ? Colors.white.withValues(alpha: 0.14)
-                      : activeColor.withValues(alpha: 0.14))
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedScale(
-                scale: isSelected ? 1.15 : 1.0,
-                duration: const Duration(milliseconds: 240),
-                curve: Curves.easeOutBack,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, anim) =>
-                      ScaleTransition(scale: anim, child: child),
-                  child: Icon(
-                    isSelected ? selectedIcon : icon,
-                    key: ValueKey<bool>(isSelected),
-                    size: 22,
-                    color: isSelected ? activeColor : inactiveColor,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 2),
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                style: TextStyle(
-                  fontFamily: AppTheme.brandFont,
-                  fontSize: 10.5,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  color: isSelected ? activeColor : inactiveColor,
-                  letterSpacing: 0.1,
-                ),
-                child: Text(label),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _M3AnimatedNavIcon extends StatelessWidget {
-  final IconData icon;
-  final bool isSelected;
-
-  const _M3AnimatedNavIcon({
-    required this.icon,
-    required this.isSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isSelected) {
-      return Icon(icon);
-    }
-
-    return TweenAnimationBuilder<double>(
-      key: ValueKey<IconData>(icon),
-      tween: Tween<double>(begin: 0.78, end: 1.12),
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutBack,
-      builder: (context, scale, child) {
-        return Transform.scale(scale: scale, child: child);
-      },
-      child: Icon(icon),
     );
   }
 }

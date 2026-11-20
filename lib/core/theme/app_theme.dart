@@ -436,25 +436,17 @@ class AppTheme {
               m3Primary.withValues(alpha: 0.34),
               const Color(0xFF141419),
             )
-          : Color.alphaBlend(
-              m3Primary.withValues(alpha: 0.16),
-              Colors.white,
-            ),
+          : Color.alphaBlend(m3Primary.withValues(alpha: 0.16), Colors.white),
       onPrimaryContainer: isDark ? Colors.white : m3Primary,
       secondaryContainer: isDark
           ? Color.alphaBlend(
               m3Primary.withValues(alpha: 0.28),
               const Color(0xFF141419),
             )
-          : Color.alphaBlend(
-              m3Primary.withValues(alpha: 0.14),
-              Colors.white,
-            ),
+          : Color.alphaBlend(m3Primary.withValues(alpha: 0.14), Colors.white),
       onSecondaryContainer: isDark ? m3Accent : m3Primary,
       surface: isDark ? AppColors.abyssalGroundDark : seedScheme.surface,
-      surfaceContainerLowest: isDark
-          ? const Color(0xFF0A0A0D)
-          : Colors.white,
+      surfaceContainerLowest: isDark ? const Color(0xFF0A0A0D) : Colors.white,
       surfaceContainerLow: isDark
           ? const Color(0xFF141419)
           : Color.alphaBlend(
@@ -476,7 +468,6 @@ class AppTheme {
     );
 
     return baseTheme.copyWith(
-      useMaterial3: true,
       scaffoldBackgroundColor: m3Scheme.surface,
       colorScheme: m3Scheme,
       iconTheme: IconThemeData(color: m3Scheme.onSurface),
@@ -485,9 +476,7 @@ class AppTheme {
         color: m3Scheme.surfaceContainerLow,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -519,10 +508,7 @@ class AppTheme {
           foregroundColor: m3Scheme.primary,
           iconColor: m3Scheme.primary,
           minimumSize: const Size.fromHeight(50),
-          side: BorderSide(
-            color: m3Scheme.outlineVariant,
-            width: 1.2,
-          ),
+          side: BorderSide(color: m3Scheme.outlineVariant, width: 1.2),
           shape: const StadiumBorder(),
         ),
       ),
@@ -549,11 +535,7 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbIcon: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return Icon(
-              Icons.check_rounded,
-              size: 16,
-              color: m3Scheme.primary,
-            );
+            return Icon(Icons.check_rounded, size: 16, color: m3Scheme.primary);
           }
           return null;
         }),
@@ -588,9 +570,7 @@ class AppTheme {
             fontFamily: brandFont,
             fontSize: 11.5,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected
-                ? m3Scheme.onSurface
-                : m3Scheme.onSurfaceVariant,
+            color: selected ? m3Scheme.onSurface : m3Scheme.onSurfaceVariant,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
@@ -607,9 +587,7 @@ class AppTheme {
         backgroundColor: m3Scheme.primaryContainer,
         foregroundColor: m3Scheme.onPrimaryContainer,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
     );
   }

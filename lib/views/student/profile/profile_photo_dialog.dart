@@ -7,6 +7,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
 import '../../../providers/auth_provider.dart';
+import 'photo/photo_preview_card.dart';
+import 'photo/photo_source_controls.dart';
 
 class ProfilePhotoDialog {
   static void show(
@@ -73,29 +75,48 @@ class _ProfilePhotoDialogContentState
     super.dispose();
   }
 
+  void _showSnack(BuildContext targetContext, String message, bool isSuccess) {
+    if (!targetContext.mounted) return;
+    ScaffoldMessenger.of(targetContext).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              isSuccess
+                  ? Icons.check_circle_rounded
+                  : Icons.error_outline_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: isSuccess
+            ? AppColors.primary
+            : AppColors.terracottaRule,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final XFile? xFile = await _picker.pickImage(
+      final xFile = await _picker.pickImage(
         source: source,
         maxWidth: 1080,
         maxHeight: 1080,
-        imageQuality: 80, // Comprime automáticamente al seleccionar
+        imageQuality: 80,
       );
-
       if (xFile == null) return;
 
       final bytes = await xFile.readAsBytes();
-
       if (bytes.lengthInBytes > _maxBytes) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'La imagen seleccionada supera el límite de 1 MB. Por favor elige otra.',
-            ),
-            backgroundColor: AppColors.terracottaRule,
-            behavior: SnackBarBehavior.floating,
-          ),
+        _showSnack(
+          context,
+          'La imagen seleccionada supera el límite de 1 MB. Por favor elige otra.',
+          false,
         );
         return;
       }
@@ -106,13 +127,7 @@ class _ProfilePhotoDialogContentState
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No fue posible seleccionar la imagen: $e'),
-          backgroundColor: AppColors.terracottaRule,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showSnack(context, 'No fue posible seleccionar la imagen: $e', false);
     }
   }
 
@@ -128,7 +143,6 @@ class _ProfilePhotoDialogContentState
   }
 
   Future<void> _submit() async {
-    // Caso 1: Imagen seleccionada de la galería o cámara
     if (_selectedBytes != null) {
       setState(() => _isSaving = true);
       Navigator.of(context).pop();
@@ -139,60 +153,30 @@ class _ProfilePhotoDialogContentState
           .uploadAndSetProfileAvatar(_selectedBytes!);
       widget.onFinishUpdate();
 
-      if (widget.parentContext.mounted) {
-        ScaffoldMessenger.of(widget.parentContext).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  success
-                      ? Icons.check_circle_rounded
-                      : Icons.error_outline_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    success
-                        ? '¡Foto de perfil actualizada y optimizada (< 1 MB)!'
-                        : 'No fue posible subir la foto a Supabase.',
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: success
-                ? AppColors.primary
-                : AppColors.terracottaRule,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-      return;
-    }
-
-    // Caso 2: Ingresó enlace manual
-    final url = _urlController.text.trim();
-    if (url.isEmpty) {
-      ScaffoldMessenger.of(widget.parentContext).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Por favor elige una foto de la galería o ingresa un enlace.',
-          ),
-          backgroundColor: AppColors.terracottaRule,
-          behavior: SnackBarBehavior.floating,
-        ),
+      _showSnack(
+        widget.parentContext,
+        success
+            ? '¡Foto de perfil actualizada y optimizada (< 1 MB)!'
+            : 'No fue posible subir la foto a Supabase.',
+        success,
       );
       return;
     }
 
+    final url = _urlController.text.trim();
+    if (url.isEmpty) {
+      _showSnack(
+        widget.parentContext,
+        'Por favor elige una foto de la galería o ingresa un enlace.',
+        false,
+      );
+      return;
+    }
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      ScaffoldMessenger.of(widget.parentContext).showSnackBar(
-        const SnackBar(
-          content: Text('El enlace debe comenzar con https:// o http://'),
-          backgroundColor: AppColors.terracottaRule,
-          behavior: SnackBarBehavior.floating,
-        ),
+      _showSnack(
+        widget.parentContext,
+        'El enlace debe comenzar con https:// o http://',
+        false,
       );
       return;
     }
@@ -206,41 +190,13 @@ class _ProfilePhotoDialogContentState
         .updateProfileAvatar(url);
     widget.onFinishUpdate();
 
-    if (widget.parentContext.mounted) {
-      ScaffoldMessenger.of(widget.parentContext).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                success
-                    ? Icons.check_circle_rounded
-                    : Icons.error_outline_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  success
-                      ? '¡Foto de perfil actualizada!'
-                      : 'No fue posible guardar la foto.',
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: success
-              ? AppColors.primary
-              : AppColors.terracottaRule,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(2)} MB';
+    _showSnack(
+      widget.parentContext,
+      success
+          ? '¡Foto de perfil actualizada!'
+          : 'No fue posible guardar la foto.',
+      success,
+    );
   }
 
   @override
@@ -286,247 +242,30 @@ class _ProfilePhotoDialogContentState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Vista previa de imagen seleccionada de la galería
             if (_selectedBytes != null) ...[
-              Center(
-                child: Column(
-                  children: [
-                    Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: isDark
-                                    ? AppColors.signalAqua
-                                    : AppColors.primary,
-                                width: 2,
-                              ),
-                            ),
-                            child: Image.memory(
-                              _selectedBytes!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: -6,
-                          right: -6,
-                          child: IconButton(
-                            icon: const CircleAvatar(
-                              radius: 12,
-                              backgroundColor: AppColors.terracottaRule,
-                              child: Icon(
-                                Icons.close_rounded,
-                                size: 14,
-                                color: Colors.white,
-                              ),
-                            ),
-                            onPressed: () => setState(() {
-                              _selectedBytes = null;
-                              _selectedFileSize = 0;
-                            }),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.signalAqua.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.check_circle_rounded,
-                            size: 14,
-                            color: AppColors.accentLimnological,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Optimizada: ${_formatFileSize(_selectedFileSize)} (Límite: 1 MB)',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              PhotoPreviewCard(
+                bytes: _selectedBytes!,
+                fileSizeBytes: _selectedFileSize,
+                isDark: isDark,
+                onClear: () => setState(() {
+                  _selectedBytes = null;
+                  _selectedFileSize = 0;
+                }),
               ),
               const SizedBox(height: 14),
             ],
-
-            // Botones principales: Galería y Cámara
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _isSaving
-                        ? null
-                        : () => _pickImage(ImageSource.gallery),
-                    icon: const Icon(
-                      Icons.photo_library_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                    label: const Text(
-                      'Galería',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themePrimary,
-                      foregroundColor: Colors.white,
-                      iconColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _isSaving
-                        ? null
-                        : () => _pickImage(ImageSource.camera),
-                    icon: Icon(
-                      Icons.photo_camera_rounded,
-                      size: 18,
-                      color: isDark ? Colors.white : themePrimary,
-                    ),
-                    label: Text(
-                      'Cámara',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : themePrimary,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isDark ? Colors.white : themePrimary,
-                      iconColor: isDark ? Colors.white : themePrimary,
-                      side: BorderSide(
-                        color: (isDark ? Colors.white38 : themePrimary)
-                            .withValues(alpha: 0.5),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            PhotoSourceControls(
+              urlController: _urlController,
+              isSaving: _isSaving,
+              showUrlField: _showUrlField,
+              isDark: isDark,
+              themePrimary: themePrimary,
+              onPickGallery: () => _pickImage(ImageSource.gallery),
+              onPickCamera: () => _pickImage(ImageSource.camera),
+              onToggleUrlField: () =>
+                  setState(() => _showUrlField = !_showUrlField),
+              onPasteUrl: _pasteFromClipboard,
             ),
-            const SizedBox(height: 8),
-
-            Text(
-              'Las fotos se optimizan y comprimen automáticamente a < 1 MB antes de subir.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: isDark
-                    ? AppColors.darkTextSecondary
-                    : AppColors.slateMuted,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Opción alternativa: Ingresar enlace URL
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => setState(() => _showUrlField = !_showUrlField),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      _showUrlField
-                          ? Icons.keyboard_arrow_up_rounded
-                          : Icons.keyboard_arrow_down_rounded,
-                      size: 18,
-                      color: isDark ? AppColors.signalAqua : AppColors.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      _showUrlField
-                          ? 'Ocultar opción de enlace web'
-                          : 'O ingresar enlace web directo (URL)',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? AppColors.signalAqua
-                            : AppColors.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            if (_showUrlField) ...[
-              const SizedBox(height: 8),
-              TextField(
-                controller: _urlController,
-                keyboardType: TextInputType.url,
-                autocorrect: false,
-                enableSuggestions: false,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: isDark
-                      ? AppColors.darkTextPrimary
-                      : AppColors.mineralInk,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'https://ejemplo.com/mifoto.jpg',
-                  prefixIcon: const Icon(Icons.link_rounded, size: 18),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (currentText.isNotEmpty)
-                        IconButton(
-                          tooltip: 'Limpiar',
-                          icon: const Icon(Icons.clear_rounded, size: 16),
-                          onPressed: () => _urlController.clear(),
-                        ),
-                      IconButton(
-                        tooltip: 'Pegar',
-                        icon: const Icon(Icons.content_paste_rounded, size: 16),
-                        onPressed: _pasteFromClipboard,
-                      ),
-                    ],
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),

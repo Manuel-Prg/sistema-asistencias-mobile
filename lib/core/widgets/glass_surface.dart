@@ -49,19 +49,25 @@ class GlassSurface extends ConsumerWidget {
           : baseCardColor;
 
       final m3Radius = borderRadius ?? BorderRadius.circular(24);
+      final ShapeBorder m3Shape = shape == BoxShape.circle
+          ? const CircleBorder()
+          : RoundedRectangleBorder(borderRadius: m3Radius);
 
-      return Container(
-        width: width,
-        height: height,
-        padding: padding,
-        margin: margin,
-        decoration: BoxDecoration(
-          color: flatColor,
-          shape: shape,
-          borderRadius: shape == BoxShape.circle ? null : m3Radius,
-        ),
-        child: child,
+      Widget m3Card = Material(
+        color: flatColor,
+        shape: m3Shape,
+        clipBehavior: Clip.antiAlias,
+        child: padding != null ? Padding(padding: padding!, child: child) : child,
       );
+
+      if (width != null || height != null) {
+        m3Card = SizedBox(width: width, height: height, child: m3Card);
+      }
+      if (margin != null) {
+        m3Card = Padding(padding: margin!, child: m3Card);
+      }
+
+      return m3Card;
     }
 
     final opacity = settings.effectiveOpacity;

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_scaffold.dart';
-import '../../../core/widgets/glass_surface.dart';
 import '../../../services/pdf_compression_service.dart';
+import 'widgets/calendar_bottom_bar.dart';
+import 'widgets/calendar_cycle_selector.dart';
+import 'widgets/calendar_pdf_viewer_card.dart';
 
 class AcademicCalendarDoc {
   final String id;
@@ -98,20 +99,18 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
     try {
       final activeDoc = AcademicCalendarView.calendars[_selectedCalendarIndex];
 
-      // Intentar cargar el PDF comprimido; si falla, usar el original.
       Uint8List bytes;
       try {
-        bytes = await PdfCompressionService.getCompressedPdfBytes(activeDoc.assetPath);
+        bytes = await PdfCompressionService.getCompressedPdfBytes(
+          activeDoc.assetPath,
+        );
       } catch (_) {
-        // Fallback: cargar el PDF original sin comprimir.
         final byteData = await rootBundle.load(activeDoc.assetPath);
         bytes = byteData.buffer.asUint8List();
       }
 
       if (mounted) {
-        setState(() {
-          _pdfBytes = bytes;
-        });
+        setState(() => _pdfBytes = bytes);
       }
     } catch (e) {
       if (mounted) {
@@ -138,14 +137,14 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
 
   void _zoomIn() {
     HapticFeedback.lightImpact();
-    final newZoom = (_pdfViewerController.zoomLevel + 0.4).clamp(1.0, 4.0);
-    _pdfViewerController.zoomLevel = newZoom;
+    _pdfViewerController.zoomLevel =
+        (_pdfViewerController.zoomLevel + 0.4).clamp(1.0, 4.0);
   }
 
   void _zoomOut() {
     HapticFeedback.lightImpact();
-    final newZoom = (_pdfViewerController.zoomLevel - 0.4).clamp(1.0, 4.0);
-    _pdfViewerController.zoomLevel = newZoom;
+    _pdfViewerController.zoomLevel =
+        (_pdfViewerController.zoomLevel - 0.4).clamp(1.0, 4.0);
   }
 
   void _resetZoom() {
@@ -197,355 +196,67 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
       ),
       body: Stack(
         children: [
-          // Selector de ciclo lectivo (2026-2027 vs 2025-2026)
           Positioned(
             top: 12,
             left: 16,
             right: 16,
-            child: GlassSurface(
-              borderRadius: BorderRadius.circular(24),
-              padding: const EdgeInsets.all(4),
-              tintColor: isDark ? const Color(0xFF141418) : null,
-              child: Row(
-                children: List.generate(AcademicCalendarView.calendars.length, (
-                  index,
-                ) {
-                  final item = AcademicCalendarView.calendars[index];
-                  final isSelected = _selectedCalendarIndex == index;
-
-                  return Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => _onCalendarChanged(index),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOutCubic,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? activeColor.withValues(
-                                  alpha: isDark ? 0.25 : 0.15,
-                                )
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
-                          border: isSelected
-                              ? Border.all(
-                                  color: activeColor.withValues(
-                                    alpha: isDark ? 0.45 : 0.30,
-                                  ),
-                                  width: 1.2,
-                                )
-                              : null,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.calendar_today_rounded,
-                                  size: 14,
-                                  color: isSelected
-                                      ? activeColor
-                                      : (isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.slateMuted),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  item.cycle,
-                                  style: TextStyle(
-                                    fontFamily: AppTheme.brandFont,
-                                    fontSize: 13,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w800
-                                        : FontWeight.w600,
-                                    color: isSelected
-                                        ? activeColor
-                                        : (isDark
-                                              ? AppColors.darkTextSecondary
-                                              : AppColors.slateMuted),
-                                  ),
-                                ),
-                                if (item.isCurrent) ...[
-                                  const SizedBox(width: 5),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 1.5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: activeColor.withValues(
-                                        alpha: isDark ? 0.35 : 0.20,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'Vigente',
-                                      style: TextStyle(
-                                        fontFamily: AppTheme.brandFont,
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.w800,
-                                        color: isSelected
-                                            ? activeColor
-                                            : (isDark
-                                                  ? Colors.white70
-                                                  : activeColor),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
+            child: CalendarCycleSelector(
+              calendars: AcademicCalendarView.calendars,
+              selectedIndex: _selectedCalendarIndex,
+              activeColor: activeColor,
+              isDark: isDark,
+              onChanged: _onCalendarChanged,
             ),
           ),
-
-          // Contenedor principal con el visor de PDF
           Positioned.fill(
             top: 74,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 84),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF101014)
-                        : Colors.white.withValues(alpha: 0.90),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.12)
-                          : activeColor.withValues(alpha: 0.15),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      // Visor de PDF nativo con pinch-to-zoom alimentado con bytes en memoria
-                      if (_pdfBytes != null)
-                        SfPdfViewer.memory(
-                          _pdfBytes!,
-                          key: ValueKey(
-                            '${activeDoc.assetPath}_$_selectedCalendarIndex',
-                          ),
-                          controller: _pdfViewerController,
-                          enableDoubleTapZooming: true,
-                          pageLayoutMode: PdfPageLayoutMode.continuous,
-                          canShowScrollHead: true,
-                          canShowScrollStatus: true,
-                          onDocumentLoaded: (PdfDocumentLoadedDetails details) {
-                            if (mounted) {
-                              setState(() {
-                                _isLoading = false;
-                                _pageCount = details.document.pages.count;
-                                _currentPage = 1;
-                              });
-                            }
-                          },
-                          onDocumentLoadFailed:
-                              (PdfDocumentLoadFailedDetails details) {
-                                if (mounted) {
-                                  setState(() {
-                                    _isLoading = false;
-                                    _errorMessage = details.description;
-                                  });
-                                }
-                              },
-                          onPageChanged: (PdfPageChangedDetails details) {
-                            if (mounted) {
-                              setState(() {
-                                _currentPage = details.newPageNumber;
-                              });
-                            }
-                          },
-                        ),
-
-                      // Indicador de carga
-                      if (_isLoading)
-                        Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: activeColor,
-                              ),
-                              const SizedBox(height: 14),
-                              Text(
-                                'Cargando ${activeDoc.cycle}...',
-                                style: TextStyle(
-                                  fontFamily: AppTheme.brandFont,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark
-                                      ? Colors.white70
-                                      : AppColors.slateMuted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      // Mensaje en caso de error con botón de reintentar
-                      if (_errorMessage != null)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.error_outline_rounded,
-                                  color: AppColors.terracottaRule,
-                                  size: 42,
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'No se pudo abrir el documento',
-                                  style: TextStyle(
-                                    fontFamily: AppTheme.brandFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: isDark
-                                        ? Colors.white
-                                        : AppColors.mineralInk,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _errorMessage!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: isDark
-                                        ? Colors.white60
-                                        : AppColors.slateMuted,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                ElevatedButton.icon(
-                                  onPressed: _loadPdf,
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    size: 18,
-                                  ),
-                                  label: const Text('Reintentar lectura'),
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize: const Size(180, 44),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+              child: CalendarPdfViewerCard(
+                activeDoc: activeDoc,
+                selectedIndex: _selectedCalendarIndex,
+                pdfBytes: _pdfBytes,
+                controller: _pdfViewerController,
+                isLoading: _isLoading,
+                errorMessage: _errorMessage,
+                activeColor: activeColor,
+                isDark: isDark,
+                onDocumentLoaded: (details) {
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = false;
+                      _pageCount = details.document.pages.count;
+                      _currentPage = 1;
+                    });
+                  }
+                },
+                onDocumentLoadFailed: (details) {
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = false;
+                      _errorMessage = details.description;
+                    });
+                  }
+                },
+                onPageChanged: (details) {
+                  if (mounted) {
+                    setState(() => _currentPage = details.newPageNumber);
+                  }
+                },
+                onRetry: _loadPdf,
               ),
             ),
           ),
-
-          // Barra flotante inferior con información de página y título del documento
           Positioned(
             left: 24,
             right: 24,
             bottom: 18,
-            child: GlassSurface(
-              borderRadius: BorderRadius.circular(28),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              tintColor: isDark ? const Color(0xFF141418) : null,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: activeColor.withValues(alpha: 0.15),
-                    ),
-                    child: Icon(
-                      Icons.description_rounded,
-                      size: 16,
-                      color: activeColor,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          activeDoc.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: AppTheme.brandFont,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12.5,
-                            color: isDark
-                                ? AppColors.darkTextPrimary
-                                : AppColors.mineralInk,
-                          ),
-                        ),
-                        Text(
-                          activeDoc.subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.slateMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (_pageCount > 1) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: activeColor.withValues(
-                          alpha: isDark ? 0.22 : 0.12,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: activeColor.withValues(alpha: 0.35),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        'Pág $_currentPage / $_pageCount',
-                        style: TextStyle(
-                          fontFamily: AppTheme.brandFont,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 11,
-                          color: activeColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+            child: CalendarBottomBar(
+              activeDoc: activeDoc,
+              currentPage: _currentPage,
+              pageCount: _pageCount,
+              activeColor: activeColor,
+              isDark: isDark,
             ),
           ),
         ],

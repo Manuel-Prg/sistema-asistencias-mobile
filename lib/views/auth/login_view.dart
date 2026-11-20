@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/widgets/glass_scaffold.dart';
-import '../../core/widgets/glass_surface.dart';
 import '../../core/widgets/glass_toast.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/security_settings_provider.dart';
 import 'forgot_password_view.dart';
+import 'widgets/login_brand_header.dart';
+import 'widgets/login_form_card.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -64,7 +63,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
     if (!security.hasSavedCredentials) {
       AppGlassToast.show(
         context,
-        message: 'No hay credenciales recordadas. Ingresa primero con tu contraseña.',
+        message:
+            'No hay credenciales recordadas. Ingresa primero con tu contraseña.',
         type: GlassToastType.info,
       );
       return;
@@ -95,7 +95,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
     final authState = ref.watch(authProvider);
     final securityState = ref.watch(securitySettingsProvider);
 
-    // Cargar credenciales guardadas si están disponibles
     if (securityState.isReady && !_hasAutoFilled) {
       _hasAutoFilled = true;
       if (securityState.isRememberEnabled) {
@@ -109,8 +108,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
       }
     }
 
-    // Disparar autenticación biométrica automática enseguida si está configurada
-    // No disparar automáticamente si el usuario cerró sesión voluntariamente o si hay un error visible
     if (securityState.isReady &&
         securityState.isBiometricEnabled &&
         securityState.hasSavedCredentials &&
@@ -135,278 +132,34 @@ class _LoginViewState extends ConsumerState<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(
-                  child: GlassSurface(
-                    shape: BoxShape.circle,
-                    width: 92,
-                    height: 92,
-                    padding: const EdgeInsets.all(14),
-                    enableRefraction: true,
-                    child: Image.asset(
-                      'assets/logo/logo_remove_background.png',
-                      cacheWidth: 180,
-                      errorBuilder: (_, _, _) => Image.asset(
-                        'assets/logo/iconoFavicon.webp',
-                        cacheWidth: 180,
-                        errorBuilder: (_, _, _) => const Icon(
-                          Icons.water_drop_rounded,
-                          size: 48,
-                          color: AppColors.primary,
-                        ),
+                const LoginBrandHeader(),
+                const SizedBox(height: 24),
+                LoginFormCard(
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                  obscurePassword: _obscurePassword,
+                  rememberMe: _rememberMe,
+                  isLoading: authState.isLoading,
+                  showBiometricButton:
+                      securityState.isBiometricEnabled &&
+                      securityState.hasSavedCredentials,
+                  errorMessage: authState.errorMessage,
+                  isDark: isDark,
+                  onToggleObscurePassword: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                  onRememberMeChanged: (val) =>
+                      setState(() => _rememberMe = val),
+                  onClearError: () =>
+                      ref.read(authProvider.notifier).clearError(),
+                  onForgotPassword: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ForgotPasswordView(
+                        initialEmail: _emailController.text.trim(),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  AppConstants.appName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Casa Universitaria del Agua • Portal Alumnos',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.accentLimnological,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                GlassSurface(
-                  borderRadius: BorderRadius.circular(24),
-                  padding: const EdgeInsets.all(22),
-                  enableRefraction: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (authState.errorMessage != null) ...[
-                        GlassSurface(
-                          borderRadius: BorderRadius.circular(12),
-                          padding: const EdgeInsets.all(12),
-                          tintColor: AppColors.terracottaRule.withValues(
-                            alpha: 0.16,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.error_outline_rounded,
-                                color: AppColors.terracottaRule,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  authState.errorMessage!,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: AppColors.terracottaRule,
-                                    height: 1.3,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => ref
-                                    .read(authProvider.notifier)
-                                    .clearError(),
-                                child: const Icon(
-                                  Icons.close,
-                                  size: 18,
-                                  color: AppColors.terracottaRule,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                      ],
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'Correo Electrónico',
-                          prefixIcon: Icon(Icons.email_outlined),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
-                            onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Fila: Recordar credenciales & ¿Olvidaste tu contraseña?
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: InkWell(
-                              onTap: () =>
-                                  setState(() => _rememberMe = !_rememberMe),
-                              borderRadius: BorderRadius.circular(6),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                  vertical: 4,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: Checkbox(
-                                        value: _rememberMe,
-                                        onChanged: (val) => setState(
-                                          () => _rememberMe = val ?? false,
-                                        ),
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Flexible(
-                                      child: Text(
-                                        'Recordar',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: isDark
-                                              ? AppColors.darkTextPrimary
-                                              : AppColors.mineralInk,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => ForgotPasswordView(
-                                      initialEmail:
-                                          _emailController.text.trim(),
-                                    ),
-                                  ),
-                                );
-                              },
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                ),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: const FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '¿Olvidaste tu contraseña?',
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.accentLimnological,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-
-                      // Botón Ingresar y botón Huella Dactilar
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: authState.isLoading
-                                  ? null
-                                  : _handleLogin,
-                              child: authState.isLoading
-                                  ? const SizedBox(
-                                      width: 22,
-                                      height: 22,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'INGRESAR AL SISTEMA',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          if (securityState.isBiometricEnabled &&
-                              securityState.hasSavedCredentials) ...[
-                            const SizedBox(width: 10),
-                            Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                color: AppColors.signalAqua.withValues(
-                                  alpha: isDark ? 0.20 : 0.12,
-                                ),
-                                border: Border.all(
-                                  color: AppColors.signalAqua.withValues(
-                                    alpha: isDark ? 0.45 : 0.35,
-                                  ),
-                                  width: 1.2,
-                                ),
-                              ),
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.fingerprint_rounded,
-                                  color: AppColors.signalAqua,
-                                  size: 28,
-                                ),
-                                onPressed: authState.isLoading
-                                    ? null
-                                    : _handleBiometricLogin,
-                                tooltip: 'Ingresar con huella dactilar',
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
+                  onLogin: _handleLogin,
+                  onBiometricLogin: _handleBiometricLogin,
                 ),
                 const SizedBox(height: 24),
               ],
