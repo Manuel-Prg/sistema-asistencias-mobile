@@ -6,8 +6,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glass_surface.dart';
 import '../../../providers/notification_provider.dart';
-import 'notifications/notification_testing_center_sheet.dart';
-import 'notifications/scheduled_dates_sheet.dart';
 
 class ProfileNotificationsCard extends ConsumerWidget {
   const ProfileNotificationsCard({super.key});
@@ -230,40 +228,6 @@ class ProfileNotificationsCard extends ConsumerWidget {
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => ScheduledDatesSheet.show(context, ref),
-                  icon: const Icon(Icons.calendar_month_rounded, size: 16),
-                  label: const Text('Ver fechas'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 40),
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    textStyle: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  onPressed: () =>
-                      NotificationTestingCenterSheet.show(context, ref),
-                  icon: const Icon(Icons.science_rounded, size: 16),
-                  label: const Text('Probar alertas'),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(0, 40),
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    textStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
