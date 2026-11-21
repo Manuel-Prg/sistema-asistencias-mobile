@@ -7,6 +7,7 @@ import '../../core/widgets/glass_scaffold.dart';
 import '../../core/widgets/glass_surface.dart';
 import '../onboarding/onboarding_view.dart';
 import 'profile/profile_footer.dart';
+import 'profile/profile_notifications_card.dart';
 import 'profile/profile_sign_out_dialog.dart';
 import 'profile/profile_theme_card.dart';
 import 'settings/settings_security_card.dart';
@@ -47,7 +48,7 @@ class SettingsView extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 14),
             child: Text(
-              'Personalización visual, temas y seguridad de acceso',
+              'Notificaciones, seguridad de acceso y personalización visual',
               style: TextStyle(
                 fontSize: 13,
                 fontFamily: AppTheme.brandFont,
@@ -56,11 +57,15 @@ class SettingsView extends ConsumerWidget {
             ),
           ),
 
-          // 1. Seguridad y Autenticación Biométrica
+          // 1. Notificaciones y Alertas de Asistencia
+          const ProfileNotificationsCard(),
+          const SizedBox(height: 16),
+
+          // 2. Seguridad y Autenticación Biométrica
           const SettingsSecurityCard(),
           const SizedBox(height: 16),
 
-          // 2. Tema, Colores y Estilos de Barra
+          // 3. Tema, Colores y Estilos de Barra
           const ProfileThemeCard(),
           const SizedBox(height: 16),
 
