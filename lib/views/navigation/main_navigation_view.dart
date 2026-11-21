@@ -14,6 +14,7 @@ import '../student/profile_view.dart';
 import '../student/resources_view.dart';
 import '../student/schedule_view.dart';
 import 'widgets/liquid_glass_dock.dart';
+import 'widgets/material3_dock.dart';
 import 'widgets/nav_tab_item.dart';
 
 class MainNavigationView extends ConsumerStatefulWidget {
@@ -187,28 +188,21 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
       ),
     );
 
-    if (isMaterial3) {
-      return Scaffold(
-        body: indexedBody,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: _onTabSelected,
-          animationDuration: const Duration(milliseconds: 320),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: List.generate(_tabs.length, (index) {
-            final tab = _tabs[index];
-            return NavigationDestination(
-              icon: M3AnimatedNavIcon(icon: tab.icon, isSelected: false),
-              selectedIcon: M3AnimatedNavIcon(
-                icon: tab.selectedIcon,
-                isSelected: _currentIndex == index,
-              ),
-              label: tab.label,
-            );
-          }),
-        ),
-      );
-    }
+    final dockWidget = isMaterial3
+        ? Material3Dock(
+            tabs: _tabs,
+            currentIndex: _currentIndex,
+            splitAnimation: _splitAnimation,
+            onTabSelected: _onTabSelected,
+            onUnsplit: _unsplitDock,
+          )
+        : LiquidGlassDock(
+            tabs: _tabs,
+            currentIndex: _currentIndex,
+            splitAnimation: _splitAnimation,
+            onTabSelected: _onTabSelected,
+            onUnsplit: _unsplitDock,
+          );
 
     return Scaffold(
       extendBody: true,
@@ -216,13 +210,7 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
         onNotification: _handleScrollNotification,
         child: indexedBody,
       ),
-      bottomNavigationBar: LiquidGlassDock(
-        tabs: _tabs,
-        currentIndex: _currentIndex,
-        splitAnimation: _splitAnimation,
-        onTabSelected: _onTabSelected,
-        onUnsplit: _unsplitDock,
-      ),
+      bottomNavigationBar: dockWidget,
     );
   }
 }
