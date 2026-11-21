@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/glass_surface.dart';
 import '../../core/widgets/glass_toast.dart';
 import '../../providers/security_settings_provider.dart';
 import '../../services/notification_service.dart';
 import '../../services/report_notification_service.dart';
+import 'widgets/permission_card.dart';
 
 /// Diapositiva 4: Solicitud interactiva de permisos (notificaciones, alarmas
 /// puntuales y acceso rápido con huella si el dispositivo lo soporta).
@@ -164,8 +164,12 @@ class _OnboardingPermissionsStepState
   Widget build(BuildContext context) {
     final isDark = widget.isDark;
     final activeAccent = widget.activeAccent;
-    final titleColor = isDark ? AppColors.darkTextPrimary : AppColors.mineralInk;
-    final subColor = isDark ? AppColors.darkTextSecondary : AppColors.slateMuted;
+    final titleColor = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.mineralInk;
+    final subColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.slateMuted;
     final securityState = ref.watch(securitySettingsProvider);
 
     return SingleChildScrollView(
@@ -228,11 +232,11 @@ class _OnboardingPermissionsStepState
           const SizedBox(height: 18),
 
           // 1. Notificaciones
-          _PermissionCard(
+          PermissionCard(
             icon: Icons.notifications_active_rounded,
             title: 'Alertas de Entrada y Reportes',
             description:
-                'Avisos si llevas 15 min de retraso en tu entrada según tu horario, y recordatorios para entrega de reportes.',
+                'Te avisaremos si llegas tarde según tu horario, y recordatorios para entrega de reportes.',
             granted: _notificationsGranted,
             loading: _loadingStatus || _requestingNotifications,
             actionLabel: 'Permitir',
@@ -243,7 +247,7 @@ class _OnboardingPermissionsStepState
           const SizedBox(height: 10),
 
           // 2. Recordatorios puntuales (Alarmas exactas)
-          _PermissionCard(
+          PermissionCard(
             icon: Icons.alarm_on_rounded,
             title: 'Recordatorios Puntuales',
             description:
@@ -259,7 +263,7 @@ class _OnboardingPermissionsStepState
           // 3. Acceso con Huella (solo si el dispositivo cuenta con biometría)
           if (securityState.isBiometricAvailable) ...[
             const SizedBox(height: 10),
-            _PermissionCard(
+            PermissionCard(
               icon: Icons.fingerprint_rounded,
               title: 'Acceso con Huella',
               description:
@@ -285,153 +289,6 @@ class _OnboardingPermissionsStepState
               color: subColor.withValues(alpha: 0.85),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PermissionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final bool granted;
-  final bool loading;
-  final String actionLabel;
-  final Color accent;
-  final bool isDark;
-  final bool allowToggleWhenGranted;
-  final VoidCallback onAction;
-
-  const _PermissionCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.granted,
-    required this.loading,
-    required this.actionLabel,
-    required this.accent,
-    required this.isDark,
-    required this.onAction,
-    this.allowToggleWhenGranted = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final badgeColor = granted ? AppColors.statusOnTime : accent;
-
-    return GlassSurface(
-      borderRadius: BorderRadius.circular(18),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-      enableRefraction: false,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: badgeColor.withValues(alpha: isDark ? 0.22 : 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, size: 21, color: badgeColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: AppTheme.brandFont,
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : AppColors.mineralInk,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 11.8,
-                    height: 1.35,
-                    color: isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.slateMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          if (loading)
-            SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2,
-                color: accent,
-              ),
-            )
-          else if (granted && !allowToggleWhenGranted)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.statusOnTime.withValues(
-                  alpha: isDark ? 0.22 : 0.14,
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    size: 14,
-                    color: AppColors.statusOnTime,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Activo',
-                    style: TextStyle(
-                      fontFamily: AppTheme.brandFont,
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.statusOnTime,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            FilledButton(
-              onPressed: onAction,
-              style: FilledButton.styleFrom(
-                backgroundColor: granted
-                    ? AppColors.statusOnTime.withValues(
-                        alpha: isDark ? 0.22 : 0.14,
-                      )
-                    : accent,
-                foregroundColor: granted ? AppColors.statusOnTime : Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: const StadiumBorder(),
-              ),
-              child: Text(
-                granted ? 'Activo' : actionLabel,
-                style: TextStyle(
-                  fontFamily: AppTheme.brandFont,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
         ],
       ),
     );
