@@ -3,8 +3,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../core/utils/date_utils.dart';
 import '../core/utils/mexican_business_days.dart';
 import '../core/utils/skippy_quotes.dart';
+import '../models/student_schedule.dart';
 
 class ScheduledReminderItem {
   final int id;
@@ -32,6 +34,11 @@ class ReportNotificationService {
   static const String _channelName = 'Recordatorios de Reportes CUA';
   static const String _channelDesc =
       'Alertas para llenado de reportes en los primeros 5 días hábiles y subida a plataforma a fin de mes.';
+
+  static const String _attendanceChannelId = 'attendance_tolerance_channel';
+  static const String _attendanceChannelName = 'Tolerancia de Asistencia (15 min)';
+  static const String _attendanceChannelDesc =
+      'Alertas de Nuty cuando transcurren 15 minutos de tolerancia sin registrar tu entrada según tu horario.';
 
   static bool _initialized = false;
 
@@ -68,14 +75,14 @@ class ReportNotificationService {
         },
       );
 
-      // 3. Crear el canal de alta importancia en Android 8.0+
+      // 3. Crear los canales de alta importancia en Android 8.0+
       final androidNotificationPlugin = _plugin
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
           >();
 
       if (androidNotificationPlugin != null) {
-        const channel = AndroidNotificationChannel(
+        const reportChannel = AndroidNotificationChannel(
           _channelId,
           _channelName,
           description: _channelDesc,
@@ -84,7 +91,17 @@ class ReportNotificationService {
           playSound: true,
         );
 
-        await androidNotificationPlugin.createNotificationChannel(channel);
+        const attendanceChannel = AndroidNotificationChannel(
+          _attendanceChannelId,
+          _attendanceChannelName,
+          description: _attendanceChannelDesc,
+          importance: Importance.max,
+          enableVibration: true,
+          playSound: true,
+        );
+
+        await androidNotificationPlugin.createNotificationChannel(reportChannel);
+        await androidNotificationPlugin.createNotificationChannel(attendanceChannel);
       }
 
       _initialized = true;
@@ -285,9 +302,170 @@ class ReportNotificationService {
     );
   }
 
-  /// Cancela todas las notificaciones de reportes
+  /// Cancela todas las notificaciones de reportes y alertas de asistencia
   static Future<void> cancelAllReportReminders() async {
     await _plugin.cancelAll();
+  }
+
+  /// Programa las alertas de tolerancia de entrada (hora de inicio + 15 min)
+  /// para los próximos 14 días basándose en el horario configurado del estudiante.
+  static Future<void> scheduleEntryToleranceReminders(
+    List<StudentSchedule> schedules,
+  ) async {
+    await initialize();
+    if (schedules.isEmpty) return;
+
+    final activeSchedules = schedules.where((s) => s.isActive).toList();
+    if (activeSchedules.isEmpty) return;
+
+    final now = DateTime.now();
+
+    for (var dayOffset = 0; dayOffset < 14; dayOffset++) {
+      final targetDate = now.add(Duration(days: dayOffset));
+      final scheduleDay = AppDateUtils.dartWeekdayToScheduleDay(
+        targetDate.weekday,
+      );
+
+      final daySchedules = activeSchedules
+          .where((s) => s.dayOfWeek == scheduleDay)
+          .toList();
+
+      if (daySchedules.isEmpty) continue;
+
+      final targetSch = daySchedules.first;
+      final parts = targetSch.startTime.split(':');
+      final startHour = int.tryParse(parts[0]) ?? 11;
+      final startMin = parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0;
+
+      final toleranceTotalMins = startHour * 60 + startMin + 15;
+      final tolHour = toleranceTotalMins ~/ 60;
+      final tolMin = toleranceTotalMins % 60;
+
+      final scheduledDateTime = DateTime(
+        targetDate.year,
+        targetDate.month,
+        targetDate.day,
+        tolHour,
+        tolMin,
+      );
+
+      if (scheduledDateTime.isAfter(now)) {
+        final id = 30000 + (targetDate.month * 100) + targetDate.day;
+        final startTimeFormatted =
+            '${startHour.toString().padLeft(2, '0')}:${startMin.toString().padLeft(2, '0')}';
+        final title = SkippyQuotes.getEntryToleranceTitle(dayOffset);
+        final body = SkippyQuotes.getEntryToleranceBody(
+          scheduledStart: startTimeFormatted,
+          variant: dayOffset,
+        );
+
+        await _scheduleToleranceNotification(
+          id: id,
+          title: title,
+          body: body,
+          scheduledDate: scheduledDateTime,
+          payload:
+              'entry_tolerance_${targetDate.year}_${targetDate.month}_${targetDate.day}',
+        );
+      }
+    }
+  }
+
+  static Future<void> _scheduleToleranceNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledDate,
+    required String payload,
+  }) async {
+    try {
+      final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
+
+      final androidDetails = AndroidNotificationDetails(
+        _attendanceChannelId,
+        _attendanceChannelName,
+        channelDescription: _attendanceChannelDesc,
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        icon: '@mipmap/ic_launcher',
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      );
+
+      final details = NotificationDetails(android: androidDetails);
+
+      try {
+        await _plugin.zonedSchedule(
+          id: id,
+          title: title,
+          body: body,
+          scheduledDate: tzDateTime,
+          notificationDetails: details,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          payload: payload,
+        );
+      } catch (_) {
+        await _plugin.zonedSchedule(
+          id: id,
+          title: title,
+          body: body,
+          scheduledDate: tzDateTime,
+          notificationDetails: details,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          payload: payload,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error programando alerta de tolerancia $id: $e');
+    }
+  }
+
+  /// Cancela la alerta de tolerancia de entrada de hoy (ej. cuando el alumno ya hizo check-in)
+  static Future<void> cancelTodayEntryReminder() async {
+    final now = DateTime.now();
+    final todayId = 30000 + (now.month * 100) + now.day;
+    await _plugin.cancel(id: todayId);
+    debugPrint('Alerta de tolerancia ($todayId) cancelada porque se registró check-in.');
+  }
+
+  /// Cancela todas las alertas de tolerancia programadas
+  static Future<void> cancelAllEntryReminders() async {
+    final now = DateTime.now();
+    for (var i = 0; i < 15; i++) {
+      final d = now.add(Duration(days: i));
+      final id = 30000 + (d.month * 100) + d.day;
+      await _plugin.cancel(id: id);
+    }
+  }
+
+  /// Dispara una notificación inmediata de prueba de la alerta de tolerancia de 15 min
+  static Future<void> triggerTestToleranceNotification({
+    String scheduledStart = '11:00 AM',
+  }) async {
+    await initialize();
+
+    final androidDetails = AndroidNotificationDetails(
+      _attendanceChannelId,
+      _attendanceChannelName,
+      channelDescription: _attendanceChannelDesc,
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      icon: '@mipmap/ic_launcher',
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+    );
+
+    final details = NotificationDetails(android: androidDetails);
+
+    await _plugin.show(
+      id: 39999,
+      title: SkippyQuotes.getEntryToleranceTitle(0),
+      body: SkippyQuotes.getEntryToleranceBody(scheduledStart: scheduledStart),
+      notificationDetails: details,
+      payload: 'manual_test_entry_tolerance',
+    );
   }
 
   /// Verifica si Android permite programar alarmas exactas (recordatorios puntuales).

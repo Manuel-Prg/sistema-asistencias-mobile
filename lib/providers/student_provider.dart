@@ -5,6 +5,7 @@ import '../models/attendance_record.dart';
 import '../models/infraction_models.dart';
 import '../models/student.dart';
 import '../services/infraction_service.dart';
+import '../services/report_notification_service.dart';
 import '../services/supabase_service.dart';
 import 'auth_provider.dart';
 
@@ -149,6 +150,11 @@ class StudentNotifier extends Notifier<StudentDashboardState> {
         heatmapWeeks: heatmap,
         activeStudents: activeStudents,
       );
+
+      // Si el alumno tiene turno activo hoy o ya checó entrada, cancelar alerta de tolerancia de hoy
+      if (activeRecord != null) {
+        await ReportNotificationService.cancelTodayEntryReminder();
+      }
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -176,6 +182,7 @@ class StudentNotifier extends Notifier<StudentDashboardState> {
     );
 
     if (result.success) {
+      await ReportNotificationService.cancelTodayEntryReminder();
       await loadData();
       if (result.warning != null) {
         state = state.copyWith(lastWarningMessage: result.warning);

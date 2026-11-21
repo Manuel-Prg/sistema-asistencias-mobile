@@ -230,9 +230,9 @@ class _OnboardingPermissionsStepState
           // 1. Notificaciones
           _PermissionCard(
             icon: Icons.notifications_active_rounded,
-            title: 'Notificaciones de Reportes',
+            title: 'Alertas de Entrada y Reportes',
             description:
-                'Recibe avisos en los primeros 5 días hábiles y al cierre de mes para entregar tus reportes a tiempo.',
+                'Avisos si llevas 15 min de retraso en tu entrada según tu horario, y recordatorios para entrega de reportes.',
             granted: _notificationsGranted,
             loading: _loadingStatus || _requestingNotifications,
             actionLabel: 'Permitir',
@@ -247,7 +247,7 @@ class _OnboardingPermissionsStepState
             icon: Icons.alarm_on_rounded,
             title: 'Recordatorios Puntuales',
             description:
-                'Asegura que las alertas de reportes lleguen a la hora exacta sin retrasos del sistema.',
+                'Asegura que las alertas de tolerancia de 15 min y reportes lleguen a la hora exacta sin retrasos del sistema.',
             granted: _exactAlarmsGranted,
             loading: _loadingStatus || _requestingAlarms,
             actionLabel: 'Activar',

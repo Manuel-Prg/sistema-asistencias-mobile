@@ -24,7 +24,7 @@ class ProfileNotificationsCard extends ConsumerWidget {
       isScrollControlled: true,
       builder: (ctx) {
         return DefaultTabController(
-          length: 2,
+          length: 3,
           child: Container(
             margin: const EdgeInsets.fromLTRB(14, 0, 14, 20),
             child: GlassSurface(
@@ -112,11 +112,12 @@ class ProfileNotificationsCard extends ConsumerWidget {
                           : AppColors.slateMuted,
                       labelStyle: const TextStyle(
                         fontWeight: FontWeight.w700,
-                        fontSize: 12,
+                        fontSize: 11.5,
                       ),
                       tabs: const [
-                        Tab(text: '1-5 Días (Llenado)'),
-                        Tab(text: 'Fin de Mes (Subida)'),
+                        Tab(text: 'Días 1-5'),
+                        Tab(text: 'Fin de Mes'),
+                        Tab(text: 'Retardo 15m'),
                       ],
                     ),
                   ),
@@ -201,7 +202,7 @@ class ProfileNotificationsCard extends ConsumerWidget {
                                                   seconds: 2,
                                                 ),
                                                 behavior:
-                                                    SnackBarBehavior.floating,
+                                                  SnackBarBehavior.floating,
                                               ),
                                             );
                                           }
@@ -382,6 +383,151 @@ class ProfileNotificationsCard extends ConsumerWidget {
                               ),
                             );
                           },
+                        ),
+                        // TAB 3: Tolerancia de Entrada (15 min de retraso)
+                        ListView(
+                          shrinkWrap: true,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.04)
+                                    : Colors.black.withValues(alpha: 0.03),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: const Color(0xFFEF4444).withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFEF4444)
+                                              .withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: const Text(
+                                          'Tolerancia 15 min Superada',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFFEF4444),
+                                          ),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      FilledButton.tonalIcon(
+                                        onPressed: () async {
+                                          HapticFeedback.selectionClick();
+                                          await ref
+                                              .read(
+                                                notificationProvider.notifier,
+                                              )
+                                              .sendTestToleranceReminder(
+                                                scheduledStart: '11:00 AM',
+                                              );
+                                          if (ctx.mounted) {
+                                            ScaffoldMessenger.of(
+                                              ctx,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  '🚨 Alerta de tolerancia (15 min) disparada. ¡Baja tu barra de notificaciones!',
+                                                ),
+                                                duration: Duration(
+                                                  seconds: 2,
+                                                ),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        icon: const Icon(
+                                          Icons.send_rounded,
+                                          size: 14,
+                                        ),
+                                        label: const Text(
+                                          'Disparar',
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                        style: FilledButton.styleFrom(
+                                          visualDensity: VisualDensity.compact,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 0,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    SkippyQuotes.getEntryToleranceTitle(0),
+                                    style: TextStyle(
+                                      fontFamily: AppTheme.brandFont,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.mineralInk,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    SkippyQuotes.getEntryToleranceBody(
+                                      scheduledStart: '11:00 AM',
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 11.5,
+                                      height: 1.35,
+                                      color: isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.slateMuted,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: themePrimary.withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline_rounded,
+                                          size: 15,
+                                          color: themePrimary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'Se activa automáticamente 15 min después de tu hora de entrada si aún no has registrado asistencia según tu horario.',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              height: 1.3,
+                                              color: isDark
+                                                  ? AppColors.darkTextSecondary
+                                                  : AppColors.slateMuted,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -604,7 +750,7 @@ class ProfileNotificationsCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Alertas de Nuty: Reportes',
+                      'Alertas de Nuty: Asistencia y Reportes',
                       style: TextStyle(
                         fontFamily: AppTheme.brandFont,
                         fontSize: 16,
@@ -617,7 +763,7 @@ class ProfileNotificationsCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Recordatorios estilo Skippy para tus reportes',
+                      'Tolerancia de 15 min y recordatorios de reportes',
                       style: TextStyle(
                         fontFamily: AppTheme.brandFont,
                         fontSize: 12,
@@ -653,6 +799,25 @@ class ProfileNotificationsCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('⏰ ', style: TextStyle(fontSize: 13)),
+                    Expanded(
+                      child: Text(
+                        'Tolerancia de Entrada (+15 min): Aviso automático si no has checado entrada 15 minutos después de tu hora de inicio según tu horario pactado.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.35,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.slateMuted,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

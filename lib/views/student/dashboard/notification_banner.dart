@@ -25,64 +25,64 @@ class NotificationBanner extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       enableRefraction: false,
       child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: themePrimary.withValues(alpha: isDark ? 0.25 : 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.notifications_active_outlined,
-                  color: themePrimary,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Activa las notificaciones para avisarte del llenado de reporte en los primeros 5 días hábiles y su entrega a fin de mes.',
-                  style: TextStyle(
-                    fontFamily: AppTheme.brandFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : AppColors.mineralInk,
-                    height: 1.3,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: onActivate,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  'Activar',
-                  style: TextStyle(
-                    fontFamily: AppTheme.brandFont,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    color: themePrimary,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.close_rounded,
-                  size: 18,
-                  color: isDark ? Colors.white60 : AppColors.slateMuted,
-                ),
-                onPressed: onClose,
-                padding: const EdgeInsets.all(4),
-                constraints: const BoxConstraints(),
-              ),
-            ],
+        children: [
+          Container(
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: themePrimary.withValues(alpha: isDark ? 0.25 : 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.notifications_active_outlined,
+              color: themePrimary,
+              size: 20,
+            ),
           ),
-        );
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Activa las notificaciones para avisarte si llevas un retraso en tu entrada y recordarte tus reportes a tiempo.',
+              style: TextStyle(
+                fontFamily: AppTheme.brandFont,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.mineralInk,
+                height: 1.3,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: onActivate,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'Activar',
+              style: TextStyle(
+                fontFamily: AppTheme.brandFont,
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+                color: themePrimary,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.close_rounded,
+              size: 18,
+              color: isDark ? Colors.white60 : AppColors.slateMuted,
+            ),
+            onPressed: onClose,
+            padding: const EdgeInsets.all(4),
+            constraints: const BoxConstraints(),
+          ),
+        ],
+      ),
+    );
   }
 }

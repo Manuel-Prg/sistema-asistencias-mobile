@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/student_schedule.dart';
+import '../services/report_notification_service.dart';
 import '../services/supabase_service.dart';
 import 'auth_provider.dart';
 
@@ -64,6 +65,8 @@ class ScheduleNotifier extends Notifier<ScheduleState> {
     try {
       final list = await SupabaseService.getStudentSchedules(uid);
       state = state.copyWith(isLoading: false, schedules: list);
+      // Sincronizar alertas locales de tolerancia de entrada según el horario
+      await ReportNotificationService.scheduleEntryToleranceReminders(list);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,

@@ -76,6 +76,20 @@ class SkippyQuotes {
     1: "Último día hábil del mes. Sube tu reporte a la plataforma ahora.",
   };
 
+  // ─── Frases de Nuty para Tolerancia de Entrada (15 minutos) ───────────────
+
+  static const List<String> nutyEntryToleranceTitles = [
+    "⏰ ¡Tolerancia de 15 min superada!",
+    "⚠️ Nuty: ¿Aún no registras tu entrada?",
+    "🚨 ¡Alerta de Asistencia de Nuty!",
+  ];
+
+  static const List<String> nutyEntryToleranceBodies = [
+    "Han pasado 15 minutos de tu horario de entrada. ¡Checa ahora en la app para evitar un retardo o falta!",
+    "Tu hora de entrada ya superó los 15 min de tolerancia. Abre la app y registra tu asistencia de inmediato.",
+    "¡Ojo! El margen de tolerancia de 15 min ha expirado. Checa tu entrada para mantener tu récord limpio.",
+  ];
+
   static int hashCodeString(String input) {
     int hash = 0;
     for (int i = 0; i < input.length; i++) {
@@ -123,6 +137,21 @@ class SkippyQuotes {
   static String getStartOfMonthBody(int businessDayNumber) {
     return nutyStartOfMonthBodies[businessDayNumber] ??
         "Nuty te recuerda que debes rellenar tu reporte mensual en estos primeros días hábiles.";
+  }
+
+  /// Título de notificación de Nuty cuando transcurren 15 min de tolerancia de entrada
+  static String getEntryToleranceTitle([int variant = 0]) {
+    final index = variant % nutyEntryToleranceTitles.length;
+    return nutyEntryToleranceTitles[index];
+  }
+
+  /// Mensaje de notificación de Nuty cuando transcurren 15 min de tolerancia de entrada
+  static String getEntryToleranceBody({String? scheduledStart, int variant = 0}) {
+    if (scheduledStart != null && scheduledStart.isNotEmpty) {
+      return "Nuty al habla: Tu entrada era a las $scheduledStart y han pasado 15 min. ¡Registra tu asistencia ahora en la app para evitar un retardo!";
+    }
+    final index = variant % nutyEntryToleranceBodies.length;
+    return nutyEntryToleranceBodies[index];
   }
 
   /// Mensaje motivacional según el porcentaje de avance del alumno (0 a <100%).

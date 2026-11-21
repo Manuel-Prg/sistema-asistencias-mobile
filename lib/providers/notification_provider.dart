@@ -103,6 +103,14 @@ class NotificationNotifier extends Notifier<NotificationState> {
     );
   }
 
+  Future<void> sendTestToleranceReminder({
+    String scheduledStart = '11:00 AM',
+  }) async {
+    await ReportNotificationService.triggerTestToleranceNotification(
+      scheduledStart: scheduledStart,
+    );
+  }
+
   Future<void> openSettings() async {
     await NotificationService.openNotificationSettings();
     // Volver a comprobar el estado tras regresar de ajustes

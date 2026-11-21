@@ -65,5 +65,15 @@ void main() {
       final dual = SkippyQuotes.getCompletedQuote('convenio_dual', 'student_1');
       expect(dual.contains('Convenio Dual') || dual.contains('horas') || dual.contains('Cyborg'), isTrue);
     });
+
+    test('Frases de tolerancia de entrada (15 min) contienen advertencia puntual y hora', () {
+      final title = SkippyQuotes.getEntryToleranceTitle(0);
+      final body = SkippyQuotes.getEntryToleranceBody(scheduledStart: '11:00 AM');
+
+      expect(title.contains('15 min') || title.contains('Tolerancia'), isTrue);
+      expect(body.contains('11:00 AM'), isTrue);
+      expect(body.contains('15 min'), isTrue);
+      expect(body.contains('asistencia'), isTrue);
+    });
   });
 }
