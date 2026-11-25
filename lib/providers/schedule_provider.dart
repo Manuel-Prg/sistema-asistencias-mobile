@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/utils/date_utils.dart';
 import '../models/student_schedule.dart';
 import '../services/report_notification_service.dart';
 import '../services/supabase_service.dart';
 import 'auth_provider.dart';
+import 'student_provider.dart';
 
 class ScheduleState {
   final bool isLoading;
@@ -66,13 +68,31 @@ class ScheduleNotifier extends Notifier<ScheduleState> {
       final list = await SupabaseService.getStudentSchedules(uid);
       state = state.copyWith(isLoading: false, schedules: list);
       // Sincronizar alertas locales de tolerancia de entrada según el horario
-      await ReportNotificationService.scheduleEntryToleranceReminders(list);
+      await syncToleranceReminders(list);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Error al cargar horarios: $e',
       );
     }
+  }
+
+  /// Sincroniza las alertas de tolerancia de entrada con el horario actual,
+  /// omitiendo el día de hoy si el alumno ya registró asistencia hoy.
+  Future<void> syncToleranceReminders([List<StudentSchedule>? overrideList]) async {
+    final schedules = overrideList ?? state.schedules;
+    final studentState = ref.read(studentProvider);
+    final todayIso = AppDateUtils.formatIsoDate(DateTime.now());
+    final hasCheckedInToday =
+        studentState.activeRecord != null ||
+        studentState.allRecords.any(
+          (r) => AppDateUtils.formatIsoDate(r.checkIn) == todayIso,
+        );
+
+    await ReportNotificationService.scheduleEntryToleranceReminders(
+      schedules,
+      skipToday: hasCheckedInToday,
+    );
   }
 
   Future<bool> saveAllSchedules(List<dynamic> dayForms) async {

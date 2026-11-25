@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 import '../models/profile.dart';
+import '../services/report_notification_service.dart';
 import '../services/supabase_service.dart';
 
 class AppAuthState {
@@ -335,6 +336,7 @@ class AuthNotifier extends Notifier<AppAuthState> {
 
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
+    await ReportNotificationService.cancelAllEntryReminders();
     await SupabaseService.signOut();
     state = AppAuthState(
       isInitialCheckDone: true,

@@ -2,9 +2,27 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
+import '../../core/utils/mexican_business_days.dart';
 import '../../core/utils/skippy_quotes.dart';
 import '../../models/student_schedule.dart';
+
+class ScheduledToleranceItem {
+  final int id;
+  final String title;
+  final String body;
+  final tz.TZDateTime scheduledDate;
+  final String payload;
+
+  const ScheduledToleranceItem({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.scheduledDate,
+    required this.payload,
+  });
+}
 
 class AttendanceToleranceScheduler {
   AttendanceToleranceScheduler._();
@@ -13,6 +31,9 @@ class AttendanceToleranceScheduler {
   static const String channelName = 'Tolerancia de Asistencia (15 min)';
   static const String channelDesc =
       'Alertas de Nuty cuando transcurren 15 minutos de tolerancia sin registrar tu entrada según tu horario.';
+
+  static const int _minId = 30000;
+  static const int _maxId = 39999;
 
   /// Crea el canal de notificación para las alertas de tolerancia
   static Future<void> createNotificationChannel(
@@ -39,21 +60,39 @@ class AttendanceToleranceScheduler {
     }
   }
 
-  /// Programa las alertas de tolerancia de entrada (hora de inicio + 15 min)
-  /// para los próximos 14 días basándose en el horario configurado del estudiante.
-  static Future<void> scheduleToleranceReminders({
-    required FlutterLocalNotificationsPlugin plugin,
+  /// Calcula la lista exacta de alertas de tolerancia (hora de inicio + 15 min)
+  /// a programar en la zona horaria oficial (`tz.local`), ignorando:
+  /// - Días desactivados (`isActive == false`)
+  /// - Días fuera del esquema válido (`AppConstants.scheduleDaysMap`, Martes-Domingo)
+  /// - Días festivos oficiales mexicanos / Tabasco
+  /// - Hoy mismo si el alumno ya registró entrada (`skipToday == true`)
+  /// - Horarios con `startTime` inválido o corrupto
+  static List<ScheduledToleranceItem> computeUpcomingReminders({
     required List<StudentSchedule> schedules,
-  }) async {
-    if (schedules.isEmpty) return;
+    required tz.TZDateTime now,
+    bool skipToday = false,
+    int daysAhead = 14,
+  }) {
+    if (schedules.isEmpty) return const [];
 
-    final activeSchedules = schedules.where((s) => s.isActive).toList();
-    if (activeSchedules.isEmpty) return;
+    final activeSchedules = schedules
+        .where(
+          (s) => s.isActive && AppConstants.scheduleDaysMap.containsKey(s.dayOfWeek),
+        )
+        .toList();
+    if (activeSchedules.isEmpty) return const [];
 
-    final now = DateTime.now();
+    final items = <ScheduledToleranceItem>[];
+    final todayMidnight = tz.TZDateTime(now.location, now.year, now.month, now.day);
 
-    for (var dayOffset = 0; dayOffset < 14; dayOffset++) {
-      final targetDate = now.add(Duration(days: dayOffset));
+    for (var dayOffset = 0; dayOffset < daysAhead; dayOffset++) {
+      if (skipToday && dayOffset == 0) continue;
+
+      final targetDate = todayMidnight.add(Duration(days: dayOffset));
+
+      // No programar alertas de retardo en días festivos oficiales
+      if (MexicanBusinessDays.isMexicanHoliday(targetDate)) continue;
+
       final scheduleDay = AppDateUtils.dartWeekdayToScheduleDay(
         targetDate.weekday,
       );
@@ -65,24 +104,25 @@ class AttendanceToleranceScheduler {
       if (daySchedules.isEmpty) continue;
 
       final targetSch = daySchedules.first;
-      final parts = targetSch.startTime.split(':');
-      final startHour = int.tryParse(parts[0]) ?? 11;
-      final startMin = parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0;
+      final parsed = _parseStartTime(targetSch.startTime);
+      if (parsed == null) continue;
 
-      final toleranceTotalMins = startHour * 60 + startMin + 15;
-      final tolHour = toleranceTotalMins ~/ 60;
-      final tolMin = toleranceTotalMins % 60;
+      final (startHour, startMin) = parsed;
 
-      final scheduledDateTime = DateTime(
+      final startDateTime = tz.TZDateTime(
+        now.location,
         targetDate.year,
         targetDate.month,
         targetDate.day,
-        tolHour,
-        tolMin,
+        startHour,
+        startMin,
+      );
+      final scheduledDateTime = startDateTime.add(
+        const Duration(minutes: AppConstants.lateToleranceMinutes),
       );
 
       if (scheduledDateTime.isAfter(now)) {
-        final id = 30000 + (targetDate.month * 100) + targetDate.day;
+        final id = _idForDate(targetDate);
         final startTimeFormatted =
             '${startHour.toString().padLeft(2, '0')}:${startMin.toString().padLeft(2, '0')}';
         final title = SkippyQuotes.getEntryToleranceTitle(dayOffset);
@@ -91,16 +131,73 @@ class AttendanceToleranceScheduler {
           variant: dayOffset,
         );
 
-        await _scheduleSingleToleranceNotification(
-          plugin: plugin,
-          id: id,
-          title: title,
-          body: body,
-          scheduledDate: scheduledDateTime,
-          payload:
-              'entry_tolerance_${targetDate.year}_${targetDate.month}_${targetDate.day}',
+        items.add(
+          ScheduledToleranceItem(
+            id: id,
+            title: title,
+            body: body,
+            scheduledDate: scheduledDateTime,
+            payload:
+                'entry_tolerance_${targetDate.year}_${targetDate.month}_${targetDate.day}',
+          ),
         );
       }
+    }
+
+    return items;
+  }
+
+  /// Parsea estrictamente un string "HH:mm" o "HH:mm:ss".
+  /// Retorna `null` si el formato es inválido en lugar de inventar una hora por defecto.
+  static (int, int)? _parseStartTime(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return null;
+
+    final parts = trimmed.split(':');
+    if (parts.length < 2) return null;
+
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+
+    return (hour, minute);
+  }
+
+  static int _idForDate(DateTime date) {
+    return _minId + (date.month * 100) + date.day;
+  }
+
+  /// Reemplaza todas las alertas de tolerancia de entrada (hora de inicio + 15 min)
+  /// para los próximos 14 días basándose en el horario actual del estudiante.
+  /// Siempre cancela primero las alertas previas para evitar notificaciones fantasma
+  /// cuando el usuario modifica o desactiva días de su horario.
+  static Future<void> scheduleToleranceReminders({
+    required FlutterLocalNotificationsPlugin plugin,
+    required List<StudentSchedule> schedules,
+    bool skipToday = false,
+  }) async {
+    // 1. Limpiar SIEMPRE cualquier alerta de tolerancia previa (evita alarmas huérfanas)
+    await cancelAllEntryReminders(plugin);
+
+    final now = tz.TZDateTime.now(tz.local);
+    final items = computeUpcomingReminders(
+      schedules: schedules,
+      now: now,
+      skipToday: skipToday,
+    );
+
+    if (items.isEmpty) return;
+
+    for (final item in items) {
+      await _scheduleSingleToleranceNotification(
+        plugin: plugin,
+        id: item.id,
+        title: item.title,
+        body: item.body,
+        tzDateTime: item.scheduledDate,
+        payload: item.payload,
+      );
     }
   }
 
@@ -109,12 +206,10 @@ class AttendanceToleranceScheduler {
     required int id,
     required String title,
     required String body,
-    required DateTime scheduledDate,
+    required tz.TZDateTime tzDateTime,
     required String payload,
   }) async {
     try {
-      final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
-
       final androidDetails = AndroidNotificationDetails(
         channelId,
         channelName,
@@ -159,23 +254,35 @@ class AttendanceToleranceScheduler {
   static Future<void> cancelTodayEntryReminder(
     FlutterLocalNotificationsPlugin plugin,
   ) async {
-    final now = DateTime.now();
-    final todayId = 30000 + (now.month * 100) + now.day;
+    final now = tz.TZDateTime.now(tz.local);
+    final todayId = _idForDate(now);
     await plugin.cancel(id: todayId);
     debugPrint(
       'Alerta de tolerancia ($todayId) cancelada porque se registró check-in.',
     );
   }
 
-  /// Cancela todas las alertas de tolerancia programadas
+  /// Cancela TODAS las alertas de tolerancia pendientes en el sistema operativo
   static Future<void> cancelAllEntryReminders(
     FlutterLocalNotificationsPlugin plugin,
   ) async {
-    final now = DateTime.now();
-    for (var i = 0; i < 15; i++) {
-      final d = now.add(Duration(days: i));
-      final id = 30000 + (d.month * 100) + d.day;
-      await plugin.cancel(id: id);
+    try {
+      final pending = await plugin.pendingNotificationRequests();
+      for (final req in pending) {
+        final isToleranceId = req.id >= _minId && req.id <= _maxId;
+        final isTolerancePayload =
+            req.payload?.startsWith('entry_tolerance_') ?? false;
+        if (isToleranceId || isTolerancePayload) {
+          await plugin.cancel(id: req.id);
+        }
+      }
+    } catch (e) {
+      debugPrint('Fallback cancelando alertas de tolerancia: $e');
+      final now = tz.TZDateTime.now(tz.local);
+      for (var i = 0; i < 16; i++) {
+        final d = now.add(Duration(days: i));
+        await plugin.cancel(id: _idForDate(d));
+      }
     }
   }
 

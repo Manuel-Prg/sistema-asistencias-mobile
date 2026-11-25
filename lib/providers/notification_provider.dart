@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/notification_service.dart';
 import '../services/report_notification_service.dart';
+import 'schedule_provider.dart';
 
 class NotificationState {
   final bool isEnabled;
@@ -70,6 +71,7 @@ class NotificationNotifier extends Notifier<NotificationState> {
     if (granted) {
       await prefs.setBool(_prefKey, true);
       await ReportNotificationService.scheduleMonthlyReportReminders();
+      await ref.read(scheduleProvider.notifier).syncToleranceReminders();
       state = state.copyWith(isEnabled: true, isDeviceGranted: true);
       return true;
     } else {
@@ -78,6 +80,7 @@ class NotificationNotifier extends Notifier<NotificationState> {
       if (stillGranted) {
         await prefs.setBool(_prefKey, true);
         await ReportNotificationService.scheduleMonthlyReportReminders();
+        await ref.read(scheduleProvider.notifier).syncToleranceReminders();
       }
       state = state.copyWith(
         isEnabled: stillGranted,

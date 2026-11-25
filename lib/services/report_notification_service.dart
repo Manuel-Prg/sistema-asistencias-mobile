@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -293,25 +294,40 @@ class ReportNotificationService {
     await _plugin.cancelAll();
   }
 
+  static const String _notificationsPrefKey = 'app_push_notifications_enabled';
+
   /// Programa las alertas de tolerancia de entrada (hora de inicio + 15 min)
   /// para los próximos 14 días basándose en el horario configurado del estudiante.
+  /// Respeta la preferencia del usuario y limpia alertas obsoletas antes de programar.
   static Future<void> scheduleEntryToleranceReminders(
-    List<StudentSchedule> schedules,
-  ) async {
+    List<StudentSchedule> schedules, {
+    bool skipToday = false,
+  }) async {
     await initialize();
+
+    final prefs = await SharedPreferences.getInstance();
+    final isEnabled = prefs.getBool(_notificationsPrefKey) ?? false;
+    if (!isEnabled) {
+      await AttendanceToleranceScheduler.cancelAllEntryReminders(_plugin);
+      return;
+    }
+
     await AttendanceToleranceScheduler.scheduleToleranceReminders(
       plugin: _plugin,
       schedules: schedules,
+      skipToday: skipToday,
     );
   }
 
   /// Cancela la alerta de tolerancia de entrada de hoy (ej. cuando el alumno ya hizo check-in)
   static Future<void> cancelTodayEntryReminder() async {
+    await initialize();
     await AttendanceToleranceScheduler.cancelTodayEntryReminder(_plugin);
   }
 
   /// Cancela todas las alertas de tolerancia programadas
   static Future<void> cancelAllEntryReminders() async {
+    await initialize();
     await AttendanceToleranceScheduler.cancelAllEntryReminders(_plugin);
   }
 

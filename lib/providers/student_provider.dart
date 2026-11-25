@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/utils/date_utils.dart';
 import '../models/active_student.dart';
 import '../models/attendance_record.dart';
 import '../models/infraction_models.dart';
@@ -151,8 +152,15 @@ class StudentNotifier extends Notifier<StudentDashboardState> {
         activeStudents: activeStudents,
       );
 
-      // Si el alumno tiene turno activo hoy o ya checó entrada, cancelar alerta de tolerancia de hoy
-      if (activeRecord != null) {
+      // Si el alumno tiene turno activo hoy o ya registró alguna entrada hoy,
+      // cancelar la alerta de tolerancia de hoy.
+      final todayIso = AppDateUtils.formatIsoDate(DateTime.now());
+      final hasCheckedInToday =
+          activeRecord != null ||
+          allRecords.any(
+            (r) => AppDateUtils.formatIsoDate(r.checkIn) == todayIso,
+          );
+      if (hasCheckedInToday) {
         await ReportNotificationService.cancelTodayEntryReminder();
       }
     } catch (e) {
