@@ -21,6 +21,10 @@ class ProgressBarStyleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final styles = ProgressBarStyle.values;
+    final firstRow = styles.take(3).toList();
+    final secondRow = styles.skip(3).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,17 +67,30 @@ class ProgressBarStyleSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Vista previa',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.slateMuted,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Vista previa · ${selectedBarStyle.label}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.slateMuted,
+                      ),
+                    ),
+                    Text(
+                      '65%',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: activeAccent,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 StyledProgressBar(
                   ratio: 0.65,
                   barColor: activeAccent,
@@ -87,25 +104,33 @@ class ProgressBarStyleSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Chips de selección
-        Row(
-          children: ProgressBarStyle.values.map((style) {
-            final isSelected = style == selectedBarStyle;
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: _BarStyleChip(
-                  style: style,
-                  isSelected: isSelected,
-                  activeColor: activeAccent,
-                  isDark: isDark,
-                  onTap: () => onStyleSelected(style),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+        // Cuadrícula 3x2 de chips de selección
+        _buildStyleRow(firstRow),
+        if (secondRow.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          _buildStyleRow(secondRow),
+        ],
       ],
+    );
+  }
+
+  Widget _buildStyleRow(List<ProgressBarStyle> rowStyles) {
+    return Row(
+      children: rowStyles.map((style) {
+        final isSelected = style == selectedBarStyle;
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: _BarStyleChip(
+              style: style,
+              isSelected: isSelected,
+              activeColor: activeAccent,
+              isDark: isDark,
+              onTap: () => onStyleSelected(style),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -135,6 +160,10 @@ class _BarStyleChip extends StatelessWidget {
         return Icons.view_week_rounded;
       case ProgressBarStyle.glowing:
         return Icons.auto_awesome_rounded;
+      case ProgressBarStyle.bubbles:
+        return Icons.bubble_chart_rounded;
+      case ProgressBarStyle.aurora:
+        return Icons.gradient_rounded;
     }
   }
 
@@ -145,7 +174,7 @@ class _BarStyleChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected
               ? activeColor.withValues(alpha: 0.18)
@@ -170,6 +199,8 @@ class _BarStyleChip extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               style.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,

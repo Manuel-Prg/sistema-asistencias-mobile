@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'progress_bar/aurora_progress_bar.dart';
+import 'progress_bar/bubbles_progress_bar.dart';
 import 'progress_bar/capsule_progress_bar.dart';
 import 'progress_bar/glowing_progress_bar.dart';
 import 'progress_bar/progress_bar_track.dart';
 import 'progress_bar/segmented_progress_bar.dart';
 import 'progress_bar/wave_progress_bar.dart';
 
+export 'progress_bar/aurora_progress_bar.dart';
+export 'progress_bar/bubbles_progress_bar.dart';
 export 'progress_bar/capsule_progress_bar.dart';
 export 'progress_bar/glowing_progress_bar.dart';
 export 'progress_bar/progress_bar_track.dart';
@@ -13,18 +17,25 @@ export 'progress_bar/segmented_progress_bar.dart';
 export 'progress_bar/wave_progress_bar.dart';
 
 /// Estilos disponibles para las barras de progreso de horas.
+/// NOTA: Mantener el orden de los índices existentes para compatibilidad con SharedPreferences.
 enum ProgressBarStyle {
   /// Cápsula cristalina: gradiente volumétrico con reflejo especular superior y gota guía.
   defaultStyle('Cápsula'),
 
-  /// Olas animadas fluidas que evocan el movimiento natural del agua y cresta luminosa.
+  /// Olas expresivas: trazo sinusoidal fluido con onda de profundidad y marcador estilizado.
   gradient('Olas'),
 
   /// Bloques discretos de precisión técnica con realce en la celda activa.
   segmented('Segmentos'),
 
   /// Resplandor de neón líquido con halo exterior difuso (bloom) y faro pulsante.
-  glowing('Resplandor');
+  glowing('Resplandor'),
+
+  /// Burbujas cristalinas flotando continuamente dentro del líquido acuático.
+  bubbles('Burbujas'),
+
+  /// Aurora iridiscente con gradiente cromático dinámico y haz de luz satinada.
+  aurora('Aurora');
 
   final String label;
   const ProgressBarStyle(this.label);
@@ -79,15 +90,12 @@ class StyledProgressBar extends StatelessWidget {
             );
 
           case ProgressBarStyle.gradient:
-            return ProgressBarTrack(
+            return WaveProgressBar(
+              ratio: clampedRatio,
+              barColor: barColor,
               height: height,
+              maxWidth: maxWidth,
               isDark: isDark,
-              child: WaveProgressBar(
-                ratio: clampedRatio,
-                barColor: barColor,
-                height: height,
-                maxWidth: maxWidth,
-              ),
             );
 
           case ProgressBarStyle.segmented:
@@ -119,6 +127,30 @@ class StyledProgressBar extends StatelessWidget {
                     isDark: isDark,
                   ),
                 ],
+              ),
+            );
+
+          case ProgressBarStyle.bubbles:
+            return ProgressBarTrack(
+              height: height,
+              isDark: isDark,
+              child: BubblesProgressBar(
+                ratio: clampedRatio,
+                barColor: barColor,
+                height: height,
+                maxWidth: maxWidth,
+              ),
+            );
+
+          case ProgressBarStyle.aurora:
+            return ProgressBarTrack(
+              height: height,
+              isDark: isDark,
+              child: AuroraProgressBar(
+                ratio: clampedRatio,
+                barColor: barColor,
+                height: height,
+                maxWidth: maxWidth,
               ),
             );
         }

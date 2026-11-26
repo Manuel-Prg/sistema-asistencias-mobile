@@ -2,13 +2,15 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// Barra de progreso con simulación fluida de olas acuáticas en bucle infinito
-/// perfecto (sin cortes ni saltos temporales).
+/// Barra de progreso estilo Olas (inspirada en Material 3 Expressive Wavy):
+/// trazo sinusoidal fluido en bucle infinito perfecto con onda de profundidad,
+/// brillo especular y marcador de gota en el extremo de avance.
 class WaveProgressBar extends StatefulWidget {
   final double ratio;
   final Color barColor;
   final double height;
   final double maxWidth;
+  final bool isDark;
 
   const WaveProgressBar({
     super.key,
@@ -16,6 +18,7 @@ class WaveProgressBar extends StatefulWidget {
     required this.barColor,
     required this.height,
     required this.maxWidth,
+    this.isDark = false,
   });
 
   @override
@@ -31,7 +34,7 @@ class _WaveProgressBarState extends State<WaveProgressBar>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 2200),
     )..repeat();
   }
 
@@ -43,46 +46,35 @@ class _WaveProgressBarState extends State<WaveProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    final barWidth = (widget.maxWidth * widget.ratio).clamp(
-      0.0,
-      widget.maxWidth,
-    );
-    if (barWidth <= 0) return const SizedBox.shrink();
+    final effectiveHeight = math.max(widget.height + 4.0, 16.0);
 
-    final radius = widget.height / 2;
-
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: SizedBox(
-          width: barWidth,
-          height: widget.height,
-          child: CustomPaint(
-            painter: _DualWavePainter(
-              animation: _controller,
-              barColor: widget.barColor,
-              height: widget.height,
-            ),
-            size: Size(barWidth, widget.height),
-          ),
+    return SizedBox(
+      width: widget.maxWidth,
+      height: effectiveHeight,
+      child: CustomPaint(
+        painter: _ExpressiveWavePainter(
+          animation: _controller,
+          ratio: widget.ratio.clamp(0.0, 1.0),
+          barColor: widget.barColor,
+          isDark: widget.isDark,
         ),
+        size: Size(widget.maxWidth, effectiveHeight),
       ),
     );
   }
 }
 
-/// Pintor que genera dos olas sinusoidales armónicas con periodicidad matemática exacta
-/// garantizando un bucle infinito continuo (seamless loop) al 100%.
-class _DualWavePainter extends CustomPainter {
+class _ExpressiveWavePainter extends CustomPainter {
   final Animation<double> animation;
+  final double ratio;
   final Color barColor;
-  final double height;
+  final bool isDark;
 
-  _DualWavePainter({
+  _ExpressiveWavePainter({
     required this.animation,
+    required this.ratio,
     required this.barColor,
-    required this.height,
+    required this.isDark,
   }) : super(repaint: animation);
 
   @override
@@ -91,125 +83,158 @@ class _DualWavePainter extends CustomPainter {
     final h = size.height;
     if (width <= 0 || h <= 0) return;
 
-    final t = animation.value; // 0.0 -> 1.0 continuo
-
-    // Fondo base del líquido (cuerpo de agua profundo)
-    final baseDark =
-        Color.lerp(barColor, const Color(0xFF0C3C4C), 0.35) ?? barColor;
-    final baseBright = Color.lerp(barColor, Colors.white, 0.30) ?? barColor;
-    final fullRect = Rect.fromLTWH(0, 0, width, h);
-
-    canvas.drawRect(
-      fullRect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color.lerp(baseDark, barColor, 0.4)!, baseDark],
-        ).createShader(fullRect),
-    );
+    final centerY = h / 2;
+    final strokeWidth = (h * 0.30).clamp(4.0, 6.0);
+    final padX = strokeWidth / 2;
+    final usableWidth = math.max(0.0, width - strokeWidth);
+    final activeEndX = padX + (usableWidth * ratio);
 
     // ──────────────────────────────────────────────────────────────────────────
-    // 1. OLA TRASERA: Flujo armónico primario (1 ciclo temporal completo = 2π*t)
+    // 1. RIEL INACTIVO (línea limpia y delgada a la derecha del progreso)
     // ──────────────────────────────────────────────────────────────────────────
-    const wavelength1 = 56.0; // Longitud de onda fija en píxeles
-    final k1 = (2 * math.pi) / wavelength1;
-    final phase1 = t * 2 * math.pi; // Período temporal exacto = 1
+    final trackStartX = ratio > 0.0 ? math.min(activeEndX + 7.0, width - padX) : padX;
+    if (trackStartX < width - padX) {
+      final trackPaint = Paint()
+        ..color = isDark
+            ? Colors.white.withValues(alpha: 0.14)
+            : const Color(0xFF9EA7B3).withValues(alpha: 0.32)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth * 0.85
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawLine(
+        Offset(trackStartX, centerY),
+        Offset(width - padX, centerY),
+        trackPaint,
+      );
+    }
+
+    if (ratio <= 0.001) return;
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 2. ONDAS SINUSOIDALES FLUIDAS (bucle matemático exacto 2π * t)
+    // ──────────────────────────────────────────────────────────────────────────
+    final t = animation.value;
+    const wavelength = 24.0;
+    final k = (2 * math.pi) / wavelength;
+    final phase = t * 2 * math.pi;
+    final amplitude = (h - strokeWidth - 3.0) / 2;
+    final activeLen = activeEndX - padX;
+
+    // Para avances muy pequeños, dibujar una cápsula limpia sin deformación
+    if (activeLen < 6.0) {
+      canvas.drawCircle(
+        Offset(activeEndX, centerY),
+        strokeWidth * 0.65,
+        Paint()..color = barColor,
+      );
+      return;
+    }
 
     final backPath = Path();
-    backPath.moveTo(0, h);
+    final mainPath = Path();
+    final highlightPath = Path();
 
-    const step = 3.0;
-    final midY1 = h * 0.42;
-    final amp1 = h * 0.22;
+    const step = 2.0;
+    for (double x = padX; x <= activeEndX; x += step) {
+      final cx = math.min(x, activeEndX);
+      // Envolvente suave al inicio y al final para que la ola nazca y termine
+      // limpiamente alineada al centro
+      final distFromStart = cx - padX;
+      final distFromEnd = activeEndX - cx;
+      final edgeEnvelope = (math.min(distFromStart, distFromEnd) / 10.0).clamp(
+        0.0,
+        1.0,
+      );
+      final smoothEnv = edgeEnvelope * edgeEnvelope * (3 - 2 * edgeEnvelope);
+      final localAmp = amplitude * smoothEnv;
 
-    for (double x = 0; x <= width + step; x += step) {
-      final currentX = x.clamp(0.0, width);
-      final y = midY1 + math.sin(k1 * currentX - phase1) * amp1;
-      backPath.lineTo(currentX, y);
-    }
-    backPath.lineTo(width, h);
-    backPath.close();
+      final mainY = centerY + math.sin(k * cx - phase) * localAmp;
+      final backY = centerY + math.sin(k * cx - phase + 1.35) * (localAmp * 0.85);
 
-    final backPaint = Paint()
-      ..color = barColor.withValues(alpha: 0.55)
-      ..style = PaintingStyle.fill;
-    canvas.drawPath(backPath, backPaint);
-
-    // ──────────────────────────────────────────────────────────────────────────
-    // 2. OLA FRONTAL: Cresta vibrante rápida (2 ciclos temporales completos = 4π*t)
-    // ──────────────────────────────────────────────────────────────────────────
-    const wavelength2 = 42.0;
-    final k2 = (2 * math.pi) / wavelength2;
-    final phase2 = t * 4 * math.pi; // Período temporal exacto = 2 (armónico)
-
-    final frontPath = Path();
-    final crestPath = Path();
-    frontPath.moveTo(0, h);
-
-    final midY2 = h * 0.35;
-    final amp2 = h * 0.24;
-
-    for (double x = 0; x <= width + step; x += step) {
-      final currentX = x.clamp(0.0, width);
-      final y = midY2 + math.sin(k2 * currentX + phase2) * amp2;
-      frontPath.lineTo(currentX, y);
-      if (x == 0) {
-        crestPath.moveTo(currentX, y);
+      if (x == padX) {
+        mainPath.moveTo(cx, mainY);
+        backPath.moveTo(cx, backY);
+        highlightPath.moveTo(cx, mainY - strokeWidth * 0.22);
       } else {
-        crestPath.lineTo(currentX, y);
+        mainPath.lineTo(cx, mainY);
+        backPath.lineTo(cx, backY);
+        highlightPath.lineTo(cx, mainY - strokeWidth * 0.22);
       }
     }
-    frontPath.lineTo(width, h);
-    frontPath.close();
 
-    // Relleno frontal con gradiente luminoso
-    final frontPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [baseBright, barColor],
-        stops: const [0.0, 0.85],
-      ).createShader(fullRect);
-    canvas.drawPath(frontPath, frontPaint);
+    // Asegurar cierre exacto en activeEndX
+    mainPath.lineTo(activeEndX, centerY);
+    backPath.lineTo(activeEndX, centerY);
 
-    // Línea de cresta / espuma blanca brillante
-    final crestPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.85)
+    final deepColor = Color.lerp(barColor, const Color(0xFF0A2E3D), 0.30) ?? barColor;
+    final brightColor = Color.lerp(barColor, Colors.white, 0.35) ?? barColor;
+
+    // 2a. Onda trasera de profundidad (efecto agua en capas)
+    final backPaint = Paint()
+      ..color = barColor.withValues(alpha: isDark ? 0.32 : 0.24)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.3;
-    canvas.drawPath(crestPath, crestPaint);
+      ..strokeWidth = strokeWidth * 0.90
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawPath(backPath, backPaint);
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // 3. REFLEJO ESPECULAR Y DESTELLO DE LUZ ACUÁTICO CONTINUO
-    // ──────────────────────────────────────────────────────────────────────────
-    // Reflejo superior de cristal
-    final glassHighlight = Paint()
+    // 2b. Onda principal con gradiente luminoso hacia el extremo activo
+    final mainRect = Rect.fromLTWH(padX, 0, math.max(1.0, activeLen), h);
+    final mainPaint = Paint()
       ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Colors.white.withValues(alpha: 0.45),
-          Colors.white.withValues(alpha: 0.05),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, width, h * 0.40));
-    canvas.drawRect(Rect.fromLTWH(0, 0, width, h * 0.40), glassHighlight);
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [deepColor, barColor, brightColor],
+        stops: const [0.0, 0.68, 1.0],
+      ).createShader(mainRect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawPath(mainPath, mainPaint);
 
-    // Destello de agua en movimiento (recorre la superficie en bucle infinito)
-    final sweepX = (t * (width + 60.0)) - 30.0;
-    final shimmerPaint = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [Colors.white.withValues(alpha: 0.40), Colors.transparent],
-            stops: const [0.0, 1.0],
-          ).createShader(
-            Rect.fromCircle(center: Offset(sweepX, h * 0.38), radius: 20.0),
-          );
-    canvas.drawCircle(Offset(sweepX, h * 0.38), 20.0, shimmerPaint);
+    // 2c. Cresta especular fina sobre la onda principal
+    final highlightPaint = Paint()
+      ..color = Colors.white.withValues(alpha: isDark ? 0.42 : 0.55)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawPath(highlightPath, highlightPaint);
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 3. MARCADOR VERTICAL DE AVANCE (píldora estilizada estilo M3 Expressive)
+    // ──────────────────────────────────────────────────────────────────────────
+    final capHeight = h * 0.86;
+    final capWidth = 4.2;
+    final capRect = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: Offset(activeEndX, centerY),
+        width: capWidth,
+        height: capHeight,
+      ),
+      const Radius.circular(2.1),
+    );
+
+    // Halo suave detrás del marcador
+    canvas.drawRRect(
+      capRect.inflate(1.5),
+      Paint()
+        ..color = barColor.withValues(alpha: isDark ? 0.40 : 0.25)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0),
+    );
+
+    canvas.drawRRect(
+      capRect,
+      Paint()..color = Color.lerp(barColor, Colors.white, isDark ? 0.35 : 0.15)!,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _DualWavePainter oldDelegate) {
-    return oldDelegate.barColor != barColor || oldDelegate.height != height;
+  bool shouldRepaint(covariant _ExpressiveWavePainter oldDelegate) {
+    return oldDelegate.ratio != ratio ||
+        oldDelegate.barColor != barColor ||
+        oldDelegate.isDark != isDark;
   }
 }
