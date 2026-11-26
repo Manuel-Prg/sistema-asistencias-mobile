@@ -1,5 +1,8 @@
+import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/device_performance_service.dart';
 
 /// Estilo visual global de la aplicación:
 /// - [material3]: Diseño plano/sólido Material 3 (máximo rendimiento y menor consumo de GPU/batería)
@@ -28,6 +31,12 @@ class GlassSettings {
   /// Habilitar desenfoque gaussiano en tiempo real (si está desactivado, usa modo alto rendimiento)
   final bool? _enableBlur;
 
+  /// Indica si el dispositivo fue detectado como de prestaciones limitadas
+  final bool isLowEndDevice;
+
+  /// Memoria RAM total reportada por el sistema en MB (0 si no aplica)
+  final int totalRamMb;
+
   const GlassSettings({
     this.visualStyle = AppVisualStyle.liquidGlass,
     this.useSystemFont = false,
@@ -35,11 +44,19 @@ class GlassSettings {
     this.showBorders = true,
     this.blurSigma = 7.0,
     bool this._enableBlur = true,
+    this.isLowEndDevice = false,
+    this.totalRamMb = 0,
   });
 
   bool get enableBlur => _enableBlur ?? true;
   bool get isMaterial3 => visualStyle == AppVisualStyle.material3;
   bool get isLiquidGlass => visualStyle == AppVisualStyle.liquidGlass;
+
+  String get deviceRamLabel {
+    if (totalRamMb <= 0) return '';
+    final gb = (totalRamMb / 1024).round().clamp(1, 64);
+    return '$gb GB RAM';
+  }
 
   GlassSettings copyWith({
     AppVisualStyle? visualStyle,
@@ -48,6 +65,8 @@ class GlassSettings {
     bool? showBorders,
     double? blurSigma,
     bool? enableBlur,
+    bool? isLowEndDevice,
+    int? totalRamMb,
   }) {
     return GlassSettings(
       visualStyle: visualStyle ?? this.visualStyle,
@@ -56,6 +75,8 @@ class GlassSettings {
       showBorders: showBorders ?? this.showBorders,
       blurSigma: blurSigma ?? this.blurSigma,
       enableBlur: enableBlur ?? this.enableBlur,
+      isLowEndDevice: isLowEndDevice ?? this.isLowEndDevice,
+      totalRamMb: totalRamMb ?? this.totalRamMb,
     );
   }
 
@@ -83,7 +104,19 @@ class GlassSettingsNotifier extends Notifier<GlassSettings> {
   }
 
   Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
+    final results = await Future.wait([
+      SharedPreferences.getInstance(),
+      DevicePerformanceService.getDevicePerformance(),
+    ]);
+    final prefs = results[0] as SharedPreferences;
+    final perf = results[1] as DevicePerformanceInfo;
+
+    // En equipos con prestaciones limitadas, reducir aún más el límite de caché de imágenes
+    if (perf.isLowEndDevice) {
+      PaintingBinding.instance.imageCache.maximumSizeBytes = 24 << 20; // 24 MB
+      PaintingBinding.instance.imageCache.maximumSize = 50;
+    }
+
     final savedStyle = prefs.getString(_visualStyleKey);
     final savedUseSystemFont = prefs.getBool(_useSystemFontKey);
     final savedTransparency = prefs.getDouble(_transparencyKey);
@@ -92,21 +125,32 @@ class GlassSettingsNotifier extends Notifier<GlassSettings> {
     final savedBlurSigma = prefs.getDouble(_blurSigmaKey);
     // Optimización de rendimiento: Si el valor guardado es muy alto (ej. 16.0 de versiones previas),
     // normalizar a 7.0 para garantizar 60-120 FPS en todos los dispositivos.
-    final effectiveBlur = (savedBlurSigma == null || savedBlurSigma > 10.0)
+    final effectiveBlur = (savedBlurSigma == null || savedBlurSigma > 8.0)
         ? 7.0
         : savedBlurSigma;
 
-    final resolvedStyle = savedStyle == 'material3'
-        ? AppVisualStyle.material3
-        : AppVisualStyle.liquidGlass;
+    // Si el usuario aún no eligió estilo manualmente y el equipo es limitado,
+    // activar Material 3 por defecto para garantizar máxima fluidez.
+    final AppVisualStyle resolvedStyle;
+    if (savedStyle == 'material3') {
+      resolvedStyle = AppVisualStyle.material3;
+    } else if (savedStyle == 'liquidGlass') {
+      resolvedStyle = AppVisualStyle.liquidGlass;
+    } else {
+      resolvedStyle = perf.isLowEndDevice
+          ? AppVisualStyle.material3
+          : AppVisualStyle.liquidGlass;
+    }
 
     state = state.copyWith(
       visualStyle: resolvedStyle,
       useSystemFont: savedUseSystemFont ?? false,
       transparency: savedTransparency ?? 0.60,
       showBorders: savedShowBorders ?? true,
-      enableBlur: savedEnableBlur ?? true,
+      enableBlur: savedEnableBlur ?? !perf.isLowEndDevice,
       blurSigma: effectiveBlur,
+      isLowEndDevice: perf.isLowEndDevice,
+      totalRamMb: perf.totalRamMb,
     );
   }
 

@@ -32,7 +32,19 @@ class _BubblesProgressBarState extends State<BubblesProgressBar>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3400),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
+    if (disableAnimations) {
+      _controller.stop();
+      _controller.value = 0.25;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -51,19 +63,21 @@ class _BubblesProgressBarState extends State<BubblesProgressBar>
 
     final radius = widget.height / 2;
 
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: SizedBox(
-          width: barWidth,
-          height: widget.height,
-          child: CustomPaint(
-            painter: _BubblesPainter(
-              animation: _controller,
-              barColor: widget.barColor,
+    return RepaintBoundary(
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(radius),
+          child: SizedBox(
+            width: barWidth,
+            height: widget.height,
+            child: CustomPaint(
+              painter: _BubblesPainter(
+                animation: _controller,
+                barColor: widget.barColor,
+              ),
+              size: Size(barWidth, widget.height),
             ),
-            size: Size(barWidth, widget.height),
           ),
         ),
       ),

@@ -33,7 +33,19 @@ class _GlowingProgressBarState extends State<GlowingProgressBar>
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1600),
-    )..repeat(reverse: true);
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
+    if (disableAnimations) {
+      _pulseController.stop();
+      _pulseController.value = 0.5;
+    } else if (!_pulseController.isAnimating) {
+      _pulseController.repeat(reverse: true);
+    }
   }
 
   @override
@@ -54,7 +66,8 @@ class _GlowingProgressBarState extends State<GlowingProgressBar>
     final leadBright =
         Color.lerp(widget.barColor, Colors.white, 0.35) ?? widget.barColor;
 
-    return AnimatedBuilder(
+    return RepaintBoundary(
+      child: AnimatedBuilder(
       animation: _pulseController,
       builder: (context, _) {
         final pulseValue = _pulseController.value;
@@ -171,6 +184,7 @@ class _GlowingProgressBarState extends State<GlowingProgressBar>
           ),
         );
       },
+    ),
     );
   }
 }

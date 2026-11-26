@@ -82,11 +82,48 @@ class OnboardingStyleStep extends ConsumerWidget {
               color: subColor,
             ),
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 16),
+          if (glassSettings.isLowEndDevice) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+              decoration: BoxDecoration(
+                color: activeAccent.withValues(alpha: isDark ? 0.16 : 0.10),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: activeAccent.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.speed_rounded, size: 18, color: activeAccent),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      glassSettings.deviceRamLabel.isNotEmpty
+                          ? 'Optimizamos la app para tu equipo (${glassSettings.deviceRamLabel}) activando Material 3.'
+                          : 'Optimizamos la app para tu dispositivo activando Material 3 para máxima fluidez.',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        height: 1.3,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.mineralInk,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ] else
+            const SizedBox(height: 6),
           _StyleChoiceCard(
             icon: Icons.layers_rounded,
             title: 'Material 3',
-            badge: 'Recomendado · Ligero',
+            badge: glassSettings.isLowEndDevice
+                ? 'Recomendado para tu equipo'
+                : 'Recomendado · Ligero',
             description:
                 'Superficies tonales planas, botones cápsula y máxima fluidez con menor consumo de batería.',
             isSelected: glassSettings.isMaterial3,

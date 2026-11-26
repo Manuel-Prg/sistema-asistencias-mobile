@@ -28,6 +28,7 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   bool _isSplit = false;
+  final Set<int> _visitedTabs = {0};
 
   late final AnimationController _splitController;
   late final Animation<double> _splitAnimation;
@@ -141,7 +142,10 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
   void _onTabSelected(int index) {
     HapticFeedback.selectionClick();
     if (_currentIndex != index) {
-      setState(() => _currentIndex = index);
+      setState(() {
+        _visitedTabs.add(index);
+        _currentIndex = index;
+      });
     }
     _unsplitDock();
   }
@@ -184,7 +188,9 @@ class _MainNavigationViewState extends ConsumerState<MainNavigationView>
       index: _currentIndex,
       children: List.generate(
         _views.length,
-        (i) => TickerMode(enabled: _currentIndex == i, child: _views[i]),
+        (i) => _visitedTabs.contains(i)
+            ? TickerMode(enabled: _currentIndex == i, child: _views[i])
+            : const SizedBox.shrink(),
       ),
     );
 

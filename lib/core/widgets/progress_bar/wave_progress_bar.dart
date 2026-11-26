@@ -35,7 +35,19 @@ class _WaveProgressBarState extends State<WaveProgressBar>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2200),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
+    if (disableAnimations) {
+      _controller.stop();
+      _controller.value = 0.25;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -48,17 +60,19 @@ class _WaveProgressBarState extends State<WaveProgressBar>
   Widget build(BuildContext context) {
     final effectiveHeight = math.max(widget.height + 4.0, 16.0);
 
-    return SizedBox(
-      width: widget.maxWidth,
-      height: effectiveHeight,
-      child: CustomPaint(
-        painter: _ExpressiveWavePainter(
-          animation: _controller,
-          ratio: widget.ratio.clamp(0.0, 1.0),
-          barColor: widget.barColor,
-          isDark: widget.isDark,
+    return RepaintBoundary(
+      child: SizedBox(
+        width: widget.maxWidth,
+        height: effectiveHeight,
+        child: CustomPaint(
+          painter: _ExpressiveWavePainter(
+            animation: _controller,
+            ratio: widget.ratio.clamp(0.0, 1.0),
+            barColor: widget.barColor,
+            isDark: widget.isDark,
+          ),
+          size: Size(widget.maxWidth, effectiveHeight),
         ),
-        size: Size(widget.maxWidth, effectiveHeight),
       ),
     );
   }

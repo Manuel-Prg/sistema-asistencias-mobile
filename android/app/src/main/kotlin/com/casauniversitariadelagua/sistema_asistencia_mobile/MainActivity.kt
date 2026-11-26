@@ -1,6 +1,8 @@
 package com.casauniversitariadelagua.sistema_asistencia_mobile
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "com.casauniversitariadelagua/notifications"
+    private val DEVICE_PERF_CHANNEL = "com.casauniversitariadelagua/device_performance"
     private val NOTIFICATION_PERMISSION_CODE = 1001
     private var pendingResult: MethodChannel.Result? = null
 
@@ -56,6 +59,34 @@ class MainActivity : FlutterFragmentActivity() {
                     }
                     startActivity(intent)
                     result.success(true)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DEVICE_PERF_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getDevicePerformance" -> {
+                    try {
+                        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                        val memInfo = ActivityManager.MemoryInfo()
+                        activityManager.getMemoryInfo(memInfo)
+                        val totalRamMb = (memInfo.totalMem / (1024L * 1024L)).toInt()
+                        val isLowRam = activityManager.isLowRamDevice
+                        val cpuCores = Runtime.getRuntime().availableProcessors()
+                        val sdkInt = Build.VERSION.SDK_INT
+
+                        result.success(
+                            mapOf(
+                                "totalRamMb" to totalRamMb,
+                                "isLowRamDevice" to isLowRam,
+                                "cpuCores" to cpuCores,
+                                "sdkInt" to sdkInt
+                            )
+                        )
+                    } catch (e: Exception) {
+                        result.error("DEVICE_PERF_ERROR", e.message, null)
+                    }
                 }
                 else -> result.notImplemented()
             }

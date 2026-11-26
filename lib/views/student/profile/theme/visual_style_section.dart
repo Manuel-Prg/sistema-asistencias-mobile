@@ -51,8 +51,12 @@ class VisualStyleSection extends StatelessWidget {
             children: [
               _VisualStyleOptionTile(
                 title: 'Material 3',
-                badgeText: 'Ligero',
-                subtitle: 'Superficies planas sólidas · Máximo rendimiento',
+                badgeText: glassSettings.isLowEndDevice
+                    ? 'Recomendado'
+                    : 'Ligero',
+                subtitle: glassSettings.isLowEndDevice
+                    ? 'Óptimo para tu dispositivo · Máxima fluidez y menor RAM'
+                    : 'Superficies planas sólidas · Máximo rendimiento',
                 isSelected: glassSettings.isMaterial3,
                 activeAccent: activeAccent,
                 isDark: isDark,
@@ -84,6 +88,42 @@ class VisualStyleSection extends StatelessWidget {
             ],
           ),
         ),
+        if (glassSettings.isLowEndDevice && glassSettings.isLiquidGlass) ...[
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.amberTolerance.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.amberTolerance.withValues(alpha: 0.35),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.speed_rounded,
+                  size: 16,
+                  color: AppColors.amberTolerance,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Tu equipo tiene recursos limitados. Si notas lentitud, te recomendamos usar Material 3.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.mineralInk,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
         _VisualStylePreviewCard(
           isMaterial3: glassSettings.isMaterial3,
