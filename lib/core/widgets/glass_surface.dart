@@ -129,14 +129,14 @@ class GlassSurface extends ConsumerWidget {
         color: isDark
             ? Colors.black.withValues(alpha: 0.45)
             : AppColors.primary.withValues(alpha: 0.06),
-        blurRadius: isDark ? 22 : 18,
+        blurRadius: isDark ? 20 : 16,
         spreadRadius: isDark ? -1 : 0,
-        offset: const Offset(0, 7),
+        offset: const Offset(0, 6),
       ),
-      if (isDark)
+      if (isDark && enableRefraction)
         BoxShadow(
           color: Colors.white.withValues(alpha: 0.04),
-          blurRadius: 14,
+          blurRadius: 12,
           spreadRadius: -2,
           offset: const Offset(0, 2),
         ),
@@ -155,8 +155,9 @@ class GlassSurface extends ConsumerWidget {
       child: child,
     );
 
+    final effectiveSigma = settings.blurSigma.clamp(0.0, 8.0);
     final shouldBlur = (settings.enableBlur == true) &&
-        (settings.blurSigma > 0) &&
+        (effectiveSigma > 0) &&
         enableRefraction;
 
     Widget visual;
@@ -165,8 +166,8 @@ class GlassSurface extends ConsumerWidget {
           ? ClipOval(
               child: BackdropFilter(
                 filter: ImageFilter.blur(
-                  sigmaX: settings.blurSigma,
-                  sigmaY: settings.blurSigma,
+                  sigmaX: effectiveSigma,
+                  sigmaY: effectiveSigma,
                 ),
                 child: content,
               ),
@@ -175,8 +176,8 @@ class GlassSurface extends ConsumerWidget {
               borderRadius: radius,
               child: BackdropFilter(
                 filter: ImageFilter.blur(
-                  sigmaX: settings.blurSigma,
-                  sigmaY: settings.blurSigma,
+                  sigmaX: effectiveSigma,
+                  sigmaY: effectiveSigma,
                 ),
                 child: content,
               ),

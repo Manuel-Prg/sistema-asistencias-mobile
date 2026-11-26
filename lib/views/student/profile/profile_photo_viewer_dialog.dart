@@ -86,6 +86,7 @@ class ProfilePhotoViewerDialog extends StatelessWidget {
                         maxScale: 4.0,
                         child: Image.network(
                           imageUrl,
+                          cacheWidth: 1080,
                           fit: BoxFit.contain,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;

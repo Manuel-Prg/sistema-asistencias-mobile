@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,9 +6,8 @@ import '../../../core/theme/app_theme.dart';
 import 'nav_tab_item.dart';
 
 /// Barra de navegación flotante estilo dock para Material 3.
-/// Ofrece diseño flotante con curvatura pronunciada (pill dock),
-/// indicador activo animado con tokens de Material You e interacción
-/// de división fluida al hacer scroll vertical.
+/// 100% libre de BackdropFilter para máximo rendimiento y fluidez en
+/// dispositivos de gama baja, usando superficies tonales Material You.
 class Material3Dock extends StatelessWidget {
   final List<NavTabItem> tabs;
   final int currentIndex;
@@ -54,7 +51,7 @@ class Material3Dock extends StatelessWidget {
                         scale: 1.0 - t * 0.10,
                         child: IgnorePointer(
                           ignoring: t > 0.4,
-                          child: _buildFullDock(context, isDark, colorScheme),
+                          child: _buildFullDock(isDark, colorScheme),
                         ),
                       ),
                     ),
@@ -93,60 +90,49 @@ class Material3Dock extends StatelessWidget {
     );
   }
 
-  Widget _buildFullDock(
-    BuildContext context,
-    bool isDark,
-    ColorScheme colorScheme,
-  ) {
-    return Container(
-      height: 64,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
+  Color _surfaceColor(bool isDark, ColorScheme colorScheme) {
+    return isDark ? colorScheme.surfaceContainerHigh : colorScheme.surfaceContainerLowest;
+  }
+
+  Widget _buildFullDock(bool isDark, ColorScheme colorScheme) {
+    return RepaintBoundary(
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+          color: _surfaceColor(isDark, colorScheme),
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(
             color: isDark
-                ? Colors.black.withValues(alpha: 0.48)
-                : Colors.black.withValues(alpha: 0.09),
-            blurRadius: 22,
-            offset: const Offset(0, 6),
-            spreadRadius: -2,
+                ? Colors.white.withValues(alpha: 0.10)
+                : colorScheme.outlineVariant.withValues(alpha: 0.45),
+            width: 1.0,
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: Container(
-            decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
               color: isDark
-                  ? const Color(0xE8171720)
-                  : const Color(0xF2FFFFFF),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.10)
-                    : Colors.black.withValues(alpha: 0.08),
-                width: 1.1,
-              ),
+                  ? Colors.black.withValues(alpha: 0.45)
+                  : Colors.black.withValues(alpha: 0.09),
+              blurRadius: 18,
+              offset: const Offset(0, 5),
+              spreadRadius: -2,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(tabs.length, (index) {
-                final tab = tabs[index];
-                return _M3NavItem(
-                  icon: tab.icon,
-                  selectedIcon: tab.selectedIcon,
-                  label: tab.label,
-                  isSelected: currentIndex == index,
-                  colorScheme: colorScheme,
-                  isDark: isDark,
-                  onTap: () => onTabSelected(index),
-                );
-              }),
-            ),
-          ),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(tabs.length, (index) {
+            final tab = tabs[index];
+            return _M3NavItem(
+              icon: tab.icon,
+              selectedIcon: tab.selectedIcon,
+              label: tab.label,
+              isSelected: currentIndex == index,
+              colorScheme: colorScheme,
+              isDark: isDark,
+              onTap: () => onTabSelected(index),
+            );
+          }),
         ),
       ),
     );
@@ -155,63 +141,52 @@ class Material3Dock extends StatelessWidget {
   Widget _buildActiveTabPod(bool isDark, ColorScheme colorScheme) {
     final currentTab = tabs[currentIndex];
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onUnsplit();
-      },
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(27),
-          boxShadow: [
-            BoxShadow(
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onUnsplit();
+        },
+        child: Container(
+          width: 54,
+          height: 54,
+          decoration: BoxDecoration(
+            color: _surfaceColor(isDark, colorScheme),
+            borderRadius: BorderRadius.circular(27),
+            border: Border.all(
               color: isDark
-                  ? Colors.black.withValues(alpha: 0.45)
-                  : colorScheme.primary.withValues(alpha: 0.15),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+                  ? Colors.white.withValues(alpha: 0.14)
+                  : colorScheme.primary.withValues(alpha: 0.22),
+              width: 1.1,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(27),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
                 color: isDark
-                    ? const Color(0xE8171720)
-                    : const Color(0xF2FFFFFF),
-                borderRadius: BorderRadius.circular(27),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.14)
-                      : colorScheme.primary.withValues(alpha: 0.20),
-                  width: 1.2,
-                ),
+                    ? Colors.black.withValues(alpha: 0.42)
+                    : colorScheme.primary.withValues(alpha: 0.14),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark
+                    ? colorScheme.secondaryContainer
+                    : colorScheme.primary.withValues(alpha: 0.14),
               ),
               child: Center(
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDark
-                        ? colorScheme.secondaryContainer
-                        : colorScheme.primary.withValues(alpha: 0.14),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      currentTab.selectedIcon,
-                      size: 22,
-                      color: isDark
-                          ? colorScheme.onSecondaryContainer
-                          : colorScheme.primary,
-                    ),
-                  ),
+                child: Icon(
+                  currentTab.selectedIcon,
+                  size: 22,
+                  color: isDark
+                      ? colorScheme.onSecondaryContainer
+                      : colorScheme.primary,
                 ),
               ),
             ),
@@ -224,55 +199,44 @@ class Material3Dock extends StatelessWidget {
   Widget _buildSearchPod(bool isDark, ColorScheme colorScheme) {
     final isRecursos = currentIndex == 3;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        if (!isRecursos) {
-          onTabSelected(3);
-        } else {
-          onUnsplit();
-        }
-      },
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(27),
-          boxShadow: [
-            BoxShadow(
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          if (!isRecursos) {
+            onTabSelected(3);
+          } else {
+            onUnsplit();
+          }
+        },
+        child: Container(
+          width: 54,
+          height: 54,
+          decoration: BoxDecoration(
+            color: _surfaceColor(isDark, colorScheme),
+            borderRadius: BorderRadius.circular(27),
+            border: Border.all(
               color: isDark
-                  ? Colors.black.withValues(alpha: 0.45)
-                  : Colors.black.withValues(alpha: 0.08),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : colorScheme.outlineVariant.withValues(alpha: 0.45),
+              width: 1.1,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(27),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
                 color: isDark
-                    ? const Color(0xE8171720)
-                    : const Color(0xF2FFFFFF),
-                borderRadius: BorderRadius.circular(27),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.10)
-                      : Colors.black.withValues(alpha: 0.08),
-                  width: 1.2,
-                ),
+                    ? Colors.black.withValues(alpha: 0.42)
+                    : Colors.black.withValues(alpha: 0.08),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
-              child: Center(
-                child: Icon(
-                  Icons.search_rounded,
-                  size: 22,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
-                ),
-              ),
+            ],
+          ),
+          child: Center(
+            child: Icon(
+              Icons.search_rounded,
+              size: 22,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.mineralInk,
             ),
           ),
         ),

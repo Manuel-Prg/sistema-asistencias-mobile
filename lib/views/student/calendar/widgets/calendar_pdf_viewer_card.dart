@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -8,10 +8,13 @@ import '../../../../core/theme/app_theme.dart';
 import '../academic_calendar_view.dart';
 
 /// Contenedor del visor de PDF con estados de carga y reintento ante errores.
+/// Lee directamente desde disco (`SfPdfViewer.file` / `SfPdfViewer.asset`)
+/// para evitar duplicar el PDF completo en la memoria RAM de Dart.
 class CalendarPdfViewerCard extends StatelessWidget {
   final AcademicCalendarDoc activeDoc;
   final int selectedIndex;
-  final Uint8List? pdfBytes;
+  final File? pdfFile;
+  final bool useAssetFallback;
   final PdfViewerController controller;
   final bool isLoading;
   final String? errorMessage;
@@ -26,7 +29,8 @@ class CalendarPdfViewerCard extends StatelessWidget {
     super.key,
     required this.activeDoc,
     required this.selectedIndex,
-    required this.pdfBytes,
+    required this.pdfFile,
+    this.useAssetFallback = false,
     required this.controller,
     required this.isLoading,
     required this.errorMessage,
@@ -57,10 +61,23 @@ class CalendarPdfViewerCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            if (pdfBytes != null)
-              SfPdfViewer.memory(
-                pdfBytes!,
-                key: ValueKey('${activeDoc.assetPath}_$selectedIndex'),
+            if (pdfFile != null)
+              SfPdfViewer.file(
+                pdfFile!,
+                key: ValueKey('${activeDoc.assetPath}_file_$selectedIndex'),
+                controller: controller,
+                enableDoubleTapZooming: true,
+                pageLayoutMode: PdfPageLayoutMode.continuous,
+                canShowScrollHead: true,
+                canShowScrollStatus: true,
+                onDocumentLoaded: onDocumentLoaded,
+                onDocumentLoadFailed: onDocumentLoadFailed,
+                onPageChanged: onPageChanged,
+              )
+            else if (useAssetFallback)
+              SfPdfViewer.asset(
+                activeDoc.assetPath,
+                key: ValueKey('${activeDoc.assetPath}_asset_$selectedIndex'),
                 controller: controller,
                 enableDoubleTapZooming: true,
                 pageLayoutMode: PdfPageLayoutMode.continuous,

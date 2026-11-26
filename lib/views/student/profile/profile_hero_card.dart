@@ -76,7 +76,7 @@ class ProfileHeroCard extends StatelessWidget {
                         ? AppColors.primaryDeep
                         : AppColors.signalAqua.withValues(alpha: 0.18),
                     backgroundImage: hasAvatar
-                        ? NetworkImage(avatarUrl!)
+                        ? ResizeImage(NetworkImage(avatarUrl!), width: 256)
                         : null,
                     child: isUpdatingPhoto
                         ? const Center(

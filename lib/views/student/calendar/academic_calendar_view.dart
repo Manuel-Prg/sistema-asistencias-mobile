@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -66,7 +68,8 @@ class AcademicCalendarView extends StatefulWidget {
 class _AcademicCalendarViewState extends State<AcademicCalendarView> {
   late int _selectedCalendarIndex;
   late PdfViewerController _pdfViewerController;
-  Uint8List? _pdfBytes;
+  File? _pdfFile;
+  bool _useAssetFallback = false;
   int _pageCount = 1;
   int _currentPage = 1;
   bool _isLoading = true;
@@ -93,24 +96,25 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
-      _pdfBytes = null;
+      _pdfFile = null;
+      _useAssetFallback = false;
     });
 
     try {
       final activeDoc = AcademicCalendarView.calendars[_selectedCalendarIndex];
 
-      Uint8List bytes;
       try {
-        bytes = await PdfCompressionService.getCompressedPdfBytes(
+        final file = await PdfCompressionService.getCompressedPdf(
           activeDoc.assetPath,
         );
+        if (mounted) {
+          setState(() => _pdfFile = file);
+        }
       } catch (_) {
-        final byteData = await rootBundle.load(activeDoc.assetPath);
-        bytes = byteData.buffer.asUint8List();
-      }
-
-      if (mounted) {
-        setState(() => _pdfBytes = bytes);
+        // Fallback directo a asset sin duplicar bytes en RAM
+        if (mounted) {
+          setState(() => _useAssetFallback = true);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -215,7 +219,8 @@ class _AcademicCalendarViewState extends State<AcademicCalendarView> {
               child: CalendarPdfViewerCard(
                 activeDoc: activeDoc,
                 selectedIndex: _selectedCalendarIndex,
-                pdfBytes: _pdfBytes,
+                pdfFile: _pdfFile,
+                useAssetFallback: _useAssetFallback,
                 controller: _pdfViewerController,
                 isLoading: _isLoading,
                 errorMessage: _errorMessage,

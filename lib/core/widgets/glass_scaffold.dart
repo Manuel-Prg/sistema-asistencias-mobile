@@ -182,6 +182,8 @@ class GlassAppBar extends ConsumerWidget implements PreferredSizeWidget {
             'assets/logo/iconoFavicon.webp',
             width: 26,
             height: 26,
+            cacheWidth: 96,
+            cacheHeight: 96,
             errorBuilder: (context, error, stackTrace) => const Icon(
               Icons.water_drop_rounded,
               color: AppColors.signalAqua,

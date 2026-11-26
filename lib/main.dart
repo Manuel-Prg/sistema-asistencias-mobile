@@ -20,11 +20,15 @@ import 'views/navigation/main_navigation_view.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar localización en español (México)
-  await initializeDateFormatting('es_MX', null);
+  // Acotar el caché de imágenes decodificadas a 40 MB (evita cierres OOM en gama baja)
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 40 << 20;
+  PaintingBinding.instance.imageCache.maximumSize = 80;
 
-  // Inicializar notificaciones locales y zona horaria (Villahermosa, Tabasco UTC-6)
-  await ReportNotificationService.initialize();
+  // Inicializar localización y notificaciones en paralelo para acelerar arranque
+  await Future.wait([
+    initializeDateFormatting('es_MX', null),
+    ReportNotificationService.initialize(),
+  ]);
 
   // Inicializar Supabase
   await Supabase.initialize(
