@@ -2,13 +2,18 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// Barra de progreso acuática con burbujas cristalinas animadas que flotan
-/// continuamente dentro del líquido en bucle infinito perfecto.
+import 'progress_bar_expressive_helpers.dart';
+
+/// Barra de progreso estilo Burbujas Expresivas: esferas cristalinas de agua
+/// translúcidas de distintos tamaños que flotan y avanzan suavemente sobre un
+/// hilo acuático sutil, con brillo curvo en cada burbuja, marcador vertical y
+/// riel inactivo delgado.
 class BubblesProgressBar extends StatefulWidget {
   final double ratio;
   final Color barColor;
   final double height;
   final double maxWidth;
+  final bool isDark;
 
   const BubblesProgressBar({
     super.key,
@@ -16,6 +21,7 @@ class BubblesProgressBar extends StatefulWidget {
     required this.barColor,
     required this.height,
     required this.maxWidth,
+    this.isDark = false,
   });
 
   @override
@@ -31,7 +37,7 @@ class _BubblesProgressBarState extends State<BubblesProgressBar>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3400),
+      duration: const Duration(milliseconds: 3600),
     );
   }
 
@@ -55,161 +61,217 @@ class _BubblesProgressBarState extends State<BubblesProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    final barWidth = (widget.maxWidth * widget.ratio).clamp(
-      0.0,
-      widget.maxWidth,
+    final effectiveHeight = ExpressiveProgressPainterHelper.effectiveHeight(
+      widget.height,
     );
-    if (barWidth <= 0) return const SizedBox.shrink();
-
-    final radius = widget.height / 2;
 
     return RepaintBoundary(
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: SizedBox(
-            width: barWidth,
-            height: widget.height,
-            child: CustomPaint(
-              painter: _BubblesPainter(
-                animation: _controller,
-                barColor: widget.barColor,
-              ),
-              size: Size(barWidth, widget.height),
-            ),
+      child: SizedBox(
+        width: widget.maxWidth,
+        height: effectiveHeight,
+        child: CustomPaint(
+          painter: _ExpressiveBubblesPainter(
+            animation: _controller,
+            ratio: widget.ratio.clamp(0.0, 1.0),
+            barColor: widget.barColor,
+            isDark: widget.isDark,
           ),
+          size: Size(widget.maxWidth, effectiveHeight),
         ),
       ),
     );
   }
 }
 
-class _BubbleSeed {
-  final double xPhase; // 0..1 posición horizontal inicial
-  final double yPhase; // 0..1 posición vertical inicial
-  final double radiusFactor; // fracción de la altura de la barra
-  final int speed; // entero para bucle perfecto (1 o 2)
-  final double wobblePhase;
+class _BubbleSpec {
+  final double spacingOffset;
+  final double radiusFactor;
+  final double yBias;
+  final double bobPhase;
 
-  const _BubbleSeed({
-    required this.xPhase,
-    required this.yPhase,
+  const _BubbleSpec({
+    required this.spacingOffset,
     required this.radiusFactor,
-    required this.speed,
-    required this.wobblePhase,
+    required this.yBias,
+    required this.bobPhase,
   });
 }
 
-class _BubblesPainter extends CustomPainter {
+class _ExpressiveBubblesPainter extends CustomPainter {
   final Animation<double> animation;
+  final double ratio;
   final Color barColor;
+  final bool isDark;
 
-  static const List<_BubbleSeed> _bubbles = [
-    _BubbleSeed(xPhase: 0.06, yPhase: 0.25, radiusFactor: 0.20, speed: 1, wobblePhase: 0.0),
-    _BubbleSeed(xPhase: 0.14, yPhase: 0.72, radiusFactor: 0.14, speed: 2, wobblePhase: 1.2),
-    _BubbleSeed(xPhase: 0.23, yPhase: 0.45, radiusFactor: 0.24, speed: 1, wobblePhase: 2.1),
-    _BubbleSeed(xPhase: 0.32, yPhase: 0.80, radiusFactor: 0.16, speed: 2, wobblePhase: 0.7),
-    _BubbleSeed(xPhase: 0.41, yPhase: 0.30, radiusFactor: 0.18, speed: 1, wobblePhase: 3.0),
-    _BubbleSeed(xPhase: 0.50, yPhase: 0.65, radiusFactor: 0.22, speed: 1, wobblePhase: 1.8),
-    _BubbleSeed(xPhase: 0.59, yPhase: 0.20, radiusFactor: 0.15, speed: 2, wobblePhase: 4.1),
-    _BubbleSeed(xPhase: 0.68, yPhase: 0.55, radiusFactor: 0.25, speed: 1, wobblePhase: 2.7),
-    _BubbleSeed(xPhase: 0.77, yPhase: 0.78, radiusFactor: 0.16, speed: 2, wobblePhase: 0.4),
-    _BubbleSeed(xPhase: 0.86, yPhase: 0.35, radiusFactor: 0.20, speed: 1, wobblePhase: 5.0),
-    _BubbleSeed(xPhase: 0.94, yPhase: 0.60, radiusFactor: 0.14, speed: 2, wobblePhase: 1.5),
+  // Patrón orgánico de burbujas grandes, medianas y micro-burbujas
+  static const List<_BubbleSpec> _pattern = [
+    _BubbleSpec(spacingOffset: 0.00, radiusFactor: 0.36, yBias: -0.10, bobPhase: 0.0),
+    _BubbleSpec(spacingOffset: 0.22, radiusFactor: 0.22, yBias: 0.22, bobPhase: 1.4),
+    _BubbleSpec(spacingOffset: 0.44, radiusFactor: 0.42, yBias: 0.04, bobPhase: 2.6),
+    _BubbleSpec(spacingOffset: 0.69, radiusFactor: 0.25, yBias: -0.22, bobPhase: 4.0),
+    _BubbleSpec(spacingOffset: 0.85, radiusFactor: 0.31, yBias: 0.14, bobPhase: 5.1),
   ];
 
-  _BubblesPainter({
+  _ExpressiveBubblesPainter({
     required this.animation,
+    required this.ratio,
     required this.barColor,
+    required this.isDark,
   }) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final w = size.width;
+    final width = size.width;
     final h = size.height;
-    if (w <= 0 || h <= 0) return;
+    if (width <= 0 || h <= 0) return;
 
-    final t = animation.value;
-    final rect = Rect.fromLTWH(0, 0, w, h);
+    final centerY = h / 2;
+    final baseStroke = (h * 0.26).clamp(3.6, 5.0);
+    final padX = baseStroke / 2;
+    final usableWidth = math.max(0.0, width - baseStroke);
+    final activeEndX = padX + (usableWidth * ratio);
 
-    // 1. Cuerpo líquido con profundidad vertical
-    final topColor = Color.lerp(barColor, Colors.white, 0.22) ?? barColor;
-    final bottomColor =
-        Color.lerp(barColor, const Color(0xFF092C3A), 0.35) ?? barColor;
-
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [topColor, barColor, bottomColor],
-          stops: const [0.0, 0.55, 1.0],
-        ).createShader(rect),
+    // 1. Riel inactivo delgado
+    final trackStartX =
+        ratio > 0.0 ? math.min(activeEndX + 7.0, width - padX) : padX;
+    ExpressiveProgressPainterHelper.drawInactiveTrack(
+      canvas: canvas,
+      startX: trackStartX,
+      endX: width - padX,
+      centerY: centerY,
+      strokeWidth: baseStroke * 0.88,
+      isDark: isDark,
     );
 
-    // 2. Burbujas cristalinas flotando de izquierda a derecha y ascendiendo suave
-    final fillPaint = Paint()..style = PaintingStyle.fill;
-    final strokePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8;
+    if (ratio <= 0.001) return;
 
-    for (final b in _bubbles) {
-      final progressX = (b.xPhase + t * b.speed) % 1.0;
-      final cx = progressX * (w + h) - h * 0.5;
-      if (cx < -h || cx > w + h) continue;
-
-      final wobbleY =
-          math.sin(t * 2 * math.pi * b.speed + b.wobblePhase) * (h * 0.14);
-      final cy = (b.yPhase * h + wobbleY).clamp(h * 0.18, h * 0.82);
-      final r = (h * b.radiusFactor).clamp(1.6, 4.2);
-
-      // Cuerpo translúcido de la burbuja
-      fillPaint.color = Colors.white.withValues(alpha: 0.22);
-      canvas.drawCircle(Offset(cx, cy), r, fillPaint);
-
-      // Borde fino brillante
-      strokePaint.color = Colors.white.withValues(alpha: 0.65);
-      canvas.drawCircle(Offset(cx, cy), r, strokePaint);
-
-      // Punto especular en esquina superior izquierda
-      fillPaint.color = Colors.white.withValues(alpha: 0.92);
-      canvas.drawCircle(
-        Offset(cx - r * 0.32, cy - r * 0.32),
-        math.max(0.65, r * 0.28),
-        fillPaint,
+    final activeLen = activeEndX - padX;
+    if (activeLen < 6.0) {
+      ExpressiveProgressPainterHelper.drawLeadingCap(
+        canvas: canvas,
+        x: activeEndX,
+        centerY: centerY,
+        totalHeight: h,
+        barColor: barColor,
+        isDark: isDark,
       );
+      return;
     }
 
-    // 3. Reflejo superior de vidrio curvo
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, w, h * 0.42),
+    // 2. Hilo acuático translúcido de base que une la corriente de burbujas
+    final threadRect = Rect.fromLTWH(padX, 0, math.max(1.0, activeLen), h);
+    canvas.drawLine(
+      Offset(padX, centerY),
+      Offset(activeEndX, centerY),
       Paint()
         ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
           colors: [
-            Colors.white.withValues(alpha: 0.40),
-            Colors.white.withValues(alpha: 0.0),
+            barColor.withValues(alpha: isDark ? 0.22 : 0.16),
+            barColor.withValues(alpha: isDark ? 0.42 : 0.32),
           ],
-        ).createShader(Rect.fromLTWH(0, 0, w, h * 0.42)),
+        ).createShader(threadRect)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = (h * 0.16).clamp(2.2, 3.2)
+        ..strokeCap = StrokeCap.round,
     );
 
-    // 4. Menisco brillante en el borde derecho
-    if (w >= 6) {
-      canvas.drawCircle(
-        Offset(w - h * 0.32, h * 0.5),
-        h * 0.28,
-        Paint()
-          ..color = Colors.white.withValues(alpha: 0.55)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5),
-      );
+    // 3. Burbujas cristalinas translúcidas flotando en bucle infinito perfecto
+    final t = animation.value;
+    const cycleWidth = 68.0; // Ancho de cada grupo de 5 burbujas
+    final driftPx = t * cycleWidth; // Al reiniciar t=0->1 avanza exactamente 1 ciclo
+    final bobPhaseGlobal = t * 2 * math.pi;
+
+    final rimColor = Color.lerp(barColor, Colors.white, isDark ? 0.28 : 0.05)!;
+    final tintFill = barColor.withValues(alpha: isDark ? 0.34 : 0.22);
+
+    final startCycle = -1;
+    final endCycle = (activeLen / cycleWidth).ceil() + 1;
+
+    for (var c = startCycle; c <= endCycle; c++) {
+      for (final spec in _pattern) {
+        final rawX = padX + (c + spec.spacingOffset) * cycleWidth + driftPx;
+        if (rawX < padX - 4.0 || rawX > activeEndX - 3.0) continue;
+
+        // Aparición y fusión suave en ambos extremos
+        final edgeScale = ExpressiveProgressPainterHelper.edgeSmoothstep(
+          math.min(rawX - padX, activeEndX - 3.0 - rawX),
+          10.0,
+        );
+        if (edgeScale <= 0.05) continue;
+
+        final maxR = (h * spec.radiusFactor).clamp(2.4, h * 0.46);
+        final r = maxR * (0.35 + 0.65 * edgeScale);
+
+        final bobY = math.sin(bobPhaseGlobal + spec.bobPhase) * (h * 0.12);
+        final cy = (centerY + (h * spec.yBias) + bobY).clamp(
+          r + 0.8,
+          h - r - 0.8,
+        );
+        final center = Offset(rawX, cy);
+
+        // Interior cristalino con gradiente radial (centro claro -> borde con color)
+        final bubbleRect = Rect.fromCircle(center: center, radius: r);
+        canvas.drawCircle(
+          center,
+          r,
+          Paint()
+            ..shader = RadialGradient(
+              center: const Alignment(-0.35, -0.35),
+              radius: 0.95,
+              colors: [
+                Colors.white.withValues(alpha: isDark ? 0.32 : 0.72),
+                tintFill,
+                barColor.withValues(alpha: isDark ? 0.62 : 0.48),
+              ],
+              stops: const [0.0, 0.58, 1.0],
+            ).createShader(bubbleRect),
+        );
+
+        // Aro cristalino nítido de la burbuja
+        canvas.drawCircle(
+          center,
+          r,
+          Paint()
+            ..color = rimColor.withValues(alpha: (0.85 * edgeScale).clamp(0.0, 1.0))
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = r > 4.2 ? 1.35 : 1.05,
+        );
+
+        // Destello curvo blanco en la esquina superior izquierda (efecto pompa real)
+        final arcRect = Rect.fromCircle(center: center, radius: r * 0.64);
+        canvas.drawArc(
+          arcRect,
+          math.pi * 1.12,
+          math.pi * 0.42,
+          false,
+          Paint()
+            ..color = Colors.white.withValues(
+              alpha: ((isDark ? 0.80 : 0.95) * edgeScale).clamp(0.0, 1.0),
+            )
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = r > 4.2 ? 1.3 : 0.95
+            ..strokeCap = StrokeCap.round,
+        );
+      }
     }
+
+    // 4. Marcador vertical estilizado
+    ExpressiveProgressPainterHelper.drawLeadingCap(
+      canvas: canvas,
+      x: activeEndX,
+      centerY: centerY,
+      totalHeight: h,
+      barColor: barColor,
+      isDark: isDark,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _BubblesPainter oldDelegate) {
-    return oldDelegate.barColor != barColor;
+  bool shouldRepaint(covariant _ExpressiveBubblesPainter oldDelegate) {
+    return oldDelegate.ratio != ratio ||
+        oldDelegate.barColor != barColor ||
+        oldDelegate.isDark != isDark;
   }
 }

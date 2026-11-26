@@ -46,7 +46,9 @@ class CheckInFormSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             tintColor: isMaterial3
                 ? null
-                : (isDark ? const Color(0xFF141418) : themePrimary),
+                : (isDark
+                      ? const Color(0xFF141418)
+                      : Colors.white.withValues(alpha: 0.94)),
             enableRefraction: !isMaterial3,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -117,16 +119,14 @@ class CheckInFormSection extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? themePrimary.withValues(
-                                    alpha: isDark ? 0.35 : 0.18,
-                                  )
+                                ? themePrimary
                                 : (isDark
-                                      ? Colors.white.withValues(alpha: 0.05)
-                                      : Colors.white.withValues(alpha: 0.65)),
+                                      ? Colors.white.withValues(alpha: 0.06)
+                                      : Colors.black.withValues(alpha: 0.04)),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: isSelected
-                                  ? (isDark ? Colors.white70 : themePrimary)
+                                  ? themePrimary
                                   : (isDark
                                         ? Colors.white12
                                         : AppColors.stoneBorder),
@@ -139,7 +139,7 @@ class CheckInFormSection extends StatelessWidget {
                                 Icons.door_sliding_outlined,
                                 size: 18,
                                 color: isSelected
-                                    ? (isDark ? Colors.white : themePrimary)
+                                    ? Colors.white
                                     : (isDark
                                           ? Colors.white60
                                           : AppColors.slateMuted),
@@ -154,7 +154,7 @@ class CheckInFormSection extends StatelessWidget {
                                         ? FontWeight.w700
                                         : FontWeight.w500,
                                     color: isSelected
-                                        ? (isDark ? Colors.white : themePrimary)
+                                        ? Colors.white
                                         : (isDark
                                               ? Colors.white
                                               : AppColors.mineralInk),
@@ -162,10 +162,10 @@ class CheckInFormSection extends StatelessWidget {
                                 ),
                               ),
                               if (isSelected)
-                                Icon(
+                                const Icon(
                                   Icons.check_circle_rounded,
                                   size: 18,
-                                  color: isDark ? Colors.white : themePrimary,
+                                  color: Colors.white,
                                 ),
                             ],
                           ),
@@ -372,8 +372,8 @@ class _ShiftButton extends StatelessWidget {
         ? (isSelected ? scheme.primaryContainer : scheme.surfaceContainerHigh)
         : (isSelected
               ? (isDark
-                    ? themePrimary.withValues(alpha: 0.35)
-                    : themePrimary.withValues(alpha: 0.20))
+                    ? themePrimary.withValues(alpha: 0.42)
+                    : Colors.white.withValues(alpha: 0.95))
               : (isDark
                     ? Colors.white.withValues(alpha: 0.06)
                     : Colors.white.withValues(alpha: 0.65)));

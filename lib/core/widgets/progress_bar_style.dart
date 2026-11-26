@@ -4,7 +4,6 @@ import 'progress_bar/aurora_progress_bar.dart';
 import 'progress_bar/bubbles_progress_bar.dart';
 import 'progress_bar/capsule_progress_bar.dart';
 import 'progress_bar/glowing_progress_bar.dart';
-import 'progress_bar/progress_bar_track.dart';
 import 'progress_bar/segmented_progress_bar.dart';
 import 'progress_bar/wave_progress_bar.dart';
 
@@ -12,29 +11,32 @@ export 'progress_bar/aurora_progress_bar.dart';
 export 'progress_bar/bubbles_progress_bar.dart';
 export 'progress_bar/capsule_progress_bar.dart';
 export 'progress_bar/glowing_progress_bar.dart';
+export 'progress_bar/progress_bar_expressive_helpers.dart';
 export 'progress_bar/progress_bar_track.dart';
 export 'progress_bar/segmented_progress_bar.dart';
 export 'progress_bar/wave_progress_bar.dart';
 
 /// Estilos disponibles para las barras de progreso de horas.
+/// Todos comparten el lenguaje expresivo (deformación orgánica de la píldora,
+/// riel inactivo delgado y marcador vertical estilizado).
 /// NOTA: Mantener el orden de los índices existentes para compatibilidad con SharedPreferences.
 enum ProgressBarStyle {
-  /// Cápsula cristalina: gradiente volumétrico con reflejo especular superior y gota guía.
+  /// Cápsula orgánica perfilada con brillo especular y marcador estilizado.
   defaultStyle('Cápsula'),
 
-  /// Olas expresivas: trazo sinusoidal fluido con onda de profundidad y marcador estilizado.
+  /// Olas expresivas: trazo sinusoidal fluido con onda de profundidad.
   gradient('Olas'),
 
-  /// Bloques discretos de precisión técnica con realce en la celda activa.
+  /// Segmentos expresivos con ondulación tipo ecualizador líquido.
   segmented('Segmentos'),
 
-  /// Resplandor de neón líquido con halo exterior difuso (bloom) y faro pulsante.
+  /// Resplandor neón con pulso de plasma que deforma el contorno y halo difuso.
   glowing('Resplandor'),
 
-  /// Burbujas cristalinas flotando continuamente dentro del líquido acuático.
+  /// Burbujas orgánicas: cadena líquida de gotas conectadas en movimiento.
   bubbles('Burbujas'),
 
-  /// Aurora iridiscente con gradiente cromático dinámico y haz de luz satinada.
+  /// Aurora boreal: doble cinta sinusoidal entrelazada con gradiente iridiscente.
   aurora('Aurora');
 
   final String label;
@@ -42,7 +44,7 @@ enum ProgressBarStyle {
 }
 
 /// Widget reutilizable de barra de progreso de horas con soporte para
-/// múltiples estilos visuales y riel de cristal embutido.
+/// múltiples estilos visuales expresivos.
 class StyledProgressBar extends StatelessWidget {
   /// Ratio de progreso entre 0.0 y 1.0.
   final double ratio;
@@ -56,7 +58,7 @@ class StyledProgressBar extends StatelessWidget {
   /// Estilo visual seleccionado para la barra.
   final ProgressBarStyle style;
 
-  /// Altura de la barra en píxeles lógicos.
+  /// Altura base de la barra en píxeles lógicos.
   final double height;
 
   const StyledProgressBar({
@@ -78,15 +80,12 @@ class StyledProgressBar extends StatelessWidget {
 
         switch (style) {
           case ProgressBarStyle.defaultStyle:
-            return ProgressBarTrack(
+            return CapsuleProgressBar(
+              ratio: clampedRatio,
+              barColor: barColor,
               height: height,
+              maxWidth: maxWidth,
               isDark: isDark,
-              child: CapsuleProgressBar(
-                ratio: clampedRatio,
-                barColor: barColor,
-                height: height,
-                maxWidth: maxWidth,
-              ),
             );
 
           case ProgressBarStyle.gradient:
@@ -107,51 +106,30 @@ class StyledProgressBar extends StatelessWidget {
             );
 
           case ProgressBarStyle.glowing:
-            // Para el estilo glowing permitimos que el halo sobresalga suavemente
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  ProgressBarTrack(
-                    height: height,
-                    isDark: isDark,
-                    showMilestones: false,
-                    child: const SizedBox.shrink(),
-                  ),
-                  GlowingProgressBar(
-                    ratio: clampedRatio,
-                    barColor: barColor,
-                    height: height,
-                    maxWidth: maxWidth,
-                    isDark: isDark,
-                  ),
-                ],
-              ),
+            return GlowingProgressBar(
+              ratio: clampedRatio,
+              barColor: barColor,
+              height: height,
+              maxWidth: maxWidth,
+              isDark: isDark,
             );
 
           case ProgressBarStyle.bubbles:
-            return ProgressBarTrack(
+            return BubblesProgressBar(
+              ratio: clampedRatio,
+              barColor: barColor,
               height: height,
+              maxWidth: maxWidth,
               isDark: isDark,
-              child: BubblesProgressBar(
-                ratio: clampedRatio,
-                barColor: barColor,
-                height: height,
-                maxWidth: maxWidth,
-              ),
             );
 
           case ProgressBarStyle.aurora:
-            return ProgressBarTrack(
+            return AuroraProgressBar(
+              ratio: clampedRatio,
+              barColor: barColor,
               height: height,
+              maxWidth: maxWidth,
               isDark: isDark,
-              child: AuroraProgressBar(
-                ratio: clampedRatio,
-                barColor: barColor,
-                height: height,
-                maxWidth: maxWidth,
-              ),
             );
         }
       },
