@@ -176,7 +176,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                     ],
                   ),
                 ),
-              if (!notificationState.isEnabled && _showNotificationBanner)
+              if (!notificationState.isChecking &&
+                  !notificationState.isEnabled &&
+                  _showNotificationBanner)
                 NotificationBanner(
                   onActivate: () => ref
                       .read(notificationProvider.notifier)

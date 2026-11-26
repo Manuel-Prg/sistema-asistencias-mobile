@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/glass_toast.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/security_settings_provider.dart';
 import '../../services/notification_service.dart';
 import '../../services/report_notification_service.dart';
@@ -30,10 +31,10 @@ class OnboardingPermissionsStep extends ConsumerStatefulWidget {
 class _OnboardingPermissionsStepState
     extends ConsumerState<OnboardingPermissionsStep>
     with WidgetsBindingObserver {
-  bool _notificationsGranted = false;
   bool _exactAlarmsGranted = false;
   bool _loadingStatus = true;
   bool _requestingNotifications = false;
+  bool _openedNotificationSettings = false;
   bool _requestingAlarms = false;
   bool _requestingBiometric = false;
 
@@ -63,8 +64,17 @@ class _OnboardingPermissionsStepState
       ReportNotificationService.canScheduleExactAlarms(),
     ]);
     if (!mounted) return;
+
+    final deviceNotificationsGranted = results[0];
+    if (_openedNotificationSettings && deviceNotificationsGranted) {
+      _openedNotificationSettings = false;
+      await ref.read(notificationProvider.notifier).setNotificationsEnabled(true);
+    } else {
+      await ref.read(notificationProvider.notifier).refreshStatus();
+    }
+
+    if (!mounted) return;
     setState(() {
-      _notificationsGranted = results[0];
       _exactAlarmsGranted = results[1];
       _loadingStatus = false;
     });
@@ -76,13 +86,12 @@ class _OnboardingPermissionsStepState
     setState(() => _requestingNotifications = true);
 
     try {
-      final granted = await NotificationService.requestNotificationPermission();
+      final enabled = await ref
+          .read(notificationProvider.notifier)
+          .setNotificationsEnabled(true);
       if (!mounted) return;
 
-      if (granted) {
-        await ReportNotificationService.scheduleMonthlyReportReminders();
-        if (!mounted) return;
-        setState(() => _notificationsGranted = true);
+      if (enabled) {
         AppGlassToast.show(
           context,
           message: 'Notificaciones activadas y recordatorios programados.',
@@ -90,6 +99,7 @@ class _OnboardingPermissionsStepState
         );
       } else {
         // Si Android ya no muestra el diálogo nativo, abrimos los ajustes
+        _openedNotificationSettings = true;
         await NotificationService.openNotificationSettings();
       }
     } finally {
@@ -171,6 +181,7 @@ class _OnboardingPermissionsStepState
         ? AppColors.darkTextSecondary
         : AppColors.slateMuted;
     final securityState = ref.watch(securitySettingsProvider);
+    final notificationState = ref.watch(notificationProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -237,8 +248,10 @@ class _OnboardingPermissionsStepState
             title: 'Alertas de Entrada y Reportes',
             description:
                 'Te avisaremos si llegas tarde según tu horario, y recordatorios para entrega de reportes.',
-            granted: _notificationsGranted,
-            loading: _loadingStatus || _requestingNotifications,
+            granted: notificationState.isEnabled,
+            loading: _loadingStatus ||
+                notificationState.isChecking ||
+                _requestingNotifications,
             actionLabel: 'Permitir',
             accent: activeAccent,
             isDark: isDark,
