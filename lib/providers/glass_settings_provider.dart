@@ -32,10 +32,11 @@ class GlassSettings {
   final bool? _enableBlur;
 
   /// Indica si el dispositivo fue detectado como de prestaciones limitadas
-  final bool isLowEndDevice;
+  /// (nullable internamente para sobrevivir a Hot Reload sin error de tipo Null -> bool)
+  final bool? _isLowEndDevice;
 
   /// Memoria RAM total reportada por el sistema en MB (0 si no aplica)
-  final int totalRamMb;
+  final int? _totalRamMb;
 
   const GlassSettings({
     this.visualStyle = AppVisualStyle.liquidGlass,
@@ -44,17 +45,20 @@ class GlassSettings {
     this.showBorders = true,
     this.blurSigma = 7.0,
     bool this._enableBlur = true,
-    this.isLowEndDevice = false,
-    this.totalRamMb = 0,
+    bool this._isLowEndDevice = false,
+    int this._totalRamMb = 0,
   });
 
   bool get enableBlur => _enableBlur ?? true;
+  bool get isLowEndDevice => _isLowEndDevice ?? false;
+  int get totalRamMb => _totalRamMb ?? 0;
   bool get isMaterial3 => visualStyle == AppVisualStyle.material3;
   bool get isLiquidGlass => visualStyle == AppVisualStyle.liquidGlass;
 
   String get deviceRamLabel {
-    if (totalRamMb <= 0) return '';
-    final gb = (totalRamMb / 1024).round().clamp(1, 64);
+    final ram = totalRamMb;
+    if (ram <= 0) return '';
+    final gb = (ram / 1024).round().clamp(1, 64);
     return '$gb GB RAM';
   }
 
