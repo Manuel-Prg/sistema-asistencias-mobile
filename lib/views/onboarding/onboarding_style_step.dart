@@ -162,6 +162,29 @@ class OnboardingStyleStep extends ConsumerWidget {
               color: subColor.withValues(alpha: 0.85),
             ),
           ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.privacy_tip_outlined,
+                size: 14,
+                color: subColor.withValues(alpha: 0.75),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Para sugerirte el mejor rendimiento, la app consulta localmente capacidades básicas (RAM y CPU). Esta información no se almacena ni se envía a ningún servidor.',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    height: 1.35,
+                    color: subColor.withValues(alpha: 0.75),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -130,6 +130,32 @@ class VisualStyleSection extends StatelessWidget {
           activeAccent: activeAccent,
           isDark: isDark,
         ),
+        const SizedBox(height: 10),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.privacy_tip_outlined,
+              size: 14,
+              color: (isDark ? AppColors.darkTextSecondary : AppColors.slateMuted)
+                  .withValues(alpha: 0.8),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'La recomendación de estilo consulta localmente capacidades básicas del dispositivo (RAM y CPU) solo para optimizar la fluidez; ningún dato de tu equipo se guarda ni se envía fuera del teléfono.',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  height: 1.35,
+                  color: (isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.slateMuted)
+                      .withValues(alpha: 0.8),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
