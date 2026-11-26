@@ -4,26 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-import '../core/utils/mexican_business_days.dart';
-import '../core/utils/skippy_quotes.dart';
 import '../models/student_schedule.dart';
 import 'notifications/attendance_tolerance_scheduler.dart';
+import 'notifications/monthly_report_scheduler.dart';
 
-class ScheduledReminderItem {
-  final int id;
-  final String title;
-  final String body;
-  final DateTime scheduledDate;
-  final bool isStartOfMonth;
-
-  const ScheduledReminderItem({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.scheduledDate,
-    required this.isStartOfMonth,
-  });
-}
+export 'notifications/monthly_report_scheduler.dart' show ScheduledReminderItem;
 
 class ReportNotificationService {
   ReportNotificationService._();
@@ -31,22 +16,16 @@ class ReportNotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  static const String _channelId = 'report_reminders_channel';
-  static const String _channelName = 'Recordatorios de Reportes CUA';
-  static const String _channelDesc =
-      'Alertas para llenado de reportes en los primeros 5 días hábiles y subida a plataforma a fin de mes.';
-
+  static const String _notificationsPrefKey = 'app_push_notifications_enabled';
   static bool _initialized = false;
 
-  /// Inicializa el motor de notificaciones y la zona horaria de Villahermosa, Tabasco (UTC-6)
+  /// Inicializa el motor de notificaciones y la zona horaria de Villahermosa, Tabasco (UTC-6).
   static Future<void> initialize() async {
     if (_initialized) return;
 
     try {
-      // 1. Inicializar bases de datos de zonas horarias
       tz.initializeTimeZones();
       try {
-        // Villahermosa, Tabasco se rige bajo la zona horaria Centro de México (UTC-6)
         final mexicoLocation = tz.getLocation('America/Mexico_City');
         tz.setLocalLocation(mexicoLocation);
       } catch (e) {
@@ -55,11 +34,9 @@ class ReportNotificationService {
         );
       }
 
-      // 2. Ajustes de plataforma
       const androidSettings = AndroidInitializationSettings(
         '@mipmap/ic_launcher',
       );
-
       const initSettings = InitializationSettings(android: androidSettings);
 
       await _plugin.initialize(
@@ -71,25 +48,8 @@ class ReportNotificationService {
         },
       );
 
-      // 3. Crear los canales de alta importancia en Android 8.0+
-      final androidNotificationPlugin = _plugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-
-      if (androidNotificationPlugin != null) {
-        const reportChannel = AndroidNotificationChannel(
-          _channelId,
-          _channelName,
-          description: _channelDesc,
-          importance: Importance.high,
-          enableVibration: true,
-          playSound: true,
-        );
-
-        await androidNotificationPlugin.createNotificationChannel(reportChannel);
-        await AttendanceToleranceScheduler.createNotificationChannel(_plugin);
-      }
+      await MonthlyReportScheduler.createNotificationChannel(_plugin);
+      await AttendanceToleranceScheduler.createNotificationChannel(_plugin);
 
       _initialized = true;
       debugPrint('ReportNotificationService inicializado correctamente');
@@ -98,188 +58,26 @@ class ReportNotificationService {
     }
   }
 
-  /// Programa las notificaciones de reporte para el mes actual y el siguiente
-  /// conforme al calendario oficial de Villahermosa, Tabasco, México:
-  /// - Primeros 5 días hábiles a las 09:00 AM (sin fines de semana ni festivos)
-  /// - Últimos 3 días hábiles del mes a las 10:00 AM (para subir a plataforma)
+  /// Programa las notificaciones de reporte para el mes actual y el siguiente.
   static Future<void> scheduleMonthlyReportReminders() async {
     await initialize();
-
-    final now = DateTime.now();
-    final monthsToSchedule = [
-      DateTime(now.year, now.month, 1),
-      DateTime(now.year, now.month + 1, 1),
-    ];
-
-    for (final monthDate in monthsToSchedule) {
-      final y = monthDate.year;
-      final m = monthDate.month;
-
-      // 1. PROGRAMAR: Primeros 5 días hábiles de inicio de mes (09:00 AM)
-      final first5Days = MexicanBusinessDays.getFirstNBusinessDays(
-        y,
-        m,
-        count: 5,
-      );
-      for (var i = 0; i < first5Days.length; i++) {
-        final bDay = first5Days[i];
-        final scheduledDateTime = DateTime(
-          bDay.year,
-          bDay.month,
-          bDay.day,
-          9,
-          0,
-        );
-
-        if (scheduledDateTime.isAfter(now)) {
-          final id = 1000 + m * 10 + (i + 1);
-          final title = SkippyQuotes.getStartOfMonthTitle(i + 1);
-          final body = SkippyQuotes.getStartOfMonthBody(i + 1);
-
-          await _scheduleNotification(
-            id: id,
-            title: title,
-            body: body,
-            scheduledDate: scheduledDateTime,
-            payload: 'start_of_month_${bDay.month}_$i',
-          );
-        }
-      }
-
-      // 2. PROGRAMAR: Cierre de mes / últimos 3 días hábiles (10:00 AM)
-      final last3Days = MexicanBusinessDays.getLastNBusinessDays(
-        y,
-        m,
-        count: 3,
-      );
-      for (var j = 0; j < last3Days.length; j++) {
-        final bDay = last3Days[j];
-        final scheduledDateTime = DateTime(
-          bDay.year,
-          bDay.month,
-          bDay.day,
-          10,
-          0,
-        );
-
-        if (scheduledDateTime.isAfter(now)) {
-          final id = 2000 + m * 10 + (j + 1);
-          final remaining = last3Days.length - j;
-          final title = SkippyQuotes.getEndOfMonthTitle(remaining);
-          final body = SkippyQuotes.getEndOfMonthBody(remaining);
-
-          await _scheduleNotification(
-            id: id,
-            title: title,
-            body: body,
-            scheduledDate: scheduledDateTime,
-            payload: 'end_of_month_${bDay.month}_$j',
-          );
-        }
-      }
-    }
+    await MonthlyReportScheduler.scheduleMonthlyReportReminders(_plugin);
   }
 
-  static Future<void> _scheduleNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledDate,
-    required String payload,
-  }) async {
-    try {
-      final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
-
-      final androidDetails = AndroidNotificationDetails(
-        _channelId,
-        _channelName,
-        channelDescription: _channelDesc,
-        importance: Importance.high,
-        priority: Priority.high,
-        playSound: true,
-        enableVibration: true,
-        icon: '@mipmap/ic_launcher',
-        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      );
-
-      final details = NotificationDetails(android: androidDetails);
-
-      try {
-        await _plugin.zonedSchedule(
-          id: id,
-          title: title,
-          body: body,
-          scheduledDate: tzDateTime,
-          notificationDetails: details,
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          payload: payload,
-        );
-      } catch (_) {
-        // En caso de que el sistema operativo no conceda permiso de alarma exacta
-        await _plugin.zonedSchedule(
-          id: id,
-          title: title,
-          body: body,
-          scheduledDate: tzDateTime,
-          notificationDetails: details,
-          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-          payload: payload,
-        );
-      }
-    } catch (e) {
-      debugPrint('Error programando notificación $id: $e');
-    }
-  }
-
-  /// Dispara una notificación de prueba específica de Nuty en el dispositivo:
-  /// - [isStartOfMonth]: true para inicio de mes (días 1 a 5), false para fin de mes (3, 2, 1 días antes)
-  /// - [index]: 1..5 para inicio, o 1..3 para fin de mes (3 = 3 días antes, 1 = último día)
+  /// Dispara una notificación de prueba específica de Nuty en el dispositivo.
   static Future<void> triggerSpecificTestNotification({
     required bool isStartOfMonth,
     required int index,
   }) async {
     await initialize();
-
-    final androidDetails = AndroidNotificationDetails(
-      _channelId,
-      _channelName,
-      channelDescription: _channelDesc,
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-      icon: '@mipmap/ic_launcher',
-      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-    );
-
-    final details = NotificationDetails(android: androidDetails);
-
-    final String title;
-    final String body;
-    final int id;
-
-    if (isStartOfMonth) {
-      final safeIndex = index.clamp(1, 5);
-      title = SkippyQuotes.getStartOfMonthTitle(safeIndex);
-      body = SkippyQuotes.getStartOfMonthBody(safeIndex);
-      id = 9910 + safeIndex;
-    } else {
-      final safeRemaining = index.clamp(1, 3);
-      title = SkippyQuotes.getEndOfMonthTitle(safeRemaining);
-      body = SkippyQuotes.getEndOfMonthBody(safeRemaining);
-      id = 9920 + safeRemaining;
-    }
-
-    await _plugin.show(
-      id: id,
-      title: title,
-      body: body,
-      notificationDetails: details,
-      payload: 'manual_test_${isStartOfMonth ? 'start' : 'end'}_$index',
+    await MonthlyReportScheduler.triggerSpecificTestNotification(
+      _plugin,
+      isStartOfMonth: isStartOfMonth,
+      index: index,
     );
   }
 
-  /// Envía una notificación instantánea de prueba para verificar en el dispositivo
+  /// Envía una notificación instantánea de prueba para verificar en el dispositivo.
   static Future<void> sendTestNotification({
     required bool isStartOfMonth,
   }) async {
@@ -289,16 +87,13 @@ class ReportNotificationService {
     );
   }
 
-  /// Cancela todas las notificaciones de reportes y alertas de asistencia
+  /// Cancela todas las notificaciones de reportes y alertas de asistencia.
   static Future<void> cancelAllReportReminders() async {
     await _plugin.cancelAll();
   }
 
-  static const String _notificationsPrefKey = 'app_push_notifications_enabled';
-
   /// Programa las alertas de tolerancia de entrada (hora de inicio + 15 min)
   /// para los próximos 14 días basándose en el horario configurado del estudiante.
-  /// Respeta la preferencia del usuario y limpia alertas obsoletas antes de programar.
   static Future<void> scheduleEntryToleranceReminders(
     List<StudentSchedule> schedules, {
     bool skipToday = false,
@@ -319,19 +114,19 @@ class ReportNotificationService {
     );
   }
 
-  /// Cancela la alerta de tolerancia de entrada de hoy (ej. cuando el alumno ya hizo check-in)
+  /// Cancela la alerta de tolerancia de entrada de hoy (ej. cuando el alumno ya hizo check-in).
   static Future<void> cancelTodayEntryReminder() async {
     await initialize();
     await AttendanceToleranceScheduler.cancelTodayEntryReminder(_plugin);
   }
 
-  /// Cancela todas las alertas de tolerancia programadas
+  /// Cancela todas las alertas de tolerancia programadas.
   static Future<void> cancelAllEntryReminders() async {
     await initialize();
     await AttendanceToleranceScheduler.cancelAllEntryReminders(_plugin);
   }
 
-  /// Dispara una notificación inmediata de prueba de la alerta de tolerancia de 15 min
+  /// Dispara una notificación inmediata de prueba de la alerta de tolerancia de 15 min.
   static Future<void> triggerTestToleranceNotification({
     String scheduledStart = '11:00 AM',
   }) async {
@@ -374,54 +169,8 @@ class ReportNotificationService {
     }
   }
 
-  /// Retorna la lista de los próximos recordatorios programados para consulta en la app
+  /// Retorna la lista de los próximos recordatorios programados para consulta en la app.
   static List<ScheduledReminderItem> getUpcomingReminders() {
-    final now = DateTime.now();
-    final items = <ScheduledReminderItem>[];
-
-    final months = [
-      DateTime(now.year, now.month, 1),
-      DateTime(now.year, now.month + 1, 1),
-    ];
-
-    for (final monthDate in months) {
-      final y = monthDate.year;
-      final m = monthDate.month;
-
-      // Primeros 5 días hábiles
-      final first5 = MexicanBusinessDays.getFirstNBusinessDays(y, m, count: 5);
-      for (var i = 0; i < first5.length; i++) {
-        final bDay = first5[i];
-        final dt = DateTime(bDay.year, bDay.month, bDay.day, 9, 0);
-        items.add(
-          ScheduledReminderItem(
-            id: 1000 + m * 10 + (i + 1),
-            title: SkippyQuotes.getStartOfMonthTitle(i + 1),
-            body: SkippyQuotes.getStartOfMonthBody(i + 1),
-            scheduledDate: dt,
-            isStartOfMonth: true,
-          ),
-        );
-      }
-
-      // Últimos 3 días hábiles
-      final last3 = MexicanBusinessDays.getLastNBusinessDays(y, m, count: 3);
-      for (var j = 0; j < last3.length; j++) {
-        final bDay = last3[j];
-        final dt = DateTime(bDay.year, bDay.month, bDay.day, 10, 0);
-        final remaining = last3.length - j;
-        items.add(
-          ScheduledReminderItem(
-            id: 2000 + m * 10 + (j + 1),
-            title: SkippyQuotes.getEndOfMonthTitle(remaining),
-            body: SkippyQuotes.getEndOfMonthBody(remaining),
-            scheduledDate: dt,
-            isStartOfMonth: false,
-          ),
-        );
-      }
-    }
-
-    return items;
+    return MonthlyReportScheduler.getUpcomingReminders();
   }
 }
